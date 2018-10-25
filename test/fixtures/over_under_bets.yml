@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  over: false
+  user: one
+  over_under: one
+  completed: false
+  correct: false
+
+two:
+  over: false
+  user: two
+  over_under: two
+  completed: false
+  correct: false

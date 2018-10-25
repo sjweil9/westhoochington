@@ -1,0 +1,2 @@
+class OverUnderBetsController < ApplicationController
+end
