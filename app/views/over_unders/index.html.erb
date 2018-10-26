@@ -1,0 +1,41 @@
+<div class="row">
+  <h1>New Over/Under Lines</h1>
+</div>
+<div class="row">
+  <table>
+    <tr>
+      <td>Subject</td>
+      <td>Line</td>
+      <td>Proposer</td>
+      <td>Evaluation Date</td>
+      <td>Over Bettors</td>
+      <td>Under Bettors</td>
+    </tr>
+    <% @over_unders.each do |over_under| %>
+      <tr>
+        <td><%= over_under.description %></td>
+        <td><%= over_under.line %></td>
+        <td><%= over_under.user.email %></td>
+        <td><%= over_under.completed_date&.strftime("%m/%d/%Y") %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+<div class="row">
+  <h1>Pending Over/Under Lines</h1>
+</div>
+<div class="row">
+  <h1>Propose an Over/Under Line</h1>
+</div>
+<div class="row">
+  <form action="<%= propose_over_under_path %>" method="post">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <input type="text" name="over_under[description]" placeholder="What's the subject?">
+      <%= render "shared/errors", type: "description" %>
+    <input type="text" name="over_under[line]" placeholder="What's the line?">
+      <%= render "shared/errors", type: "line" %>
+    Evaluation Date: <input type="date" name="over_under[completed_date]">
+      <%= render "shared/errors", type: "completed_date" %>
+    <button type="submit">Propose</button>
+  </form>
+</div>

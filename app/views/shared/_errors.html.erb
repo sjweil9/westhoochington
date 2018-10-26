@@ -1,0 +1,6 @@
+
+<% if flash[type.to_sym] %>
+<% flash[type.to_sym].each do |error| %>
+    <p class="error"><small><% if type == "password_confirmation" %>Confirmation <% end %><%= error %></small></p>
+<% end %>
+<% end %>
