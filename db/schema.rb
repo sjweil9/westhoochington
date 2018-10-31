@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_25_032000) do
+ActiveRecord::Schema.define(version: 2018_10_31_041842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,16 @@ ActiveRecord::Schema.define(version: 2018_10_25_032000) do
     t.datetime "updated_at", null: false
     t.index ["message_id"], name: "index_comments_on_message_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "lines", force: :cascade do |t|
+    t.bigint "over_under_id"
+    t.bigint "user_id"
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["over_under_id"], name: "index_lines_on_over_under_id"
+    t.index ["user_id"], name: "index_lines_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
@@ -45,17 +55,16 @@ ActiveRecord::Schema.define(version: 2018_10_25_032000) do
   create_table "over_under_bets", force: :cascade do |t|
     t.boolean "over"
     t.bigint "user_id"
-    t.bigint "over_under_id"
     t.boolean "completed"
     t.boolean "correct"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["over_under_id"], name: "index_over_under_bets_on_over_under_id"
+    t.bigint "line_id"
+    t.index ["line_id"], name: "index_over_under_bets_on_line_id"
     t.index ["user_id"], name: "index_over_under_bets_on_user_id"
   end
 
   create_table "over_unders", force: :cascade do |t|
-    t.string "line"
     t.datetime "completed_date"
     t.bigint "user_id"
     t.text "description"
@@ -78,9 +87,11 @@ ActiveRecord::Schema.define(version: 2018_10_25_032000) do
 
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
+  add_foreign_key "lines", "over_unders"
+  add_foreign_key "lines", "users"
   add_foreign_key "messages", "users"
   add_foreign_key "nicknames", "users"
-  add_foreign_key "over_under_bets", "over_unders"
+  add_foreign_key "over_under_bets", "lines"
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
 end

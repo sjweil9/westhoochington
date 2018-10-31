@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  over_under: one
+  user: one
+  value: MyString
+
+two:
+  over_under: two
+  user: two
+  value: MyString

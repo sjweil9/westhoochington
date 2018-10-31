@@ -9,5 +9,8 @@ Rails.application.routes.draw do
 
   post '/over_unders', to: 'over_unders#create', as: 'propose_over_under'
 
+  post '/lines/:line_id/over_bets', to: 'over_under_bets#create_over', as: 'bet_over'
+  post '/lines/:line_id/under_bets', to: 'over_under_bets#create_under', as: 'bet_under'
+
   devise_for :users
 end

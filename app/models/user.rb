@@ -4,20 +4,17 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   
-  before_create :default_name
   validate :allowed_email
+
+  has_many :nicknames
+
+  def random_nickname
+    nicknames.sample
+  end
 
   private
 
   ALLOWED_EMAILS = ['test@test.com']
-  JOKERS = {
-    'stephen.weil@gmail.com':'Stephen Weil',
-    'test@test.com':'Test User'
-  }
-
-  def default_name
-    self.name = JOKERS[self.email]
-  end
 
   def allowed_email
     return if ALLOWED_EMAILS.include?(email)
