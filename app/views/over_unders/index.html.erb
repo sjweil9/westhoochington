@@ -17,6 +17,8 @@
         <td><%= over_under.line %></td>
         <td><%= over_under.user.email %></td>
         <td><%= over_under.completed_date&.strftime("%m/%d/%Y") %></td>
+        <td><button action="/over_unders/${over_under.id}/over" method="patch">Bet Over</button></td>
+        <td><button action="/over_unders/${over_under.id}/under" method="patch">Bet Under</button></td>
       </tr>
     <% end %>
   </table>
