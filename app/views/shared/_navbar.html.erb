@@ -1,11 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="<%= home_path %>">Westhoochington</a>
   <div class="navbar-nav">
-    <a class="nav-item nav-link" href="#">Over/Under Lines</a>
-    <a class="nav-item nav-link" href="#">Side Hustles</a>
+    <a class="nav-item nav-link" href="<%= home_path %>">Over/Under Lines</a>
+    <a class="nav-item nav-link" href="<%= side_hustles_path %>">Side Hustles</a>
     <a class="nav-item nav-link" href="#">Cuck of the Week Standings</a>
     <a class="nav-item nav-link" href="#">WHIFFBP</a>
     <a class="nav-item nav-link" href="#">Trapgame Maestros</a>
+    <a class="nav-item nav-link" href="<%= user_profile_path(current_user[:id]) %>">Profile</a>
     <a class="nav-item nav-link" href="<%= destroy_user_session_path %>" data-method="delete">Log Out Like a Real Bitch</a>
   </div>
 </nav>

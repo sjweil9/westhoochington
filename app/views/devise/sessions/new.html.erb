@@ -1,10 +1,10 @@
-<% if flash[:login] %>
+<% if flash[:register] %>
 <style>
     #login {
-        display: block;
+        display: none;
     }
     #register {
-        display: none;
+        display: block;
     }
 </style>
 <% end %>
@@ -13,18 +13,12 @@
     <div id="overlay">
         <form action="<%= register_path %>" id="register" method="post">
             <h1>Haven't registered yet, you lazy fuck?</h1>
-            <% if flash[:success] %>
-                <p class="success"><%= flash[:success] %></p>
-            <% end %>
-            <% if flash[:not_found] %>
-                <p class="error"><%= flash[:not_found] %></p>
-            <% end %>
             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
             <input type="email" name="user[email]" placeholder="Email Address">
             <%= render "shared/errors", type: "email" %>
             <input type="password" name="user[password]" placeholder="Password">
             <%= render "shared/errors", type: "password" %>
-            <p><small>*It's gonna complain if yours is shitty</small></p>
+            <p class="error">*It's gonna complain if yours is shitty</p>
             <input type="password" name="user[password_confirmation]" placeholder="Confirm Password">
             <%= render "shared/errors", type: "password_confirmation" %>
             <button type="submit">Register</button>
@@ -34,19 +28,11 @@
 
         <form action="<%= user_session_path %>" id="login" method="post">
             <h1>Which one of you assholes is this?</h1>
-            <% if flash[:login] %>
-                <% if flash[:success] %>
-                    <p class="success"><%= flash[:success] %></p>
-                <% end %>
-            <% end %>
             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
             <input type="email" name="user[email]" placeholder="Email Address">
-            <% if flash[:login] %>
-                <%= render "shared/errors", type: "email" %>
-            <% end %>
             <input type="password" name="user[password]" placeholder="Password">
-            <% if flash[:login] %>
-                <%= render "shared/errors", type: "password" %>
+            <% if flash[:alert] %>
+                <%= render "shared/errors", type: "alert" %>
             <% end %>
             <button type="submit">Login</button>
 

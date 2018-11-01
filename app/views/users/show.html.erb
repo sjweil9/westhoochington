@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="row">
+    <h1><%= @user.nicknames[@nickname_idx].name %><% if @user.nicknames.count > 1 %>*<% end %></h1>
+  </div>
+  <div class="row profile-title">
+    <% if @user.nicknames.count > 1 %>
+    <h4>*
+      <% @user.nicknames.each_with_index do |nickname, idx| %>
+        <% if idx != @nickname_idx %>
+          aka <%= nickname.name %> 
+        <% end %>
+      <% end %>
+    </h4>
+    <% end %>
+  </div>
+  <div class="row profile-header">
+    <h2>FFB Record</h2>
+  </div>
+  <div class="row profile-header">
+    <h2>Side Hustle Record</h2>
+  </div>
+  <% if current_user[:id] != @user.id %>
+  <div class="row">
+    <h2>Add Nickname</h2>
+  </div>
+  <div class="row">
+    <form action="<%= create_nickname_path %>" method="post">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <input type="text" name="name">
+      <%= render "shared/errors", type: "name" %>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+  <% else %>
+  <div class="row">
+      <h2>Change Password</h2>
+  </div>
+  <% end %>
+</div>

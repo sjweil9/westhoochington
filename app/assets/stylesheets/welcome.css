@@ -58,5 +58,8 @@ div#overlay {
       margin: 1em auto;
   }
 #login {
+  display: block;
+}
+#register {
   display: none;
 }

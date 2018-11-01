@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_31_041842) do
+ActiveRecord::Schema.define(version: 2018_11_01_024604) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,6 +73,26 @@ ActiveRecord::Schema.define(version: 2018_10_31_041842) do
     t.index ["user_id"], name: "index_over_unders_on_user_id"
   end
 
+  create_table "side_bet_acceptances", force: :cascade do |t|
+    t.bigint "side_bet_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "status"
+    t.index ["side_bet_id"], name: "index_side_bet_acceptances_on_side_bet_id"
+    t.index ["user_id"], name: "index_side_bet_acceptances_on_user_id"
+  end
+
+  create_table "side_bets", force: :cascade do |t|
+    t.decimal "amount"
+    t.text "terms"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "completed"
+    t.index ["user_id"], name: "index_side_bets_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -94,4 +114,7 @@ ActiveRecord::Schema.define(version: 2018_10_31_041842) do
   add_foreign_key "over_under_bets", "lines"
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
+  add_foreign_key "side_bet_acceptances", "side_bets"
+  add_foreign_key "side_bet_acceptances", "users"
+  add_foreign_key "side_bets", "users"
 end

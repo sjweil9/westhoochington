@@ -19,3 +19,15 @@
   color: red;
   margin: 0;
 }
+
+.profile-title {
+  margin-bottom: 5vh;
+}
+
+.profile-header {
+  margin-bottom: 2vh;
+}
+
+h2.form-header {
+  display: block;
+}

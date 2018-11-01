@@ -4,8 +4,11 @@ Rails.application.routes.draw do
   root to: 'over_unders#index', as: 'home'
 
   post '/users', to: 'users#create', as: 'register'
+  post '/users/:user_id/nicknames', to: 'nicknames#create', as: 'create_nickname'
 
-  # post '/sessions', to: 'sessions#create', as: 'login'
+  post '/sessions', to: 'sessions#create', as: 'login'
+
+  get '/side_bets', to: 'side_bets#index', as: 'side_hustles'
 
   post '/over_unders', to: 'over_unders#create', as: 'propose_over_under'
 
@@ -15,4 +18,7 @@ Rails.application.routes.draw do
   post '/lines/:line_id/under_bets', to: 'over_under_bets#create_under', as: 'bet_under'
 
   devise_for :users
+
+  # put this after devise because of /users/sign_in
+  get '/users/:user_id', to: 'users#show', as: 'user_profile'
 end

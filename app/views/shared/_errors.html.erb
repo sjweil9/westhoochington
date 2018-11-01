@@ -1,7 +1,7 @@
 <% if flash[type.to_sym]&.is_a?(Array) %>
 <% flash[type.to_sym].each do |error| %>
-    <p class="error"><small><% if type == "password_confirmation" %>Confirmation <% end %><%= error %></small></p>
+    <p class="error"><% if type == "password_confirmation" %>Confirmation <% end %><%= error %></p>
 <% end %>
 <% elsif flash[type.to_sym].is_a?(String) %>
-    <p class="error"><small><%= flash[type.to_sym] %></small></p>
+    <p class="error"><%= flash[type.to_sym] %></p>
 <% end %>

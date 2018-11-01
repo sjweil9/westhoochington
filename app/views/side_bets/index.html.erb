@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="row">
+    <h1>Active Side Hustles</h1>
+    <% @side_bets.reject(&:completed).each do |side_bet| %>
+
+    <% end %>
+  </div>
+
+  <div class="row">
+    <h1>Completed Side Hustles</h1>
+    <% @side_bets.select(&:completed).each do |side_bet| %>
+      
+    <% end %>
+  </div>
+</div>
