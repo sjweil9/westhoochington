@@ -18,7 +18,9 @@ class ApplicationController < ActionController::Base
     return unless object&.errors&.messages
 
     object.errors.messages.each do |tag, message|
-      flash[tag] = message
+      flash[tag] = message.each_with_object([]) do |content, memo|
+        memo << "#{tag} #{content}".humanize
+      end
     end
   end
 end

@@ -9,7 +9,7 @@ class User < ApplicationRecord
   has_many :nicknames
 
   def random_nickname
-    nicknames.sample
+    nicknames.sample&.name
   end
 
   private

@@ -7,6 +7,7 @@ class Line < ApplicationRecord
   has_many :under_bets, -> { where(over: false) }, class_name: 'OverUnderBet'
 
   validates_uniqueness_of :over_under_id, scope: :user_id
+  validates :value, numericality: true
 
   def bet_on_by_user?
     over_bets.any?(&:created_by_user?) || under_bets.any?(&:created_by_user?)

@@ -15,6 +15,7 @@
  *= require_self
  */
 
-.error {
-  color: 'red'
+ .error {
+  color: red;
+  margin: 0;
 }

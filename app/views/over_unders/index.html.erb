@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    <h1>New Over/Under Lines</h1>
+    <h1>Pending Over/Under Lines</h1>
   </div>
   
   <div class="row">
@@ -16,11 +16,27 @@
         </tr>
       </thead>
       <tbody>
-      <% @over_unders.each do |over_under| %>
+      <% @over_unders.reject(&:completed?).each do |over_under| %>
         <tr class="table-primary">
           <th scope="row"><%= over_under.description %></th>
-          <td><% if over_under.lines.none? { |line| line.user.id == current_user[:id] } %><button>Propose</button><% end %></td>
-          <td><%= over_under.user.random_nickname&.name %></td>
+          <td>
+            <% if over_under.lines.none? { |line| line.user.id == current_user[:id] } %>
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse_<%= over_under.id %>" aria-expanded="false" aria-controls="collapseExample">
+            Propose Line
+            </button>
+            <%= render "shared/errors", type: "value" %>
+            <% end %>
+            <div class="collapse" id="collapse_<%= over_under.id %>">
+              <div class="card card-body">
+                <form action="<%= propose_line_path(over_under.id) %>" method="post">
+                  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                  <input type="number" name="value" placeholder="What's the line?" step="0.1">
+                  <button type="submit">Submit</button>
+                </form>             
+              </div>
+            </div>
+          </td>
+          <td><%= over_under.user.random_nickname %></td>
           <td><%= over_under.completed_date&.strftime("%m/%d/%Y") %></td>
           <td></td>
           <td></td>
@@ -29,14 +45,14 @@
           <tr class="table-warning">
             <td></td>
             <td><%= line.value %></td>
-            <td><%= line.user.random_nickname&.name %></td>
+            <td><%= line.user.random_nickname %></td>
             <td></td>
             <td>
               <% if !line.created_by_user? && !line.bet_on_by_user? %>
               <a class="btn btn-primary" href="<%= bet_over_path(line.id) %>" data-method="post" role="button">Bet Over</a>
               <% else %>
               <% line.over_bets.each do |over_bet| %>
-                <%= over_bet.user.random_nickname.name %>
+                <%= over_bet.user.random_nickname %>
               <% end %>
               <% end %>
             </td>
@@ -45,7 +61,7 @@
               <a class="btn btn-primary" href="<%= bet_under_path(line.id) %>" data-method="post" role="button">Bet Under</a>
               <% else %>
               <% line.under_bets.each_with_index do |under_bet, idx| %>
-                <%= under_bet.user.random_nickname.name %><% if idx < line.under_bets.size - 1 %>,<% end %>
+                <%= under_bet.user.random_nickname %><% if idx < line.under_bets.size - 1 %>,<% end %>
               <% end %>
               <% end %>
             </td>
@@ -54,9 +70,6 @@
       <% end %>
       </tbody>
     </table>
-  </div>
-  <div class="row">
-    <h1>Pending Over/Under Lines</h1>
   </div>
   <div class="row">
     <h1>Propose an Over/Under Subject</h1>
