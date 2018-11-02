@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   post '/sessions', to: 'sessions#create', as: 'login'
 
   get '/side_bets', to: 'side_bets#index', as: 'side_hustles'
+  post '/side_bets', to: 'side_bets#create', as: 'propose_bet'
+  post '/side_bets/:side_bet_id/acceptances', to: 'side_bets#accept', as: 'accept_side_bet'
+  patch '/side_bets/:side_bet_id/status/:status', to: 'side_bets#update', as: 'complete_side_bet'
 
   post '/over_unders', to: 'over_unders#create', as: 'propose_over_under'
 
