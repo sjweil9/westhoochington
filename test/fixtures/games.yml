@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  opponent_id: 1
+  week: 1
+  season_year: 1
+  active_total: 1.5
+  bench_total: 1.5
+  projected_total: 1.5
+
+two:
+  user: two
+  opponent_id: 1
+  week: 1
+  season_year: 1
+  active_total: 1.5
+  bench_total: 1.5
+  projected_total: 1.5

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_02_021611) do
+ActiveRecord::Schema.define(version: 2018_11_06_030537) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,19 @@ ActiveRecord::Schema.define(version: 2018_11_02_021611) do
     t.datetime "updated_at", null: false
     t.index ["message_id"], name: "index_comments_on_message_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "games", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "opponent_id"
+    t.integer "week"
+    t.integer "season_year"
+    t.float "active_total"
+    t.float "bench_total"
+    t.float "projected_total"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_games_on_user_id"
   end
 
   create_table "lines", force: :cascade do |t|
@@ -109,6 +122,7 @@ ActiveRecord::Schema.define(version: 2018_11_02_021611) do
 
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
+  add_foreign_key "games", "users"
   add_foreign_key "lines", "over_unders"
   add_foreign_key "lines", "users"
   add_foreign_key "messages", "users"
