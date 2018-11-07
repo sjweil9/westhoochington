@@ -16,6 +16,52 @@ class User < ApplicationRecord
     nicknames.sample&.name
   end
 
+  #
+  # stat related methods
+  #
+
+  %w[active_total bench_total projected_total].each do |method|
+    define_method(:"yearly_#{method}") do
+      games.map(&:"#{method}").reduce(:+).round(2)
+    end
+
+    define_method(:"average_#{method}") do
+      (send(:"yearly_#{method}") / game_count).round(2)
+    end
+    
+    define_method(:"yearly_opponent_#{method}") do
+      opponent_games.map(&:"#{method}").reduce(:+).round(2)
+    end
+
+    define_method(:"average_opponent_#{method}") do
+      (send(:"yearly_opponent_#{method}") / opponent_game_count).round(2)
+    end
+  end
+
+  def lucky_wins
+    # games where you won, but would have lost to opponent's average score
+    games.select(&:lucky?).count
+  end
+
+  %w[margin_of_victory margin_of_defeat].each do |method|
+    define_method(:"total_#{method}") do
+      check = method == 'margin_of_victory' ? 'won?' : 'lost?'
+      games.select(&:"#{check}").map(&:point_differential).reduce(:+).round(2)
+    end
+
+    define_method(:"average_#{method}") do
+      (send(:"total_#{method}") / game_count).round(2)
+    end
+  end
+
+  def game_count
+    @game_count ||= games.count.to_f
+  end
+
+  def opponent_game_count
+    @opponent_game_count ||= opponent_games.count.to_f
+  end
+
   private
 
   ALLOWED_EMAILS = [

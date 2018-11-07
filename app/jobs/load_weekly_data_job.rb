@@ -24,7 +24,7 @@ class LoadWeeklyDataJob < ApplicationJob
       parsed_response = JSON.parse(response.body)
 
       team_data = parsed_response.dig('boxscore', 'teams').detect { |h| h['teamId'] == team }
-      other_team_id = parsed_response.dig('boxscore', 'teams').detect { |h| h['teamId'] != team }['teamId']
+      other_team_data = parsed_response.dig('boxscore', 'teams').detect { |h| h['teamId'] != team }
       game_data = {
         active_total: team_data['appliedActiveRealTotal'],
         bench_total: team_data['appliedInactiveRealTotal'],
@@ -32,7 +32,10 @@ class LoadWeeklyDataJob < ApplicationJob
         season_year: season_year,
         week: week,
         user_id: user_id_for(team),
-        opponent_id: user_id_for(other_team_id),
+        opponent_id: user_id_for(other_team_data['teamId']),
+        opponent_active_total: other_team_data['appliedActiveRealTotal'],
+        opponent_bench_total: team_data['appliedInactiveRealTotal'],
+        opponent_projected_total: team_data['appliedActiveProjectedTotal'],
       }
 
       Game.create(game_data)
