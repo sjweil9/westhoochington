@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="row">
+      <h1>Season Stats</h1>
+    </div>
+    <div class="row">
+      <h3>Most Lucky Wins</h3>
+    </div>
+    <div class="row">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Lucky Wins</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.sort{ |a, b| b.lucky_wins <=> a.lucky_wins }.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= idx + 1 %></th>
+              <th><%= user.random_nickname %></th>
+              <th><%= user.lucky_wins %></th>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+</div>

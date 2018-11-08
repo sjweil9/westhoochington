@@ -54,6 +54,10 @@ class User < ApplicationRecord
     end
   end
 
+  def total_high_weekly_scores
+    @total_high_weekly_scores ||= games.select(&:weekly_high_score?).count
+  end
+
   def game_count
     @game_count ||= games.count.to_f
   end

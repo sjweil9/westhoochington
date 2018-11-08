@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   post '/lines/:line_id/over_bets', to: 'over_under_bets#create_over', as: 'bet_over'
   post '/lines/:line_id/under_bets', to: 'over_under_bets#create_under', as: 'bet_under'
 
+  get '/games', to: 'games#index', as: 'games'
+
   devise_for :users
 
   # put this after devise because of /users/sign_in
