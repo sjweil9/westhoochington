@@ -2,12 +2,32 @@ class Game < ApplicationRecord
   belongs_to :user
   belongs_to :opponent, class_name: 'User'
 
+  def winner
+    won? ? user : opponent
+  end
+
+  def loser
+    won? ? opponent : user
+  end
+
+  def winning_score
+    won? ? active_total : opponent_active_total
+  end
+
+  def losing_score
+    won? ? opponent_active_total : active_total
+  end
+
   def won?
     active_total > opponent_active_total
   end
 
   def lost?
     opponent_active_total > active_total
+  end
+
+  def projected_win?
+    projected_total > opponent_projected_total
   end
 
   def lucky?
@@ -24,7 +44,27 @@ class Game < ApplicationRecord
     other_week_games.none? { |game| game.active_total > active_total }
   end
 
-  def point_differential
-    active_total - opponent_active_total
+  def margin
+    (active_total - opponent_active_total).round(2)
+  end
+
+  def margin_of_victory
+    won? ? margin : -margin
+  end
+
+  def points_above_projection
+    active_total - projected_total
+  end
+
+  def points_above_opponent_average
+    active_total - opponent.average_active_total
+  end
+
+  def points_above_average
+    active_total - user.average_active_total
+  end
+
+  (1..17).each do |week_num|
+    define_method(:"week#{week_num}?") { week == week_num }
   end
 end

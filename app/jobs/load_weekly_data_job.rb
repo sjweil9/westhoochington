@@ -34,8 +34,8 @@ class LoadWeeklyDataJob < ApplicationJob
         user_id: user_id_for(team),
         opponent_id: user_id_for(other_team_data['teamId']),
         opponent_active_total: other_team_data['appliedActiveRealTotal'],
-        opponent_bench_total: team_data['appliedInactiveRealTotal'],
-        opponent_projected_total: team_data['appliedActiveProjectedTotal'],
+        opponent_bench_total: other_team_data['appliedInactiveRealTotal'],
+        opponent_projected_total: other_team_data['appliedActiveProjectedTotal'],
       }
 
       Game.create(game_data)
