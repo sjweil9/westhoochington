@@ -103,11 +103,11 @@ class User < ApplicationRecord
   end
 
   def game_count
-    @game_count ||= games.count.to_f
+    @game_count ||= games.size.to_f
   end
 
   def opponent_game_count
-    @opponent_game_count ||= opponent_games.count.to_f
+    @opponent_game_count ||= opponent_games.size.to_f
   end
 
   private
