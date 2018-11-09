@@ -38,7 +38,14 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_projected_total: other_team_data['appliedActiveProjectedTotal'],
       }
 
-      Game.create(game_data)
+      game = Game.find_by(
+        week: week,
+        season_year: season_year,
+        user_id: user_id_for(team),
+        opponent_id: user_id_for(other_team_data['teamId'])
+      ) || Game.new
+
+      game.update(game_data)
     end
   end
 
@@ -53,8 +60,8 @@ class LoadWeeklyDataJob < ApplicationJob
   end
   
   def user_id_for(team_id)
-    email = EMAIL_MAPPING[team_id.to_s]
-    User.find_by(email: email).id
+    @user_ids ||= {}
+    @user_ids[team_id.to_s] ||= User.find_by(email: EMAIL_MAPPING[team_id.to_s]).id
   end
 end
 
