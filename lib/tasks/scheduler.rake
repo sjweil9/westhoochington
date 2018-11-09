@@ -14,7 +14,7 @@ namespace :stats do
   task :load_backlog_data => :environment do
     last_week = Time.now.strftime('%U').to_i - 35
 
-    (1...last_week).to_a.each do |week|
+    (1..last_week).to_a.each do |week|
       LoadWeeklyDataJob.perform_now(week)
     end
   end

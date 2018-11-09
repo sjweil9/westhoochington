@@ -6,6 +6,7 @@
     <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <%= @narrowest.winner.random_nickname %> (<%= @narrowest.winning_score %>) 
       - <%= @narrowest.loser.random_nickname %> (<%= @narrowest.losing_score %>) ***
     </h4>
+    <h4>*** High Score of the Week: <%= @highest_score_game.user.random_nickname %> (<%= @highest_score_game.active_total %>) ***</h4>
   </div>
   <div class="row">
     <ul class="week_list">
@@ -35,9 +36,9 @@
           <% @users.sort_by { |a| -a.margin_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.game_for(@week)&.active_total %></th>
-              <th><%= user.game_for(@week)&.opponent_active_total %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.game_for(@week)&.active_total %></td>
+              <td><%= user.game_for(@week)&.opponent_active_total %></td>
               <th scope="row"><%= user.margin_for_week(@week) %></th>
             </tr>
           <% end %>
@@ -61,11 +62,11 @@
           <% @users.sort_by { |a| -a.points_above_projection_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.game_for(@week)&.active_total %></th>
-              <th><%= user.game_for(@week)&.projected_total %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.game_for(@week)&.active_total %></td>
+              <td><%= user.game_for(@week)&.projected_total %></td>
               <th scope="row"><%= user.points_above_projection_for_week(@week) %></th>
-              <th><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></th>
+              <td><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></td>
             </tr>
           <% end %>
         </tbody>
@@ -90,11 +91,11 @@
           <% @users.sort_by { |a| -a.points_above_opponent_average_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.game_for(@week)&.active_total %></th>
-              <th><%= user.game_for(@week)&.opponent&.average_active_total %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.game_for(@week)&.active_total %></td>
+              <td><%= user.game_for(@week)&.opponent&.average_active_total %></td>
               <th><%= user.points_above_opponent_average_for_week(@week) %></th>
-              <th><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></th>
+              <td><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></td>
             </tr>
           <% end %>
         </tbody>
@@ -117,11 +118,11 @@
           <% @users.sort_by { |a| -a.points_above_average_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.game_for(@week)&.active_total %></th>
-              <th><%= user.average_active_total %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.game_for(@week)&.active_total %></td>
+              <td><%= user.average_active_total %></td>
               <th><%= user.points_above_average_for_week(@week) %></th>
-              <th><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></th>
+              <td><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></td>
             </tr>
           <% end %>
         </tbody>

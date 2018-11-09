@@ -4,6 +4,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(new_user_params)
     if user.save
+      UserNotificationsMailer.send_signup_email(user).deliver
       redirect_to after_sign_in_path_for(user)
     else
       process_errors(user)

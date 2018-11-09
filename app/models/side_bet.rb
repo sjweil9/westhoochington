@@ -3,13 +3,13 @@ class SideBet < ApplicationRecord
   has_many :side_bet_acceptances
 
   validates :amount, numericality: { greater_than: 0 }
-  validates :max_takers, numericality: { 
-    allow_nil: true, 
-    greater_than: 0, 
+  validates :max_takers, numericality: {
+    allow_nil: true,
+    greater_than: 0,
     only_integer: true,
   }
-  validates :terms, length: { 
-    in: 5..80, 
+  validates :terms, length: {
+    in: 5..80,
     message: 'must be 5-80 characters. Let me know if that really isnt gonna cut it for ya.',
   }
 

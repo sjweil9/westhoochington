@@ -19,7 +19,7 @@
           <% @users.sort_by { |a| -a.lucky_wins }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
+              <td><%= user.random_nickname %></td>
               <th><%= user.lucky_wins %></th>
             </tr>
           <% end %>
@@ -43,9 +43,9 @@
           <% @users.sort_by { |a| -a.wins_above_projections }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.wins %></th>
-              <th><%= user.projected_wins %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.wins %></td>
+              <td><%= user.projected_wins %></td>
               <th><%= user.wins_above_projections %></th>
             </tr>
           <% end %>
@@ -70,9 +70,9 @@
           <% @users.sort_by { |a| -a.average_points_above_projection }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.average_active_total %></th>
-              <th><%= user.average_projected_total %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.average_active_total %></td>
+              <td><%= user.average_projected_total %></td>
               <th><%= user.average_points_above_projection %></th>
             </tr>
           <% end %>
@@ -95,10 +95,33 @@
           <% @users.sort_by { |a| -a.average_scoring_margin }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <th><%= user.random_nickname %></th>
-              <th><%= user.average_active_total %></th>
-              <th><%= user.average_opponent_active_total %></th>
+              <td><%= user.random_nickname %></td>
+              <td><%= user.average_active_total %></td>
+              <td><%= user.average_opponent_active_total %></td>
               <th><%= user.average_scoring_margin %></th>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <h3>Most Weekly High Scores</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Weekly High Scores</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.sort_by { |a| -a.total_high_weekly_scores }.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= idx + 1 %></th>
+              <td><%= user.random_nickname %></td>
+              <th><%= user.total_high_weekly_scores %></th>
             </tr>
           <% end %>
         </tbody>

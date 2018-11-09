@@ -4,6 +4,9 @@ div.welcome {
   padding: 2.5em;
   min-width: 100vw;
   min-height: 100vh;
+  background: url('league_background.jpg') no-repeat center;
+  background-attachment: fixed;
+  background-size: cover;
 }
   .welcome p {
       margin: 0 auto;

@@ -4,84 +4,88 @@
   </div>
   
   <div class="row">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">Subject</th>
-          <th scope="col">Line</th>
-          <th scope="col">Proposer</th>
-          <th scope="col">Evaluation Date</th>
-          <th scope="col">Over Bettors</th>
-          <th scope="col">Under Bettors</th>
-        </tr>
-      </thead>
-      <tbody>
-      <% @over_unders.reject(&:completed?).each do |over_under| %>
-        <tr class="table-primary">
-          <th scope="row"><%= over_under.description %></th>
-          <td>
-            <% if over_under.lines.none? { |line| line.user.id == current_user[:id] } %>
-            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse_<%= over_under.id %>" aria-expanded="false" aria-controls="collapseExample">
-            Propose Line
-            </button>
-            <%= render "shared/errors", type: "value" %>
-            <% end %>
-            <div class="collapse" id="collapse_<%= over_under.id %>">
-              <div class="card card-body">
-                <form action="<%= propose_line_path(over_under.id) %>" method="post">
-                  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-                  <input type="number" name="value" placeholder="What's the line?" step="0.1">
-                  <button type="submit">Submit</button>
-                </form>             
-              </div>
-            </div>
-          </td>
-          <td><%= over_under.user.random_nickname %></td>
-          <td><%= over_under.completed_date&.strftime("%m/%d/%Y") %></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <% over_under.lines.each do |line| %>
-          <tr class="table-active">
-            <td></td>
-            <td><%= line.value %></td>
-            <td><%= line.user.random_nickname %></td>
-            <td></td>
-            <td>
-              <% if !line.created_by_user? && !line.bet_on_by_user? %>
-              <a class="btn btn-primary" href="<%= bet_over_path(line.id) %>" data-method="post" role="button">Bet Over</a>
-              <% else %>
-              <% line.over_bets.each do |over_bet| %>
-                <%= over_bet.user.random_nickname %>
-              <% end %>
-              <% end %>
-            </td>
-            <td>
-              <% if !line.created_by_user? && !line.bet_on_by_user? %>
-              <a class="btn btn-primary" href="<%= bet_under_path(line.id) %>" data-method="post" role="button">Bet Under</a>
-              <% else %>
-              <% line.under_bets.each_with_index do |under_bet, idx| %>
-                <%= under_bet.user.random_nickname %><% if idx < line.under_bets.size - 1 %>,<% end %>
-              <% end %>
-              <% end %>
-            </td>
+    <div class="col-12">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Subject</th>
+            <th scope="col">Line</th>
+            <th scope="col">Proposer</th>
+            <th scope="col">Evaluation Date</th>
+            <th scope="col">Over Bettors</th>
+            <th scope="col">Under Bettors</th>
           </tr>
+        </thead>
+        <tbody>
+        <% @over_unders.reject(&:completed?).each do |over_under| %>
+          <tr class="table-secondary">
+            <th scope="row"><%= over_under.description %></th>
+            <td>
+              <% if over_under.lines.none? { |line| line.user.id == current_user[:id] } %>
+              <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse_<%= over_under.id %>" aria-expanded="false" aria-controls="collapseExample">
+              Propose Line
+              </button>
+              <%= render "shared/errors", type: "value" %>
+              <% end %>
+              <div class="collapse" id="collapse_<%= over_under.id %>">
+                <div class="card card-body">
+                  <form action="<%= propose_line_path(over_under.id) %>" method="post">
+                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                    <input type="number" name="value" placeholder="What's the line?" step="0.1">
+                    <button type="submit">Submit</button>
+                  </form>             
+                </div>
+              </div>
+            </td>
+            <th scope="row"><%= over_under.user.random_nickname %></th>
+            <td><%= over_under.completed_date&.strftime("%m/%d/%Y") %></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <% over_under.lines.each do |line| %>
+            <tr class="table">
+              <td></td>
+              <td><%= line.value %></td>
+              <td><%= line.user.random_nickname %></td>
+              <td></td>
+              <td>
+                <% if !line.created_by_user? && !line.bet_on_by_user? %>
+                <a class="btn btn-success" href="<%= bet_over_path(line.id) %>" data-method="post" role="button">Bet Over</a>
+                <% else %>
+                <% line.over_bets.each do |over_bet| %>
+                  <%= over_bet.user.random_nickname %>
+                <% end %>
+                <% end %>
+              </td>
+              <td>
+                <% if !line.created_by_user? && !line.bet_on_by_user? %>
+                <a class="btn btn-danger" href="<%= bet_under_path(line.id) %>" data-method="post" role="button">Bet Under</a>
+                <% else %>
+                <% line.under_bets.each_with_index do |under_bet, idx| %>
+                  <%= under_bet.user.random_nickname %><% if idx < line.under_bets.size - 1 %>,<% end %>
+                <% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
         <% end %>
-      <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div class="row">
     <h1>Propose an Over/Under Subject</h1>
   </div>
   <div class="row">
-    <form action="<%= propose_over_under_path %>" method="post">
-      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-      <input type="text" name="over_under[description]" placeholder="What's the subject?">
-        <%= render "shared/errors", type: "description" %>
-      Evaluation Date: <input type="date" name="over_under[completed_date]">
-        <%= render "shared/errors", type: "completed_date" %>
-      <button type="submit">Propose</button>
-    </form>
+    <div class="col-12">
+      <form action="<%= propose_over_under_path %>" method="post">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input type="text" name="over_under[description]" placeholder="What's the subject?">
+          <%= render "shared/errors", type: "description" %>
+        Evaluation Date: <input type="date" name="over_under[completed_date]">
+          <%= render "shared/errors", type: "completed_date" %>
+        <button type="submit">Propose</button>
+      </form>
+    </div>
   </div>
 </div>

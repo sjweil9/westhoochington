@@ -22,7 +22,8 @@
   <div class="row profile-header">
     <div class="col-6">
       <h2>Side Hustle Record</h2>
-      <h3>*Coming Soon!*</h3>
+      <h3><%= @user.side_bet_wins %> - <%= @user.side_bet_losses %></h3>
+      <h3><%= @user.pending_side_bets %> bet(s) unresolved</h3>
     </div>
   </div>
   <div class="row">
@@ -37,6 +38,20 @@
       </form>
     <% else %>
       <h2>Change Password</h2>
+      <form action="<%= propose_bet_path %>" method="post">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <div class="form-group">
+          <label for="terms">New Password</label>
+          <input type="password" class="form-control" id="terms" name="password">
+          <%= render "shared/errors", type: "password" %>
+        </div>
+        <div class="form-group">
+          <label for="amount">Confirm New Password</label>
+          <input type="password" class="form-control" id="amount" name="password_confirmation">
+          <%= render "shared/errors", type: "password_confirmation" %>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
     <% end %>
     </div>
   </div>

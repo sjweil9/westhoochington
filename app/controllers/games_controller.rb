@@ -8,12 +8,13 @@ class GamesController < ApplicationController
     @week = params[:week] == 'current' ? current_week : params[:week].to_i
     @users = User.includes(user_joins).references(user_joins).all
     @narrowest = Game.includes(game_joins).references(game_joins).where(week: @week).all.sort_by { |a| a.margin.abs }.first
+    @highest_score_game = Game.includes(user: :nicknames).references(user: :nicknames).where(week: @week).all.find(&:weekly_high_score?)
   end
 
   private
 
   def current_week
-    Time.now.strftime('%U').to_i - 34
+    Time.now.strftime('%U').to_i - 35
   end
 
   def user_joins

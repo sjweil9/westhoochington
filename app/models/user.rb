@@ -9,6 +9,8 @@ class User < ApplicationRecord
   has_many :nicknames, dependent: :destroy
   has_many :games
   has_many :opponent_games, class_name: 'Game', foreign_key: :opponent_id
+  has_many :side_bets
+  has_many :side_bet_acceptances
 
   after_create :default_nicknames
 
@@ -108,6 +110,34 @@ class User < ApplicationRecord
 
   def opponent_game_count
     @opponent_game_count ||= opponent_games.size.to_f
+  end
+
+  #
+  ## side bet methods
+  #
+
+  def side_bet_wins
+    return @side_bet_wins if @side_bet_wins.present?
+
+    proposed_wins = side_bets.where(status: 'proposer', completed: true).count
+    accepted_wins = side_bet_acceptances.where(status: 'won').count
+    @side_bet_wins = proposed_wins + accepted_wins
+  end
+
+  def side_bet_losses
+    return @side_bet_losses if @side_bet_losses.present?
+
+    proposed_losses = side_bets.where(status: 'takers', completed: true).count
+    accepted_losses = side_bet_acceptances.where(status: 'lost').count
+    @side_bet_losses = proposed_losses + accepted_losses
+  end
+
+  def pending_side_bets
+    return @pending_side_bets if @pending_side_bets.present?
+
+    proposed_pending = side_bets.where(status: 'pending', completed: false).count
+    accepted_pending = side_bet_acceptances.where(status: 'pending').count
+    @pending_side_bets = proposed_pending + accepted_pending
   end
 
   private
