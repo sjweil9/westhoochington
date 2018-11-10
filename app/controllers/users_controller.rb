@@ -18,6 +18,25 @@ class UsersController < ApplicationController
     @nickname_idx = rand(@user.nicknames.count)
   end
 
+  def edit_password
+    @user = User.find(params[:user_id])
+    if user.valid_password?(params[:old_password])
+      if params[:password] != params[:password_confirmation]
+        flash[:password_confirmation] = 'did not match password'
+      else
+        if user.update(password: params[:password])
+          flash[:password_success] = 'Password updated successfully!'
+          sign_in(user, bypass: true)
+        else
+          flash[:password] = user.errors.full_messages
+        end
+      end
+    else
+      flash[:old_password] = 'Invalid credentials'
+    end
+    redirect_back(fallback_location: home_path)
+  end
+
   private
 
   attr_reader :user

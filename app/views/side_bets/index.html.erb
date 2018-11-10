@@ -16,9 +16,13 @@
         <% @side_bets.reject(&:completed).each do |side_bet| %>
           <tr>
             <td><%= side_bet.terms %></td>
-            <td>$<%= side_bet.amount %></td>
-            <td><%= side_bet.user.random_nickname %></td>
-            <td><%= side_bet.side_bet_acceptances.map(&:user).map(&:random_nickname).join(', ') %></td>
+            <td><%= '$%.2f' % side_bet.amount %></td>
+            <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
+            <td>
+              <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
+                <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
+              <% end %>
+            </td>
             <td><%= side_bet.max_takers ? side_bet.max_takers.to_i : 'N/A'  %></td>
             <td>
               <% if side_bet.user.id == current_user[:id] %>
@@ -52,8 +56,12 @@
         <tr>
           <td><%= side_bet.terms %></td>
           <td><%= '$%.2f' % side_bet.amount %></td>
-          <td><%= side_bet.user.random_nickname %></td>
-          <td><%= side_bet.side_bet_acceptances.map(&:user).map(&:random_nickname).join(', ') %></td>
+          <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
+          <td>
+            <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
+              <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
+            <% end %>
+          </td>
           <td><%= side_bet.status.humanize %></td>
           <td><%= side_bet.updated_at.strftime('%m-%d-%Y') %></td>
         </tr>

@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  root to: 'over_unders#index', as: 'home'
+  root to: 'games#index', as: 'home'
 
   post '/users', to: 'users#create', as: 'register'
   post '/users/:user_id/nicknames', to: 'nicknames#create', as: 'create_nickname'
+  put '/users/:user_id/password', to: 'users#edit_password', as: 'edit_password'
 
   post '/sessions', to: 'sessions#create', as: 'login'
 
@@ -14,6 +15,7 @@ Rails.application.routes.draw do
   patch '/side_bets/:side_bet_id/status/:status', to: 'side_bets#update', as: 'complete_side_bet'
 
   post '/over_unders', to: 'over_unders#create', as: 'propose_over_under'
+  get '/over_unders', to: 'over_unders#index', as: 'over_unders'
 
   post '/over_unders/:over_under_id/lines', to: 'lines#create', as: 'propose_line'
 

@@ -38,8 +38,17 @@
       </form>
     <% else %>
       <h2>Change Password</h2>
-      <form action="<%= propose_bet_path %>" method="post">
+      <% if flash[:password_success] %>
+        <p class="success"><%= flash[:password_success] %></p>
+      <% end %>
+      <form action="<%= edit_password_path(@user.id) %>" method="post">
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input type="hidden" name="_method" value="PUT">
+        <div class="form-group">
+          <label for="terms">Old Password</label>
+          <input type="password" class="form-control" id="terms" name="old_password">
+          <%= render "shared/errors", type: "old_password" %>
+        </div>
         <div class="form-group">
           <label for="terms">New Password</label>
           <input type="password" class="form-control" id="terms" name="password">

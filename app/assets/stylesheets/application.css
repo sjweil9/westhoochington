@@ -20,6 +20,11 @@
   margin: 0;
 }
 
+.success {
+  color: green;
+  margin: 0;
+}
+
 .profile-title {
   margin-bottom: 5vh;
 }

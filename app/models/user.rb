@@ -164,16 +164,14 @@ class User < ApplicationRecord
   ]
 
   NICKNAMES = {
-    'user@user.com': ['User boi fresh'],
-    'cuck@boi.com': ['Amazing Blowhole'],
-    'ovaisinamullah@gmail.com': ['The Commish'],
+    'ovaisinamullah@gmail.com': ['The Commish', 'Ovals'],
     'tonypelli@gmail.com': ['T-Pain'],
-    'mikelacy3@gmail.com': ['McLacy'],
-    'goblue101@gmail.com': ['Patch'],
-    'pkaushish@gmail.com': ['Nav'],
-    'adamkos101@gmail.com': ['Cleaver'],
+    'mikelacy3@gmail.com': ['McLacy', 'The Effect', 'Ron Mexico'],
+    'goblue101@gmail.com': ['Patch', 'P-Stick', "O'Hoolihan"],
+    'pkaushish@gmail.com': ['Nav', 'Saquon Sucker'],
+    'adamkos101@gmail.com': ['Cleaver', 'Young Koz'],
     'stephen.weil@gmail.com': ['Lynchpin Stevie'],
-    'captrf@gmail.com': ['Senghas'],
+    'captrf@gmail.com': ['Senghas', 'Matthew'],
     'seidmangar@gmail.com': ['Norwood'],
     'mattforetich4@gmail.com': ['Quadcock']
   }.with_indifferent_access

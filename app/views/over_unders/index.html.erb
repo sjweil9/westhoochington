@@ -37,7 +37,7 @@
                 </div>
               </div>
             </td>
-            <th scope="row"><%= over_under.user.random_nickname %></th>
+            <th scope="row"><a href="<%= user_profile_path(over_under.user.id) %>"><%= over_under.user.random_nickname %></a></th>
             <td><%= over_under.completed_date&.strftime("%m/%d/%Y") %></td>
             <td></td>
             <td></td>
@@ -46,14 +46,14 @@
             <tr class="table">
               <td></td>
               <td><%= line.value %></td>
-              <td><%= line.user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(line.user.id) %>"><%= line.user.random_nickname %></a></td>
               <td></td>
               <td>
                 <% if !line.created_by_user? && !line.bet_on_by_user? %>
                 <a class="btn btn-success" href="<%= bet_over_path(line.id) %>" data-method="post" role="button">Bet Over</a>
                 <% else %>
-                <% line.over_bets.each do |over_bet| %>
-                  <%= over_bet.user.random_nickname %>
+                <% line.over_bets.each_with_index do |over_bet, idx| %>
+                  <a href="<%= user_profile_path(over_bet.user.id) %>"><%= over_bet.user.random_nickname %></a><% if idx < line.under_bets.size - 1 %>,<% end %>
                 <% end %>
                 <% end %>
               </td>
@@ -62,7 +62,7 @@
                 <a class="btn btn-danger" href="<%= bet_under_path(line.id) %>" data-method="post" role="button">Bet Under</a>
                 <% else %>
                 <% line.under_bets.each_with_index do |under_bet, idx| %>
-                  <%= under_bet.user.random_nickname %><% if idx < line.under_bets.size - 1 %>,<% end %>
+                  <a href="<%= user_profile_path(under_bet.user.id) %>"><%= under_bet.user.random_nickname %></a><% if idx < line.under_bets.size - 1 %>,<% end %>
                 <% end %>
                 <% end %>
               </td>
