@@ -23,6 +23,8 @@ Rails.application.routes.draw do
   get '/games', to: 'games#index', as: 'games'
   get '/games/weekly_stats/:week', to: 'games#weekly_stats', as: 'weekly_stats'
 
+  get '/podcasts', to: 'podcasts#index', as: 'podcasts'
+
   devise_for :users
 
   # put this after devise because of /users/sign_in

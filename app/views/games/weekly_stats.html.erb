@@ -3,10 +3,10 @@
     <h1><a href="<%= games_path %>">Season Stats</a> | Weekly Stats</h1>
   </div>
   <div class="row">
-    <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <%= @narrowest.winner.random_nickname %> (<%= @narrowest.winning_score %>) 
-      - <%= @narrowest.loser.random_nickname %> (<%= @narrowest.losing_score %>) ***
+    <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <a href="<%= user_profile_path(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> (<%= @narrowest.winning_score %>) 
+      - <a href="<%= user_profile_path(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> (<%= @narrowest.losing_score %>) ***
     </h4>
-    <h4>*** High Score of the Week: <%= @highest_score_game.user.random_nickname %> (<%= @highest_score_game.active_total %>) ***</h4>
+    <h4>*** High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>) ***</h4>
   </div>
   <div class="row">
     <ul class="week_list">
@@ -36,7 +36,7 @@
           <% @users.sort_by { |a| -a.margin_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.game_for(@week)&.active_total %></td>
               <td><%= user.game_for(@week)&.opponent_active_total %></td>
               <th scope="row"><%= user.margin_for_week(@week) %></th>
@@ -62,7 +62,7 @@
           <% @users.sort_by { |a| -a.points_above_projection_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.game_for(@week)&.active_total %></td>
               <td><%= user.game_for(@week)&.projected_total %></td>
               <th scope="row"><%= user.points_above_projection_for_week(@week) %></th>
@@ -91,7 +91,7 @@
           <% @users.sort_by { |a| -a.points_above_opponent_average_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.game_for(@week)&.active_total %></td>
               <td><%= user.game_for(@week)&.opponent&.average_active_total %></td>
               <th><%= user.points_above_opponent_average_for_week(@week) %></th>
@@ -118,7 +118,7 @@
           <% @users.sort_by { |a| -a.points_above_average_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.game_for(@week)&.active_total %></td>
               <td><%= user.average_active_total %></td>
               <th><%= user.points_above_average_for_week(@week) %></th>

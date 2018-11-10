@@ -3,32 +3,35 @@
     <h1>Season Stats | <a href="<%= weekly_stats_path('current') %>">Weekly Stats</a></h1>
   </div>
   <div class="row">
-  </div>
-  <div class="row">
     <div class="col-6">
-      <h3>Most Lucky Wins*</h3>
+      <h3>Most Weekly High Scores</h3>
       <table class="table table-striped">
         <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
-            <th scope="col">Lucky Wins</th>
+            <th scope="col">Weekly High Scores</th>
+            <th scope="col">Weeks</th>
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.lucky_wins }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.total_high_weekly_scores }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
-              <th><%= user.lucky_wins %></th>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+              <th><%= user.total_high_weekly_scores %></th>
+              <td>
+                <% user.games.select(&:weekly_high_score?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.total_high_weekly_scores %>,<% end %>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
-      *<small>Would have lost to Opponent's average score for the year</small>
     </div>
     <div class="col-6">
-      <h3>Wins vs Projected</h3>
+      <h3>Wins Above Projected</h3>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -43,7 +46,7 @@
           <% @users.sort_by { |a| -a.wins_above_projections }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.wins %></td>
               <td><%= user.projected_wins %></td>
               <th><%= user.wins_above_projections %></th>
@@ -51,6 +54,64 @@
           <% end %>
         </tbody>
       </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <h3>Most Lucky Wins*</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Lucky Wins</th>
+            <th scope="col">Games</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.sort_by { |a| -a.lucky_wins }.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= idx + 1 %></th>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+              <th><%= user.lucky_wins %></th>
+              <td>
+                <% user.games.select(&:lucky?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.lucky_wins %>,<% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      *<small>Would have lost to Opponent's average score for the year</small>
+    </div>
+    <div class="col-6">
+      <h3>Most Unlucky Losses*</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Unlucky Losses</th>
+            <th scope="col">Games</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.sort_by { |a| -a.unlucky_losses }.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= idx + 1 %></th>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+              <th><%= user.unlucky_losses %></th>
+              <td>
+                <% user.games.select(&:unlucky?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                  <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.unlucky_losses %>,<% end %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      *<small>Would have beaten Opponent's average score for the year</small>
     </div>
   </div>
   <div class="row">
@@ -70,7 +131,7 @@
           <% @users.sort_by { |a| -a.average_points_above_projection }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.average_active_total %></td>
               <td><%= user.average_projected_total %></td>
               <th><%= user.average_points_above_projection %></th>
@@ -95,33 +156,10 @@
           <% @users.sort_by { |a| -a.average_scoring_margin }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
               <td><%= user.average_active_total %></td>
               <td><%= user.average_opponent_active_total %></td>
               <th><%= user.average_scoring_margin %></th>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-6">
-      <h3>Most Weekly High Scores</h3>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">Rank</th>
-            <th scope="col">User</th>
-            <th scope="col">Weekly High Scores</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @users.sort_by { |a| -a.total_high_weekly_scores }.each_with_index do |user, idx| %>
-            <tr>
-              <th scope="row"><%= idx + 1 %></th>
-              <td><%= user.random_nickname %></td>
-              <th><%= user.total_high_weekly_scores %></th>
             </tr>
           <% end %>
         </tbody>

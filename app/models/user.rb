@@ -45,6 +45,11 @@ class User < ApplicationRecord
     games.select(&:lucky?).count
   end
 
+  def unlucky_losses
+    # games where you lost, but would have beaten opponent's average score
+    games.select(&:unlucky?).count
+  end
+
   %w[margin_of_victory margin_of_defeat].each do |method|
     define_method(:"total_#{method}") do
       check = method == 'margin_of_victory' ? 'won?' : 'lost?'

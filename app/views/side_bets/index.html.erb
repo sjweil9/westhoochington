@@ -40,6 +40,7 @@
       <thead>
         <tr>
           <th scope="col">Bet</th>
+          <th scope="col">Amount</th>
           <th scope="col">Proposer</th>
           <th scope="col">Taker(s)</th>
           <th scope="col">Won By</th>
@@ -50,6 +51,7 @@
       <% @side_bets.select(&:completed).each do |side_bet| %>
         <tr>
           <td><%= side_bet.terms %></td>
+          <td><%= '$%.2f' % side_bet.amount %></td>
           <td><%= side_bet.user.random_nickname %></td>
           <td><%= side_bet.side_bet_acceptances.map(&:user).map(&:random_nickname).join(', ') %></td>
           <td><%= side_bet.status.humanize %></td>

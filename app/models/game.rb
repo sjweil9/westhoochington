@@ -37,6 +37,13 @@ class Game < ApplicationRecord
     active_total < opponent.average_active_total
   end
 
+  def unlucky?
+    # lost, but would have beaten opponent average score
+    return false if won?
+
+    active_total > opponent.average_active_total
+  end
+
   def weekly_high_score?
     return false if lost?
 
