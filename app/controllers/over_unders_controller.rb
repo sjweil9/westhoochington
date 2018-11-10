@@ -11,7 +11,7 @@ class OverUndersController < ApplicationController
   def create
     @over_under = OverUnder.new(new_over_under_params)
     process_errors(over_under) unless over_under.save
-    redirect_to home_path
+    redirect_to over_unders_path
   end
 
   private
