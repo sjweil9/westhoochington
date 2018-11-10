@@ -27,3 +27,4 @@
 /config/master.key
 sendgrid.env
 .todos
+.initial_pws
