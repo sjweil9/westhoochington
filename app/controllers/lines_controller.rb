@@ -2,7 +2,7 @@ class LinesController < ApplicationController
   def create
     line = Line.new(new_line_params)
     process_errors(line) unless line.save
-    redirect_to home_path
+    redirect_to over_unders_path
   end
 
   private
