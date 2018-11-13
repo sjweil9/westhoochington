@@ -53,7 +53,7 @@
                 <a class="btn btn-success" href="<%= bet_over_path(line.id) %>" data-method="post" role="button">Bet Over</a>
                 <% else %>
                 <% line.over_bets.each_with_index do |over_bet, idx| %>
-                  <a href="<%= user_profile_path(over_bet.user.id) %>"><%= over_bet.user.random_nickname %></a><% if idx < line.under_bets.size - 1 %>,<% end %>
+                  <a href="<%= user_profile_path(over_bet.user.id) %>"><%= over_bet.user.random_nickname %></a><% if idx < line.over_bets.size - 1 %>,<% end %>
                 <% end %>
                 <% end %>
               </td>
