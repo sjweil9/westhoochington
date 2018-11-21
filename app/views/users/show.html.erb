@@ -10,6 +10,7 @@
         <a href="<%= nickname_downvote_path(@user.nicknames[@nickname_idx].id) %>" data-method="post"><img class="vote" src="<%= image_path('downvote.png') %>" /></a>
         <% end %>
       <% end %>
+      <small>(<%= @user.nicknames[@nickname_idx].votes.select(&:up?).size %> Upvotes - <%= @user.nicknames[@nickname_idx].votes.select(&:down?).size %> Downvotes)</small>
     </h1>
   </div>
   <div class="row profile-title">
@@ -27,6 +28,7 @@
               <a href="<%= nickname_downvote_path(nickname.id) %>" data-method="post"><img class="vote" src="<%= image_path('downvote.png') %>" /></a>
               <% end %>
             <% end %>
+            <small>(<%= nickname.votes.select(&:up?).size %> Upvotes - <%= nickname.votes.select(&:down?).size %> Downvotes)</small>
           </h4> 
         <% end %>
       <% end %>
