@@ -1,17 +1,31 @@
 <div class="container">
   <div class="row">
-    <h1><%= @user.nicknames[@nickname_idx].name %><% if @user.nicknames.count > 1 %>*<% end %></h1>
+    <h1>
+      <%= @user.nicknames[@nickname_idx].name %>
+      <% if @user.nicknames[@nickname_idx].votes.none? { |vote| vote.user_id == current_user[:id] && vote.value.positive? } %>
+      <a href="<%= nickname_upvote_path(@user.nicknames[@nickname_idx].id) %>" data-method="post"><img class="vote" src="<%= image_path('upvote.png') %>" /></a>
+      <% end %>
+      <% if @user.nicknames[@nickname_idx].votes.none? { |vote| vote.user_id == current_user[:id] && vote.value.negative? } %>
+      <a href="<%= nickname_downvote_path(@user.nicknames[@nickname_idx].id) %>" data-method="post"><img class="vote" src="<%= image_path('downvote.png') %>" /></a>
+      <% end %>
+    </h1>
   </div>
   <div class="row profile-title">
-    <% if @user.nicknames.count > 1 %>
-    <h4>*
-      <% @user.nicknames.each_with_index do |nickname, idx| %>
-        <% if idx != @nickname_idx %>
-          aka <%= nickname.name %> 
-        <% end %>
+  <% if @user.nicknames.count > 1 %>
+    <% @user.nicknames.each_with_index do |nickname, idx| %>
+      <% if idx != @nickname_idx %>
+        <h4>
+          aka <%= nickname.name %>
+          <% if nickname.votes.none? { |vote| vote.user_id == current_user[:id] && vote.value.positive? } %>
+          <a href="<%= nickname_upvote_path(nickname.id) %>" data-method="post"><img class="vote" src="<%= image_path('upvote.png') %>" /></a>
+          <% end %>
+          <% if nickname.votes.none? { |vote| vote.user_id == current_user[:id] && vote.value.negative? } %>
+          <a href="<%= nickname_downvote_path(nickname.id) %>" data-method="post"><img class="vote" src="<%= image_path('downvote.png') %>" /></a>
+          <% end %>
+        </h4> 
       <% end %>
-    </h4>
     <% end %>
+  <% end %>
   </div>
   <div class="row profile-header">
     <div class="col-6">

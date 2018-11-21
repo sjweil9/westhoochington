@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_07_043311) do
+ActiveRecord::Schema.define(version: 2018_11_21_191800) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,16 @@ ActiveRecord::Schema.define(version: 2018_11_07_043311) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "nickname_votes", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "nickname_id"
+    t.decimal "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["nickname_id"], name: "index_nickname_votes_on_nickname_id"
+    t.index ["user_id"], name: "index_nickname_votes_on_user_id"
   end
 
   create_table "nicknames", force: :cascade do |t|
@@ -129,6 +139,8 @@ ActiveRecord::Schema.define(version: 2018_11_07_043311) do
   add_foreign_key "lines", "over_unders"
   add_foreign_key "lines", "users"
   add_foreign_key "messages", "users"
+  add_foreign_key "nickname_votes", "nicknames"
+  add_foreign_key "nickname_votes", "users"
   add_foreign_key "nicknames", "users"
   add_foreign_key "over_under_bets", "lines"
   add_foreign_key "over_under_bets", "users"

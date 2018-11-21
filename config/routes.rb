@@ -27,6 +27,9 @@ Rails.application.routes.draw do
 
   get '/podcasts', to: 'podcasts#index', as: 'podcasts'
 
+  post '/nicknames/:nickname_id/upvote', to: 'nicknames#upvote', as: 'nickname_upvote'
+  post '/nicknames/:nickname_id/downvote', to: 'nicknames#downvote', as: 'nickname_downvote'
+
   devise_for :users
 
   # put this after devise because of /users/sign_in

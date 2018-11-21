@@ -25,6 +25,11 @@
   margin: 0;
 }
 
+img.vote {
+  width: 2.5vh;
+  height: 2.5vh;
+}
+
 .profile-title {
   margin-bottom: 5vh;
 }

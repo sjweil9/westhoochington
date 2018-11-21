@@ -14,7 +14,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.includes(:nicknames).references(:nicknames).find(params[:user_id])
+    @user = User.includes(nicknames: :votes).references(nicknames: :votes).find(params[:user_id])
     @nickname_idx = rand(@user.nicknames.count)
   end
 

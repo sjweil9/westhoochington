@@ -1,5 +1,8 @@
 class Nickname < ApplicationRecord
   belongs_to :user
+  has_many :votes, class_name: 'NicknameVote'
+
+  default_scope { includes(:votes).references(:votes) }
 
   TROLL_MESSAGE = <<~TROLL
     must be 1 to 50 characters. I know... 

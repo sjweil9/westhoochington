@@ -15,7 +15,18 @@ class User < ApplicationRecord
   after_create :default_nicknames
 
   def random_nickname
-    nicknames.sample&.name
+    weighted_nicknames.sample&.name
+  end
+
+  def weighted_nicknames
+    nicknames.map do |nickname|
+      downvotes = nickname.votes.select(&:down?).size
+      upvotes = nickname.votes.select(&:up?).size
+      weight = 10 - downvotes + upvotes
+      arr = []
+      weight.times { arr << nickname }
+      arr
+    end.flatten
   end
 
   #
