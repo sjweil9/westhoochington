@@ -19,7 +19,7 @@ class User < ApplicationRecord
   end
 
   def weighted_nicknames
-    nicknames.map do |nickname|
+    @weighted_nicknames ||= nicknames.map do |nickname|
       downvotes = nickname.votes.select(&:down?).size
       upvotes = nickname.votes.select(&:up?).size
       weight = 10 - downvotes + upvotes
@@ -129,7 +129,10 @@ class User < ApplicationRecord
   end
 
   def matchup_independent_record(season = 'current')
+    @matchup_independent_records ||= {}
     season_year = season == 'current' ? Date.today.year : season
+    return @matchup_independent_records[season_year.to_s] if @matchup_independent_records[season_year.to_s].present?
+
     games_for_year = games.select { |game| game.season_year == season_year }
     other_user_games = Game.where(season_year: season_year).where.not(user_id: id)
     win, loss, tie = games_for_year.reduce([0, 0, 0]) do |memo, game|
@@ -139,7 +142,7 @@ class User < ApplicationRecord
       memo[2] += other_user_games.select { |og| og.week == week && game.active_total == og.active_total }.size
       memo
     end
-    "#{win} - #{loss} - #{tie}"
+    @matchup_independent_records[season_year.to_s] = "#{win} - #{loss} - #{tie}"
   end
 
   #
