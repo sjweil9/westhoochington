@@ -117,6 +117,20 @@ class User < ApplicationRecord
     @opponent_game_count ||= opponent_games.size.to_f
   end
 
+  def matchup_independent_record(season = 'current')
+    season_year = season == 'current' ? Date.today.year : season
+    games_for_year = games.select { |game| game.season_year == season_year }
+    other_user_games = Game.where(season_year: season_year).where.not(user_id: id)
+    win, loss, tie = games_for_year.reduce([0, 0, 0]) do |memo, game|
+      week = game.week
+      memo[0] += other_user_games.select { |og| og.week == week && game.active_total > og.active_total }.size
+      memo[1] += other_user_games.select { |og| og.week == week && game.active_total < og.active_total }.size
+      memo[2] += other_user_games.select { |og| og.week == week && game.active_total == og.active_total }.size
+      memo
+    end
+    "#{win} - #{loss} - #{tie}"
+  end
+
   #
   ## side bet methods
   #

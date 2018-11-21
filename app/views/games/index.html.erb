@@ -4,6 +4,52 @@
   </div>
   <div class="row">
     <div class="col-6">
+      <h3>Current Standings</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Record</th>
+            <th scope="col">Points For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.sort_by { |a| [-a.wins, -a.yearly_active_total] }.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= idx + 1 %></th>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+              <th><%= user.wins %> - <%= user.losses %></th>
+              <td><%= user.yearly_active_total %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-6">
+      <h3>Matchup Independent Records</h3>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Record</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.sort_by { |a| -a.matchup_independent_record.split(' - ').first.to_i }.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= idx + 1 %></th>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+              <td><%= user.matchup_independent_record %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
       <h3>Most Weekly High Scores</h3>
       <table class="table table-striped">
         <thead>
