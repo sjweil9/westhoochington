@@ -48,6 +48,8 @@ group :development, :test do
   gem 'pry'
   gem 'pry-nav'
   gem 'hirb'
+  gem 'rails-footnotes'
+  gem 'memory-profiler'
 end
 
 group :development do

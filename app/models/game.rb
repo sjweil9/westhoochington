@@ -44,10 +44,15 @@ class Game < ApplicationRecord
     active_total > opponent.average_active_total
   end
 
-  def weekly_high_score?
+  def weekly_high_score?(passed_games = nil)
     return false if lost?
 
-    other_week_games = Game.where(season_year: season_year, week: week).where.not(user_id: user_id).all
+    other_week_games = 
+      if passed_games
+        passed_games&.select { |pg| pg.season_year == season_year && pg.week == week && pg.user_id != user_id }
+      else
+        Game.where(season_year: season_year, week: week).where.not(user_id: user_id).all
+      end
     other_week_games.none? { |game| game.active_total > active_total }
   end
 

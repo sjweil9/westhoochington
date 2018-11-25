@@ -15,11 +15,11 @@ class User < ApplicationRecord
   after_create :default_nicknames
 
   def random_nickname
-    weighted_nicknames.sample&.name
+    @random_nickname ||= weighted_nicknames.sample&.name
   end
 
   def weighted_nicknames
-    @weighted_nicknames ||= nicknames.map do |nickname|
+    nicknames.map do |nickname|
       downvotes = nickname.votes.select(&:down?).size
       upvotes = nickname.votes.select(&:up?).size
       weight = 10 - downvotes + upvotes
@@ -116,8 +116,8 @@ class User < ApplicationRecord
     games.find(&:"week#{week}?")
   end
 
-  def total_high_weekly_scores
-    @total_high_weekly_scores ||= games.select(&:weekly_high_score?).count
+  def total_high_weekly_scores(passed_games = nil)
+    @total_high_weekly_scores ||= (passed_games.select { |pg| pg.user_id == id } || games).select { |g| g.weekly_high_score?(passed_games) }.count
   end
 
   def game_count
@@ -128,21 +128,37 @@ class User < ApplicationRecord
     @opponent_game_count ||= opponent_games.size.to_f
   end
 
-  def matchup_independent_record(season = 'current')
+  def matchup_independent_record(games = nil)
     @matchup_independent_records ||= {}
-    season_year = season == 'current' ? Date.today.year : season
-    return @matchup_independent_records[season_year.to_s] if @matchup_independent_records[season_year.to_s].present?
+    season_year = games&.first&.week || Date.today.year.to_s
+    return @matchup_independent_records[season_year] if @matchup_independent_records[season_year].present?
 
-    games_for_year = games.select { |game| game.season_year == season_year }
-    other_user_games = Game.where(season_year: season_year).where.not(user_id: id)
+    games ||= Game.where(season_year: season_year)
+
+    games_for_year = []
+    other_user_games = []
+
+    games.each do |game|
+      games_for_year << game if game.user_id == id
+      other_user_games << game if game.user_id != id
+    end
+
     win, loss, tie = games_for_year.reduce([0, 0, 0]) do |memo, game|
       week = game.week
-      memo[0] += other_user_games.select { |og| og.week == week && game.active_total > og.active_total }.size
-      memo[1] += other_user_games.select { |og| og.week == week && game.active_total < og.active_total }.size
-      memo[2] += other_user_games.select { |og| og.week == week && game.active_total == og.active_total }.size
+      other_user_games.each do |other_game|
+        next unless other_game.week == week
+
+        if game.active_total > other_game.active_total
+          memo[0] += 1
+        elsif game.active_total < other_game.active_total
+          memo[1] += 1
+        else
+          memo[2] += 1
+        end
+      end
       memo
     end
-    @matchup_independent_records[season_year.to_s] = "#{win} - #{loss} - #{tie}"
+    @matchup_independent_records[season_year] = "#{win} - #{loss} - #{tie}"
   end
 
   #

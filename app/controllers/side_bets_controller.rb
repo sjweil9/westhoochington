@@ -2,9 +2,9 @@ class SideBetsController < ApplicationController
   def index
     @side_bets =
       SideBet
-        .joins(user: :nicknames)
-        .includes(side_bet_acceptances: { user: :nicknames })
-        .references(side_bet_acceptances: { user: :nicknames })
+        .joins(user: { nicknames: :votes })
+        .includes(side_bet_acceptances: { user: { nicknames: :votes } })
+        .references(side_bet_acceptances: { user: { nicknames: :votes } })
         .all
   end
 

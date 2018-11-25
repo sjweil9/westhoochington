@@ -1,6 +1,7 @@
 class GamesController < ApplicationController
   def index
     @users = User.includes(user_joins).references(user_joins).all
+    @games = Game.where(season_year: Date.today.year.to_s)
   end
 
   def weekly_stats
@@ -21,7 +22,7 @@ class GamesController < ApplicationController
   end
 
   def user_joins
-    [{ games: { opponent: :games } }, :opponent_games, :nicknames]
+    [{ games: { opponent: :games } }, :opponent_games, nicknames: :votes]
   end
 
   def game_joins

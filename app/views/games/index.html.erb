@@ -37,11 +37,11 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.matchup_independent_record.split(' - ').first.to_i }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.matchup_independent_record(@games).split(' - ').first.to_i }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.matchup_independent_record %></td>
+              <td><%= user.matchup_independent_record(@games) %></td>
             </tr>
           <% end %>
         </tbody>
@@ -61,14 +61,14 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.total_high_weekly_scores }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.total_high_weekly_scores(@games) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <th><%= user.total_high_weekly_scores %></th>
+              <th><%= user.total_high_weekly_scores(@games) %></th>
               <td>
-                <% user.games.select(&:weekly_high_score?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.total_high_weekly_scores %>,<% end %>
+                <% user.games.select { |g| g.weekly_high_score?(@games) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.total_high_weekly_scores(@games) %>,<% end %>
                 <% end %>
               </td>
             </tr>
