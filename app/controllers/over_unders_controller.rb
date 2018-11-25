@@ -3,8 +3,8 @@ class OverUndersController < ApplicationController
     @over_unders =
       OverUnder
         .joins(user: :nicknames)
-        .includes(lines: { user: { nicknames: :votes }, under_bets: :user, over_bets: { user:  { nicknames: :votes } })
-        .references(lines: { user: { nicknames: :votes }, under_bets: :user, over_bets: { user: { nicknames: :votes } })
+        .includes(lines: { user: { nicknames: :votes }, under_bets: :user, over_bets: { user:  { nicknames: :votes } } })
+        .references(lines: { user: { nicknames: :votes }, under_bets: :user, over_bets: { user: { nicknames: :votes } } })
         .all
   end
 
