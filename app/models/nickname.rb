@@ -18,6 +18,10 @@ class Nickname < ApplicationRecord
   validates :name, length: { in: 1..50, message: TROLL_MESSAGE }
   validate :other_user
 
+  def net_votes
+    @net_votes ||= votes.reduce(0) { |memo, vote| memo + vote.value.to_i }
+  end
+
   private
 
   def other_user

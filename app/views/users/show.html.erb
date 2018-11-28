@@ -10,7 +10,9 @@
         <a href="<%= nickname_downvote_path(@user.nicknames[@nickname_idx].id) %>" data-method="post"><img class="vote" src="<%= image_path('downvote.png') %>" /></a>
         <% end %>
       <% end %>
-      <small>(<%= @user.nicknames[@nickname_idx].votes.select(&:up?).size %> Upvotes - <%= @user.nicknames[@nickname_idx].votes.select(&:down?).size %> Downvotes)</small>
+      <small class="<%= @user.nicknames[@nickname_idx].net_votes.positive? ? 'green' : (@user.nicknames[@nickname_idx].net_votes.negative? ? 'red' : 'black') %>">
+        (<%= @user.nicknames[@nickname_idx].net_votes.positive? ? '+' : '' %><%= @user.nicknames[@nickname_idx].net_votes %> Votes)
+      </small>
     </h1>
   </div>
   <div class="row profile-title">
@@ -28,7 +30,9 @@
               <a href="<%= nickname_downvote_path(nickname.id) %>" data-method="post"><img class="vote" src="<%= image_path('downvote.png') %>" /></a>
               <% end %>
             <% end %>
-            <small>(<%= nickname.votes.select(&:up?).size %> Upvotes - <%= nickname.votes.select(&:down?).size %> Downvotes)</small>
+            <small class="<%= nickname.net_votes.positive? ? 'green' : (nickname.net_votes.negative? ? 'red' : 'black') %>">
+              (<%= nickname.net_votes.positive? ? '+' : '' %><%= nickname.net_votes %> Votes)
+            </small>
           </h4> 
         <% end %>
       <% end %>
