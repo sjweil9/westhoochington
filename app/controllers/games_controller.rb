@@ -18,7 +18,7 @@ class GamesController < ApplicationController
     # find highest week num in DB
     # old approach causes some issues during week-week transition
     # Time.now.strftime('%U').to_i - 35
-    Game.order(:week).reverse.first.week
+    @current_week ||= Game.order(:week).reverse.first.week
   end
 
   def user_joins
