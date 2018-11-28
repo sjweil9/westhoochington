@@ -22,7 +22,7 @@ class GamesController < ApplicationController
   end
 
   def user_joins
-    [{ games: { opponent: :games } }, :opponent_games, nicknames: :votes]
+    [:games, :opponent_games, nicknames: :votes]
   end
 
   def game_joins
