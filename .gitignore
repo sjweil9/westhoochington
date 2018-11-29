@@ -30,3 +30,5 @@ sendgrid.env
 .initial_pws
 .todos_list_id
 .idea/*
+
+.todos_status
