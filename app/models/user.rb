@@ -7,10 +7,15 @@ class User < ApplicationRecord
   validate :allowed_email
 
   has_many :nicknames, dependent: :destroy
-  has_many :games
+  # has_many :games, -> { where(season_year: Date.today.year ) } **PUT THIS BACK***
+  has_many :games, -> { where(season_year: '2017' ) }
   has_many :opponent_games, class_name: 'Game', foreign_key: :opponent_id
   has_many :side_bets
   has_many :side_bet_acceptances
+
+  (2017..Date.today.year).each do |year|
+    has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
+  end
 
   after_create :default_nicknames
 
@@ -204,7 +209,12 @@ class User < ApplicationRecord
     'stephen.weil@gmail.com',
     'captrf@gmail.com',
     'seidmangar@gmail.com',
-    'mattforetich4@gmail.com'
+    'mattforetich4@gmail.com',
+    'stewart.hackler@gmail.com',
+    'sccrrckstr@gmail.com',
+    'jstatham3@gmail.com',
+    'john.rosensweig@gmail.com',
+    'brandon.tricou@gmail.com'
   ]
 
   NICKNAMES = {
@@ -217,7 +227,12 @@ class User < ApplicationRecord
     'stephen.weil@gmail.com': ['Lynchpin Stevie'],
     'captrf@gmail.com': ['Senghas', 'Matthew'],
     'seidmangar@gmail.com': ['Norwood'],
-    'mattforetich4@gmail.com': ['Quadcock']
+    'mattforetich4@gmail.com': ['Quadcock'],
+    'stewart.hackler@gmail.com':['Beef Stew'],
+    'sccrrckstr@gmail.com':['Netanyahu'],
+    'jstatham3@gmail.com':['Ty'],
+    'john.rosensweig@gmail.com':['Rosenswag'],
+    'brandon.tricou@gmail.com':['Brandon']
   }.with_indifferent_access
 
   def allowed_email

@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   post '/lines/:line_id/under_bets', to: 'over_under_bets#create_under', as: 'bet_under'
 
   get '/games', to: 'games#index', as: 'games'
+  get '/games/:year', to: 'games#yearly', as: 'season_states'
   get '/games/weekly_stats/:week', to: 'games#weekly_stats', as: 'weekly_stats'
 
   get '/podcasts', to: 'podcasts#index', as: 'podcasts'

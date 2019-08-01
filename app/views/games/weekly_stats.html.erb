@@ -2,28 +2,29 @@
   <div class="row">
     <h1><a href="<%= games_path %>">Season Stats</a> | Weekly Stats</h1>
   </div>
-  <div class="row">
-    <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <a href="<%= user_profile_path(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> (<%= @narrowest.winning_score %>) 
-      - <a href="<%= user_profile_path(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> (<%= @narrowest.losing_score %>) ***
-    </h4>
-    <h4>*** High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>) ***</h4>
-  </div>
-  <div class="row">
-    <ul class="week_list">
-      <% @weeks.each do |week| %>
-        <% if week != @week %>
-        <li><a href="<%= weekly_stats_path(week) %>"><%= week %></a></li>
-        <% else %>
-        <li><%= week %></li>
+  <% if @week.positive? %>
+    <div class="row">
+      <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <a href="<%= user_profile_path(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> (<%= @narrowest.winning_score %>)
+        - <a href="<%= user_profile_path(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> (<%= @narrowest.losing_score %>) ***
+      </h4>
+      <h4>*** High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>) ***</h4>
+    </div>
+    <div class="row">
+      <ul class="week_list">
+        <% @weeks.each do |week| %>
+          <% if week != @week %>
+            <li><a href="<%= weekly_stats_path(week) %>"><%= week %></a></li>
+          <% else %>
+            <li><%= week %></li>
+          <% end %>
         <% end %>
-      <% end %>
-    </ul>
-  </div>
-  <div class="row">
-    <div class="col-6">
-      <h3>Margin of Victory</h3>
-      <table class="table table-striped">
-        <thead>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <h3>Margin of Victory</h3>
+        <table class="table table-striped">
+          <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
@@ -31,8 +32,8 @@
             <th scope="col">Opponent Points</th>
             <th scope="col">Margin of Victory</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <% @users.sort_by { |a| -a.margin_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
@@ -42,13 +43,13 @@
               <th scope="row"><%= user.margin_for_week(@week) %></th>
             </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div>
-    <div class="col-6">
-      <h3>Points Above Projection</h3>
-      <table class="table table-striped">
-        <thead>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-6">
+        <h3>Points Above Projection</h3>
+        <table class="table table-striped">
+          <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
@@ -57,8 +58,8 @@
             <th scope="col">Points Above Projection</th>
             <th scope="col">Result</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <% @users.sort_by { |a| -a.points_above_projection_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
@@ -69,15 +70,15 @@
               <td><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></td>
             </tr>
           <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-6">
-      <h3>Points Above Opponent Season Average</h3>
-      <table class="table table-striped">
-        <thead>
+    <div class="row">
+      <div class="col-6">
+        <h3>Points Above Opponent Season Average</h3>
+        <table class="table table-striped">
+          <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
@@ -86,8 +87,8 @@
             <th scope="col">Diff</th>
             <th scope="col">Result</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <% @users.sort_by { |a| -a.points_above_opponent_average_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
@@ -98,13 +99,13 @@
               <td><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></td>
             </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div>
-    <div class="col-6">
-      <h3>Points Above Own Season Average</h3>
-      <table class="table table-striped">
-        <thead>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-6">
+        <h3>Points Above Own Season Average</h3>
+        <table class="table table-striped">
+          <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
@@ -113,8 +114,8 @@
             <th scope="col">Diff</th>
             <th scope="col">Result</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <% @users.sort_by { |a| -a.points_above_average_for_week(@week) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
@@ -125,8 +126,14 @@
               <td><% if user.game_for(@week)&.won? %>Won<% elsif user.game_for(@week)&.lost? %>Lost<% end %></td>
             </tr>
           <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  <% else %>
+    <div class="row">
+      <h4>Oops! There are no weeks in this season yet.</h4>
+    </div>
+  <% end %>
+
 </div>
