@@ -54,10 +54,10 @@ h2.form-header {
   display: block;
 }
 
-ul.week_list {
+ul.horizontal_list {
   list-style-type: none;
 }
-ul.week_list > li {
+ul.horizontal_list > li {
   display: inline-block;
   margin: 2px;
   padding: 5px;

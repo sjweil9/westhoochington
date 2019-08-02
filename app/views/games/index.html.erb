@@ -1,5 +1,16 @@
 <div class="container">
   <div class="row">
+    <ul class="horizontal_list">
+      <% (2015..Date.today.year).each do |year| %>
+        <% if year != @year %>
+          <li><a href="<%= season_stats_path(year) %>"><%= year %></a></li>
+        <% else %>
+          <li><%= year %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+  <div class="row">
     <h1>Season Stats | <a href="<%= weekly_stats_path('current') %>">Weekly Stats</a></h1>
   </div>
   <div class="row">
@@ -15,12 +26,12 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| [-a.wins, -a.yearly_active_total] }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| [-a.send("wins_#{@year}"), -a.send("yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <th><%= user.wins %> - <%= user.losses %></th>
-              <td><%= user.yearly_active_total %></td>
+              <th><%= user.send("wins_#{@year}") %> - <%= user.send("losses_#{@year}") %></th>
+              <td><%= user.send("yearly_active_total_#{@year}") %></td>
             </tr>
           <% end %>
         </tbody>
@@ -61,14 +72,14 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.total_high_weekly_scores(@games) }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.send("total_high_weekly_scores_#{@year}", @games) }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <th><%= user.total_high_weekly_scores(@games) %></th>
+              <th><%= user.send("total_high_weekly_scores_#{@year}", @games) %></th>
               <td>
-                <% user.games.select { |g| g.weekly_high_score?(@games) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.total_high_weekly_scores(@games) %>,<% end %>
+                <% user.send("games_#{@year}").select { |g| g.weekly_high_score?(@games) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("total_high_weekly_scores_#{@year}", @games) %>,<% end %>
                 <% end %>
               </td>
             </tr>
@@ -89,13 +100,13 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.wins_above_projections }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.send("wins_above_projections_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.wins %></td>
-              <td><%= user.projected_wins %></td>
-              <th><%= user.wins_above_projections %></th>
+              <td><%= user.send("wins_#{@year}") %></td>
+              <td><%= user.send("projected_wins_#{@year}") %></td>
+              <th><%= user.send("wins_above_projections_#{@year}") %></th>
             </tr>
           <% end %>
         </tbody>
@@ -115,14 +126,14 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.lucky_wins }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.send("lucky_wins_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <th><%= user.lucky_wins %></th>
+              <th><%= user.send("lucky_wins_#{@year}") %></th>
               <td>
-                <% user.games.select(&:lucky?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.lucky_wins %>,<% end %>
+                <% user.send("games_#{@year}").select(&:lucky?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("lucky_wins_#{@year}") %>,<% end %>
                 <% end %>
               </td>
             </tr>
@@ -143,14 +154,14 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.unlucky_losses }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.send("unlucky_losses_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <th><%= user.unlucky_losses %></th>
+              <th><%= user.send("unlucky_losses_#{@year}") %></th>
               <td>
-                <% user.games.select(&:unlucky?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                  <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.unlucky_losses %>,<% end %>
+                <% user.send("games_#{@year}").select(&:unlucky?).sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                  <a href="<%= weekly_stats_path(game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("unlucky_losses_#{@year}") %>,<% end %>
                 <% end %>
               </td>
             </tr>
@@ -174,13 +185,13 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.average_points_above_projection }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.send("average_points_above_projection_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.average_active_total %></td>
-              <td><%= user.average_projected_total %></td>
-              <th><%= user.average_points_above_projection %></th>
+              <td><%= user.send("average_active_total_#{@year}") %></td>
+              <td><%= user.send("average_projected_total_#{@year}") %></td>
+              <th><%= user.send("average_points_above_projection_#{@year}") %></th>
             </tr>
           <% end %>
         </tbody>
@@ -199,13 +210,13 @@
           </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.average_scoring_margin }.each_with_index do |user, idx| %>
+          <% @users.sort_by { |a| -a.send("average_scoring_margin_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.average_active_total %></td>
-              <td><%= user.average_opponent_active_total %></td>
-              <th><%= user.average_scoring_margin %></th>
+              <td><%= user.send("average_active_total_#{@year}") %></td>
+              <td><%= user.send("average_opponent_active_total_#{@year}") %></td>
+              <th><%= user.send("average_scoring_margin_#{@year}") %></th>
             </tr>
           <% end %>
         </tbody>

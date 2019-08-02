@@ -1,15 +1,17 @@
 class GamesController < ApplicationController
   def index
+    @year = Date.today.year
     @games = Game.where(season_year: Date.today.year)
     user_ids = @games.map(&:user_id)
     @users = User.includes(user_joins).references(user_joins).where(id: user_ids).all
+    binding.pry
   end
 
   def yearly
     @year = params[:year]
     joins = [:"games_#{@year}", :"opponent_games_#{@year}", nicknames: :votes]
-    @users = User.includes(joins).references(joins)
     @games = Game.where(season_year: params[:year])
+    @users = User.includes(joins).references(joins).where(id: @games.map(&:user_id))
     render :index
   end
 

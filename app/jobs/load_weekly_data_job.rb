@@ -140,7 +140,7 @@ class LoadWeeklyDataJob < ApplicationJob
           week: game['matchupPeriodId'],
           user_id: user_id_for(game.dig(side, 'teamId')),
           opponent_id: user_id_for(game.dig(other_side, 'teamId')),
-          opponent_active_total: user_id_for(game.dig(other_side, 'totalPoints')),
+          opponent_active_total: game.dig(other_side, 'totalPoints'),
         }
 
         game_to_create = Game.find_by(

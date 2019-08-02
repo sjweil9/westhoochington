@@ -10,7 +10,7 @@
       <h4>*** High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>) ***</h4>
     </div>
     <div class="row">
-      <ul class="week_list">
+      <ul class="horizontal_list">
         <% @weeks.each do |week| %>
           <% if week != @week %>
             <li><a href="<%= weekly_stats_path(week) %>"><%= week %></a></li>

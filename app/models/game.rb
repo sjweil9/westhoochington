@@ -34,14 +34,14 @@ class Game < ApplicationRecord
     # won, but would have lost to opponent average score
     return false if lost?
     
-    active_total < opponent.average_active_total
+    active_total < opponent.send("average_active_total_#{season_year}")
   end
 
   def unlucky?
     # lost, but would have beaten opponent average score
     return false if won?
 
-    active_total > opponent.average_active_total
+    active_total > opponent.send("average_active_total_#{season_year}")
   end
 
   def weekly_high_score?(passed_games = nil)
@@ -69,11 +69,11 @@ class Game < ApplicationRecord
   end
 
   def points_above_opponent_average
-    active_total - opponent.average_active_total
+    active_total - opponent.send("average_active_total_#{season_year}")
   end
 
   def points_above_average
-    active_total - user.average_active_total
+    active_total - user.send("average_active_total_#{season_year}")
   end
 
   (1..17).each do |week_num|

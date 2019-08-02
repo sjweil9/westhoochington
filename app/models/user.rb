@@ -7,14 +7,14 @@ class User < ApplicationRecord
   validate :allowed_email
 
   has_many :nicknames, dependent: :destroy
-  # has_many :games, -> { where(season_year: Date.today.year ) } **PUT THIS BACK***
-  has_many :games, -> { where(season_year: '2017' ) }
-  has_many :opponent_games, class_name: 'Game', foreign_key: :opponent_id
+  has_many :games, -> { where(season_year: Date.today.year ) }
+  has_many :opponent_games, -> { where(season_year: Date.today.year) }, class_name: 'Game', foreign_key: :opponent_id
   has_many :side_bets
   has_many :side_bet_acceptances
 
-  (2017..Date.today.year).each do |year|
+  (2015..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
+    has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id
   end
 
   after_create :default_nicknames
@@ -38,72 +38,79 @@ class User < ApplicationRecord
   # stat related methods
   #
 
-  %w[active_total bench_total projected_total opponent_active_total].each do |method|
-    define_method(:"yearly_#{method}") do
-      games.map(&:"#{method}").reduce(:+).to_f.round(2)
+  (2015..Date.today.year).each do |year|
+    %w[active_total bench_total projected_total opponent_active_total].each do |method|
+      define_method(:"yearly_#{method}_#{year}") do
+        send(:"games_#{year}").map(&:"#{method}").reduce(:+).to_f.round(2)
+      end
+
+      define_method(:"average_#{method}_#{year}") do
+        return 0 unless send("game_count_#{year}").positive?
+
+        (send(:"yearly_#{method}_#{year}") / send("game_count_#{year}")).round(2)
+      end
+
+      define_method(:"yearly_opponent_#{method}_#{year}") do
+        send("opponent_games_#{year}").map(&:"#{method}").reduce(:+).to_f.round(2)
+      end
+
+      define_method(:"average_opponent_#{method}_#{year}") do
+        return 0 unless send("opponent_game_count_#{year}").positive?
+
+        (send(:"yearly_opponent_#{method}_#{year}") / send("opponent_game_count_#{year}")).round(2)
+      end
     end
 
-    define_method(:"average_#{method}") do
-      (send(:"yearly_#{method}") / game_count).round(2)
-    end
-    
-    define_method(:"yearly_opponent_#{method}") do
-      opponent_games.map(&:"#{method}").reduce(:+).to_f.round(2)
+    define_method("lucky_wins_#{year}") do
+      send(:"games_#{year}").select(&:lucky?).count
     end
 
-    define_method(:"average_opponent_#{method}") do
-      (send(:"yearly_opponent_#{method}") / opponent_game_count).round(2)
-    end
-  end
-
-  def lucky_wins
-    # games where you won, but would have lost to opponent's average score
-    games.select(&:lucky?).count
-  end
-
-  def unlucky_losses
-    # games where you lost, but would have beaten opponent's average score
-    games.select(&:unlucky?).count
-  end
-
-  %w[margin_of_victory margin_of_defeat].each do |method|
-    define_method(:"total_#{method}") do
-      check = method == 'margin_of_victory' ? 'won?' : 'lost?'
-      games.select(&:"#{check}").map(&:margin).reduce(:+).to_f.round(2)
+    define_method("unlucky_losses_#{year}") do
+      send(:"games_#{year}").select(&:unlucky?).count
     end
 
-    define_method(:"average_#{method}") do
-      (send(:"total_#{method}") / game_count).round(2)
+    %w[margin_of_victory margin_of_defeat].each do |method|
+      define_method(:"total_#{method}_#{year}") do
+        check = method == 'margin_of_victory' ? 'won?' : 'lost?'
+        send(:"games_#{year}").select(&:"#{check}").map(&:margin).reduce(:+).to_f.round(2)
+      end
+
+      define_method(:"average_#{method}_#{year}") do
+        return 0 unless send(:"game_count_#{year}").positive?
+
+        (send(:"total_#{method}_#{year}") / send(:"game_count_#{year}")).round(2)
+      end
     end
-  end
 
-  def average_scoring_margin
-    (games.map(&:margin).reduce(:+).to_f / game_count).round(2)
-  end
+    define_method("average_scoring_margin_#{year}") do
+      return 0 unless send(:"game_count_#{year}").positive?
 
-  def average_points_above_projection
-    (games.map(&:points_above_projection).reduce(:+).to_f / game_count).round(2)
-  end
+      (send("games_#{year}").map(&:margin).reduce(:+).to_f / send(:"game_count_#{year}")).round(2)
+    end
 
-  def wins
-    # must be .size, .count gets treated as query
-    games.select(&:won?).size
-  end
+    define_method("average_points_above_projection_#{year}") do
+      return 0 unless send(:"game_count_#{year}").positive?
 
-  def losses
-    games.select(&:lost?).size
-  end
+      (send(:"games_#{year}").map(&:points_above_projection).reduce(:+).to_f / send(:"game_count_#{year}")).round(2)
+    end
 
-  def projected_wins
-    # must be .size, .count gets treated as query
-    games.select(&:projected_win?).size
-  end
+    define_method("wins_#{year}") do
+      send(:"games_#{year}").select(&:won?).size
+    end
 
-  def wins_above_projections
-    wins - projected_wins
-  end
+    define_method("losses_#{year}") do
+      send(:"games_#{year}").select(&:lost?).size
+    end
 
-  WEEKLY_METHODS = %w[
+    define_method("projected_wins_#{year}") do
+      send(:"games_#{year}").select(&:projected_win?).size
+    end
+
+    define_method("wins_above_projections_#{year}") do
+      send(:"wins_#{year}") - send(:"projected_wins_#{year}")
+    end
+
+    WEEKLY_METHODS = %w[
     margin
     points_above_projection
     bench_total
@@ -111,26 +118,39 @@ class User < ApplicationRecord
     points_above_average
   ].freeze
 
-  WEEKLY_METHODS.each do |method|
-    define_method(:"#{method}_for_week") do |week|
-      game_for(week)&.send(method).to_f.round(2)
+    WEEKLY_METHODS.each do |method|
+      define_method(:"#{method}_for_week_#{year}") do |week|
+        send(:"game_for_week_#{year}", week)&.send(method).to_f.round(2)
+      end
     end
-  end
 
-  def game_for(week)
-    games.find(&:"week#{week}?")
-  end
+    define_method("game_for_week_#{year}") do |week|
+      send(:"games_#{year}").find(&:"week#{week}?")
+    end
 
-  def total_high_weekly_scores(passed_games = nil)
-    @total_high_weekly_scores ||= (passed_games.select { |pg| pg.user_id == id } || games).select { |g| g.weekly_high_score?(passed_games) }.count
-  end
+    define_method("total_high_weekly_scores_#{year}") do |passed_games = nil|
+      var_name = :"@total_high_weekly_scores_#{year}"
+      return instance_variable_get(var_name) if instance_variable_get(var_name)
 
-  def game_count
-    @game_count ||= games.size.to_f
-  end
+      instance_variable_set(var_name, (passed_games.select { |pg| pg.user_id == id } || send(:"games_#{year}")).select { |g| g.weekly_high_score?(passed_games) }.count)
+      instance_variable_get(var_name)
+    end
 
-  def opponent_game_count
-    @opponent_game_count ||= opponent_games.size.to_f
+    define_method("game_count_#{year}") do
+      var_name = :"@game_count_#{year}"
+      return instance_variable_get(var_name) if instance_variable_get(var_name)
+
+      instance_variable_set(var_name, send(:"games_#{year}").size.to_f)
+      instance_variable_get(var_name)
+    end
+
+    define_method("opponent_game_count_#{year}") do
+      var_name = :"@opponent_game_count_#{year}"
+      return instance_variable_get(var_name) if instance_variable_get(var_name)
+
+      instance_variable_set(var_name, send(:"games_#{year}").size.to_f)
+      instance_variable_get(var_name)
+    end
   end
 
   def matchup_independent_record(games = nil)
