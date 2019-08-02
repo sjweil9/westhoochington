@@ -88,27 +88,27 @@
       </table>
     </div>
     <div class="col-6">
-      <h3>Wins Above Projected</h3>
+      <h3>Average Scoring Margin</h3>
       <table class="table table-striped">
         <thead>
-          <tr>
-            <th scope="col">Rank</th>
-            <th scope="col">User</th>
-            <th scope="col">Wins</th>
-            <th scope="col">Projected Wins</th>
-            <th scope="col">Diff</th>
-          </tr>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">User</th>
+          <th scope="col">Average Points</th>
+          <th scope="col">Average Opponent Points</th>
+          <th scope="col">Average Scoring Margin</th>
+        </tr>
         </thead>
         <tbody>
-          <% @users.sort_by { |a| -a.send("wins_above_projections_#{@year}") }.each_with_index do |user, idx| %>
-            <tr>
-              <th scope="row"><%= idx + 1 %></th>
-              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.send("wins_#{@year}") %></td>
-              <td><%= user.send("projected_wins_#{@year}") %></td>
-              <th><%= user.send("wins_above_projections_#{@year}") %></th>
-            </tr>
-          <% end %>
+        <% @users.sort_by { |a| -a.send("average_scoring_margin_#{@year}") }.each_with_index do |user, idx| %>
+          <tr>
+            <th scope="row"><%= idx + 1 %></th>
+            <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+            <td><%= user.send("average_active_total_#{@year}") %></td>
+            <td><%= user.send("average_opponent_active_total_#{@year}") %></td>
+            <th><%= user.send("average_scoring_margin_#{@year}") %></th>
+          </tr>
+        <% end %>
         </tbody>
       </table>
     </div>
@@ -172,10 +172,15 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-6">
-      <h3>Average Points Above Projection</h3>
-      <table class="table table-striped">
-        <thead>
+    <% if @year.to_i < 2018 %>
+      <div class="col-12">
+        <h4>Projection-related stats are not available prior to 2018</h4>
+      </div>
+    <% else %>
+      <div class="col-6">
+        <h3>Average Points Above Projection</h3>
+        <table class="table table-striped">
+          <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
@@ -183,8 +188,8 @@
             <th scope="col">Average Projected Points</th>
             <th scope="col">Average Points Above Projection</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <% @users.sort_by { |a| -a.send("average_points_above_projection_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
@@ -194,33 +199,34 @@
               <th><%= user.send("average_points_above_projection_#{@year}") %></th>
             </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div>
-    <div class="col-6">
-      <h3>Average Scoring Margin</h3>
-      <table class="table table-striped">
-        <thead>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-6">
+        <h3>Wins Above Projected</h3>
+        <table class="table table-striped">
+          <thead>
           <tr>
             <th scope="col">Rank</th>
             <th scope="col">User</th>
-            <th scope="col">Average Points</th>
-            <th scope="col">Average Opponent Points</th>
-            <th scope="col">Average Scoring Margin</th>
+            <th scope="col">Wins</th>
+            <th scope="col">Projected Wins</th>
+            <th scope="col">Diff</th>
           </tr>
-        </thead>
-        <tbody>
-          <% @users.sort_by { |a| -a.send("average_scoring_margin_#{@year}") }.each_with_index do |user, idx| %>
+          </thead>
+          <tbody>
+          <% @users.sort_by { |a| -a.send("wins_above_projections_#{@year}") }.each_with_index do |user, idx| %>
             <tr>
               <th scope="row"><%= idx + 1 %></th>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.send("average_active_total_#{@year}") %></td>
-              <td><%= user.send("average_opponent_active_total_#{@year}") %></td>
-              <th><%= user.send("average_scoring_margin_#{@year}") %></th>
+              <td><%= user.send("wins_#{@year}") %></td>
+              <td><%= user.send("projected_wins_#{@year}") %></td>
+              <th><%= user.send("wins_above_projections_#{@year}") %></th>
             </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
   </div>
 </div>
