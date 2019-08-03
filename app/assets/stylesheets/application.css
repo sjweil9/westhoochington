@@ -62,3 +62,9 @@ ul.horizontal_list > li {
   margin: 2px;
   padding: 5px;
 }
+
+.centered {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}
