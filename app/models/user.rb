@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :nicknames, dependent: :destroy
   has_many :games, -> { where(season_year: Date.today.year ) }
   has_many :opponent_games, -> { where(season_year: Date.today.year) }, class_name: 'Game', foreign_key: :opponent_id
+  has_many :historical_games, class_name: 'Game'
   has_many :side_bets
   has_many :side_bet_acceptances
 
@@ -111,12 +112,12 @@ class User < ApplicationRecord
     end
 
     WEEKLY_METHODS = %w[
-    margin
-    points_above_projection
-    bench_total
-    points_above_opponent_average
-    points_above_average
-  ].freeze
+      margin
+      points_above_projection
+      bench_total
+      points_above_opponent_average
+      points_above_average
+    ].freeze
 
     WEEKLY_METHODS.each do |method|
       define_method(:"#{method}_for_week_#{year}") do |week|
@@ -151,6 +152,14 @@ class User < ApplicationRecord
       instance_variable_set(var_name, send(:"games_#{year}").size.to_f)
       instance_variable_get(var_name)
     end
+  end
+
+  def historical_wins
+    historical_games.select(&:won?).size
+  end
+
+  def historical_losses
+    historical_games.select(&:lost?).size
   end
 
   def matchup_independent_record(games = nil)

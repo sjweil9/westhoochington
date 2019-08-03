@@ -41,8 +41,13 @@
   </div>
   <div class="row profile-header">
     <div class="col-6">
-      <h2>FFB Record:</h2>
-      <h3><%= @user.wins %> - <%= @user.losses %></h3>
+      <h2>FFB Record</h2>
+      <h3>All Time:</h3>
+      <h4><%= @user.historical_wins %> - <%= @user.historical_losses %></h4>
+      <% @involved_years.each do |year| %>
+        <h3><%= year %> Season:</h3>
+        <h4><%= @user.send("wins_#{year}") %> - <%= @user.send("losses_#{year}") %></h4>
+      <% end %>
     </div>
   </div>
   <div class="row profile-header">

@@ -15,6 +15,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.includes(nicknames: :votes).references(nicknames: :votes).find(params[:user_id])
+    @involved_years = @user.historical_games.map(&:season_year).uniq.sort
     @nickname_idx = rand(@user.nicknames.count)
   end
 
