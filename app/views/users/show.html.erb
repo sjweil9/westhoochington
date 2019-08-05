@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
   <div class="row">
     <h1>
       <%= @user.nicknames[@nickname_idx].name %>
@@ -16,7 +16,7 @@
     </h1>
   </div>
   <div class="row profile-title">
-    <div class="col-12">
+    <div class="col-xs-12">
       <% if @user.nicknames.count > 1 %>
       <% @user.nicknames.each_with_index do |nickname, idx| %>
         <% if idx != @nickname_idx %>
@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class="row profile-header">
-    <div class="col-6">
+    <div class="col-xs-12 col-md-6">
       <h2>FFB Record</h2>
       <h3>All Time:</h3>
       <h4><%= @user.historical_wins %> - <%= @user.historical_losses %></h4>
@@ -51,14 +51,14 @@
     </div>
   </div>
   <div class="row profile-header">
-    <div class="col-6">
+    <div class="col-xs-12 col-md-6">
       <h2>Side Hustle Record</h2>
       <h3><%= @user.side_bet_wins %> - <%= @user.side_bet_losses %></h3>
       <h3><%= @user.pending_side_bets %> bet(s) unresolved</h3>
     </div>
   </div>
   <div class="row">
-    <div class="col-6">
+    <div class="col-xs-12 col-md-6">
     <% if current_user[:id] != @user.id %>
       <h2>Add Nickname</h2>
       <form action="<%= create_nickname_path %>" method="post">

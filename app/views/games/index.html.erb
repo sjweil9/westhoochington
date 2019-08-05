@@ -1,10 +1,10 @@
-<div class="container">
+<div class="container-fluid">
   <form action="<%= stats_path %>" method="get">
-    <div class="row">
-      <div class="col">
+    <div class="row justify-content-center">
+      <div class="col-xs-3 col-sm-1">
         <p>Select Season / Week:</p>
       </div>
-      <div class="col">
+      <div class="col-xs-3 col-sm-2">
         <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="year">
           <% (2015..Date.today.year).each do |year| %>
             <% if year.to_i == @year.to_i %>
@@ -15,7 +15,7 @@
           <% end %>
         </select>
       </div>
-      <div class="col">
+      <div class="col-xs-3 col-sm-2">
         <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="week">
           <% if @week %>
             <option value="season">Season Stats</option>
@@ -31,20 +31,22 @@
           <% end %>
         </select>
       </div>
-      <div class="col">
+      <div class="col-xs-3 col-sm-1">
         <button type="submit" class="btn btn-primary mb-2">Go</button>
       </div>
     </div>
   </form>
   <% if @week %>
-    <div class="row">
+    <div class="row justify-content-center">
       <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <a href="<%= user_profile_path(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> (<%= @narrowest.winning_score %>)
         - <a href="<%= user_profile_path(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> (<%= @narrowest.losing_score %>) ***
       </h4>
+    </div>
+    <div class="row justify-content-center">
       <h4>*** High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>) ***</h4>
     </div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Margin of Victory</h3>
         <table class="table table-striped">
           <thead>
@@ -69,7 +71,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Points Above Own Season Average</h3>
         <table class="table table-striped">
           <thead>
@@ -98,7 +100,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Points Above Opponent Season Average</h3>
         <table class="table table-striped">
           <thead>
@@ -126,7 +128,7 @@
         </table>
       </div>
       <% if @year.to_i >= 2018 %>
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Points Above Projection</h3>
         <table class="table table-striped">
           <thead>
@@ -157,7 +159,7 @@
     </div>
   <% else %>
     <div class="row">
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Current Standings</h3>
         <table class="table table-striped">
           <thead>
@@ -180,7 +182,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Matchup Independent Records</h3>
         <table class="table table-striped">
           <thead>
@@ -203,7 +205,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Most Weekly High Scores</h3>
         <table class="table table-striped">
           <thead>
@@ -230,7 +232,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Average Scoring Margin</h3>
         <table class="table table-striped">
           <thead>
@@ -257,7 +259,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Most Lucky Wins*</h3>
         <table class="table table-striped">
           <thead>
@@ -285,7 +287,7 @@
         </table>
         *<small>Would have lost to Opponent's average score for the year</small>
       </div>
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Most Unlucky Losses*</h3>
         <table class="table table-striped">
           <thead>
@@ -316,7 +318,7 @@
     </div>
     <% if @year.to_i >= 2018 %>
     <div class="row">
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Average Points Above Projection</h3>
         <table class="table table-striped">
           <thead>
@@ -341,7 +343,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col-6">
+      <div class="col-xs-12 col-md-6">
         <h3>Wins Above Projected</h3>
         <table class="table table-striped">
           <thead>
