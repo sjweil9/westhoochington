@@ -1,12 +1,33 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="<%= home_path %>">Westhoochington</a>
-  <div class="navbar-nav">
-      <a class="nav-item nav-link" href="<%= home_path %>">Stats</a>
-    <a class="nav-item nav-link" href="<%= over_unders_path %>">Over/Under Lines</a>
-    <a class="nav-item nav-link" href="<%= side_hustles_path %>">Side Hustles</a>
-    <a class="nav-item nav-link" href="<%= podcasts_path %>">WHIFFBP</a>
-    <a class="nav-item nav-link" href="https://www.youtube.com/channel/UClIs_jVPFzlU70gulSD1plQ/videos">Trapgame Maestros</a>
-    <a class="nav-item nav-link" href="<%= user_profile_path(current_user[:id]) %>">View Profile</a>
-    <a class="nav-item nav-link" href="<%= destroy_user_session_path %>" data-method="delete">Log Out Like a Real Bitch</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary margin-below">
+  <div class="container">
+    <a class="navbar-brand" href="<%= home_path %>">Westhoochington</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar1">
+      <ul class="navbar-nav nav nav-fill w-100">
+        <li class="nav-item">
+          <a class="<%= (current_page?(home_path) || current_page?(stats_path)) ? 'active' : 'nav-item' %> nav-link" href="<%= home_path %>">Stats</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(over_unders_path) ? 'active' : 'nav-item' %> nav-link" href="<%= over_unders_path %>">Over/Under Lines</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(side_hustles_path) ? 'active' : 'nav-item' %> nav-link" href="<%= side_hustles_path %>">Side Hustles</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(podcasts_path) ? 'active' : 'nav-item' %> nav-link" href="<%= podcasts_path %>">WHIFFBP</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="https://www.youtube.com/channel/UClIs_jVPFzlU70gulSD1plQ/videos">Trapgame Maestros</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(user_profile_path(current_user[:id])) ? 'active' : 'nav-item' %> nav-link" href="<%= user_profile_path(current_user[:id]) %>">View Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(destroy_user_session_path) ? 'active' : 'nav-item' %> nav-link" href="<%= destroy_user_session_path %>" data-method="delete">Log Out Like a Real Bitch</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>

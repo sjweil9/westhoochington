@@ -1,8 +1,9 @@
 <div class="container-fluid">
   <div class="row profile-header">
     <h1>Active Side Hustles</h1>
-    <table class="table table-striped">
-      <thead>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
         <tr>
           <th scope="col">Bet</th>
           <th scope="col">Amount</th>
@@ -11,8 +12,8 @@
           <th scope="col">Max Takers</th>
           <th scope="col">Action(s)</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <% @side_bets.reject(&:completed).each do |side_bet| %>
           <tr>
             <td><%= side_bet.terms %></td>
@@ -34,14 +35,16 @@
             </td>
           </tr>
         <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="row profile-header">
     <h1>Completed Side Hustles</h1>
-    <table class="table table-striped">
-      <thead>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
         <tr>
           <th scope="col">Bet</th>
           <th scope="col">Amount</th>
@@ -50,24 +53,25 @@
           <th scope="col">Won By</th>
           <th scope="col">Completed On</th>
         </tr>
-      </thead>
-      <tbody>
-      <% @side_bets.select(&:completed).each do |side_bet| %>
-        <tr>
-          <td><%= side_bet.terms %></td>
-          <td><%= '$%.2f' % side_bet.amount %></td>
-          <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
-          <td>
-            <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
-              <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
-            <% end %>
-          </td>
-          <td><%= side_bet.status.humanize %></td>
-          <td><%= side_bet.updated_at.strftime('%m-%d-%Y') %></td>
-        </tr>
-      <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+        <% @side_bets.select(&:completed).each do |side_bet| %>
+          <tr>
+            <td><%= side_bet.terms %></td>
+            <td><%= '$%.2f' % side_bet.amount %></td>
+            <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
+            <td>
+              <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
+                <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
+              <% end %>
+            </td>
+            <td><%= side_bet.status.humanize %></td>
+            <td><%= side_bet.updated_at.strftime('%m-%d-%Y') %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="row profile-header">

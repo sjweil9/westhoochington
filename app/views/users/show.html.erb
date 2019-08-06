@@ -41,57 +41,67 @@
   </div>
   <div class="row profile-header">
     <div class="col-xs-12 col-md-6">
-      <h2>FFB Record</h2>
-      <h3>All Time:</h3>
-      <h4><%= @user.historical_wins %> - <%= @user.historical_losses %></h4>
-      <% @involved_years.each do |year| %>
-        <h3><%= year %> Season:</h3>
-        <h4><%= @user.send("wins_#{year}") %> - <%= @user.send("losses_#{year}") %></h4>
-      <% end %>
+      <h2><img class="expand" data-toggle="collapse" data-target="#ffbrecord" aria-expanded="true" aria-controls="ffbrecord" src="<%= image_path('expand.png') %>" />
+        FFB Record
+      </h2>
+      <div class="collapse" id="ffbrecord">
+        <h3>All Time:</h3>
+        <h4><%= @user.historical_wins %> - <%= @user.historical_losses %></h4>
+        <% @involved_years.each do |year| %>
+          <h3><%= year %> Season:</h3>
+          <h4><%= @user.send("wins_#{year}") %> - <%= @user.send("losses_#{year}") %></h4>
+        <% end %>
+      </div>
     </div>
   </div>
   <div class="row profile-header">
     <div class="col-xs-12 col-md-6">
-      <h2>Side Hustle Record</h2>
-      <h3><%= @user.side_bet_wins %> - <%= @user.side_bet_losses %></h3>
-      <h3><%= @user.pending_side_bets %> bet(s) unresolved</h3>
+      <h2><img class="expand" data-toggle="collapse" data-target="#sidebetrecord" aria-expanded="true" aria-controls="sidebetrecord" src="<%= image_path('expand.png') %>" /> Side Hustle Record</h2>
+      <div class="collapse" id="sidebetrecord">
+        <h3><%= @user.side_bet_wins %> - <%= @user.side_bet_losses %></h3>
+        <h3><%= @user.pending_side_bets %> bet(s) unresolved</h3>
+      </div>
     </div>
   </div>
   <div class="row">
     <div class="col-xs-12 col-md-6">
     <% if current_user[:id] != @user.id %>
-      <h2>Add Nickname</h2>
-      <form action="<%= create_nickname_path %>" method="post">
-        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-        <input type="text" name="name">
-        <%= render "shared/errors", type: "name" %>
-        <button type="submit">Add</button>
-      </form>
+      <h2><img class="expand" data-toggle="collapse" data-target="#addnickname" aria-expanded="true" aria-controls="addnickname" src="<%= image_path('expand.png') %>" /> Add Nickname</h2>
+      <div class="collapse" id="addnickname">
+        <form action="<%= create_nickname_path %>" method="post">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <input type="text" name="name">
+          <%= render "shared/errors", type: "name" %>
+          <button type="submit">Add</button>
+        </form>
+      </div>
     <% else %>
-      <h2>Change Password</h2>
+      <h2><img class="expand" data-toggle="collapse" data-target="#changepassword" aria-expanded="true" aria-controls="changepassword" src="<%= image_path('expand.png') %>" /> Change Password</h2>
       <% if flash[:password_success] %>
         <p class="success"><%= flash[:password_success] %></p>
       <% end %>
-      <form action="<%= edit_password_path(@user.id) %>" method="post">
-        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-        <input type="hidden" name="_method" value="PUT">
-        <div class="form-group">
-          <label for="terms">Old Password</label>
-          <input type="password" class="form-control" id="terms" name="old_password">
-          <%= render "shared/errors", type: "old_password" %>
-        </div>
-        <div class="form-group">
-          <label for="terms">New Password</label>
-          <input type="password" class="form-control" id="terms" name="password">
-          <%= render "shared/errors", type: "password" %>
-        </div>
-        <div class="form-group">
-          <label for="amount">Confirm New Password</label>
-          <input type="password" class="form-control" id="amount" name="password_confirmation">
-          <%= render "shared/errors", type: "password_confirmation" %>
-        </div>
-        <button type="submit" class="btn btn-primary">Update</button>
-      </form>
+      <div class="collapse" id="changepassword">
+        <form action="<%= edit_password_path(@user.id) %>" method="post">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <input type="hidden" name="_method" value="PUT">
+          <div class="form-group">
+            <label for="terms">Old Password</label>
+            <input type="password" class="form-control" id="terms" name="old_password">
+            <%= render "shared/errors", type: "old_password" %>
+          </div>
+          <div class="form-group">
+            <label for="terms">New Password</label>
+            <input type="password" class="form-control" id="terms" name="password">
+            <%= render "shared/errors", type: "password" %>
+          </div>
+          <div class="form-group">
+            <label for="amount">Confirm New Password</label>
+            <input type="password" class="form-control" id="amount" name="password_confirmation">
+            <%= render "shared/errors", type: "password_confirmation" %>
+          </div>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+      </div>
     <% end %>
     </div>
   </div>

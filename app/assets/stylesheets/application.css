@@ -42,6 +42,22 @@ img.vote {
   height: 2.5vh;
 }
 
+img.questionmark {
+    max-width: 3vh;
+    max-height: 3vh;
+    vertical-align: top;
+}
+
+img.expand {
+    max-width: 2.5vh;
+    max-height: 2.5vh;
+}
+
+img.contract {
+    max-width: 2.5vh;
+    max-height: 2.5vh;
+}
+
 .profile-title {
   margin-bottom: 5vh;
 }
@@ -67,4 +83,8 @@ ul.horizontal_list > li {
     width: 50%;
     margin: auto;
     text-align: center;
+}
+
+.margin-below {
+    margin-bottom: 2.5%;
 }
