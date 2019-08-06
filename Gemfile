@@ -26,12 +26,16 @@ gem 'jbuilder', '~> 2.5'
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
-gem 'devise'
+gem 'devise', '>= 4.6.0'
 gem 'rest-client'
 gem 'sendgrid-ruby'
+gem "railties", ">= 5.2.2.1"
+gem "actionview", ">= 5.2.2.1"
+gem "rack", ">= 2.0.6"
+gem "loofah", ">= 2.2.3"
 
 gem 'jquery-rails'
-gem 'bootstrap', '= 4.0.0'
+gem 'bootstrap', '>= 4.3.1'
 
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
