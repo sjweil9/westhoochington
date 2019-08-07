@@ -30,6 +30,12 @@ class Game < ApplicationRecord
     projected_total > opponent_projected_total
   end
 
+  def playoff?
+    return week >= 14 if season_year < 2018
+
+    week >= 13
+  end
+
   def lucky?
     # won, but would have lost to opponent average score
     return false if lost?

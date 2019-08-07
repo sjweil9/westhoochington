@@ -7,6 +7,7 @@ class GamesController < ApplicationController
     @week = nil
     @games = Game.where(season_year: params[:year])
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id))
+    @playoffs = @games.any?(&:playoff?)
     render :index
   end
 

@@ -45,6 +45,14 @@ class User < ApplicationRecord
         send(:"games_#{year}").map(&:"#{method}").reduce(:+).to_f.round(2)
       end
 
+      define_method(:"regular_yearly_#{method}_#{year}") do
+        send(:"games_#{year}").reject(&:playoff?).map(&:"#{method}").reduce(:+).to_f.round(2)
+      end
+
+      define_method(:"playoff_yearly_#{method}_#{year}") do
+        send(:"games_#{year}").select(&:playoff?).map(&:"#{method}").reduce(:+).to_f.round(2)
+      end
+
       define_method(:"average_#{method}_#{year}") do
         return 0 unless send("game_count_#{year}").positive?
 
@@ -93,6 +101,22 @@ class User < ApplicationRecord
       return 0 unless send(:"game_count_#{year}").positive?
 
       (send(:"games_#{year}").map(&:points_above_projection).reduce(:+).to_f / send(:"game_count_#{year}")).round(2)
+    end
+
+    define_method("regular_wins_#{year}") do
+      send(:"games_#{year}").reject(&:playoff?).select(&:won?).size
+    end
+
+    define_method("regular_losses_#{year}") do
+      send(:"games_#{year}").reject(&:playoff?).select(&:lost?).size
+    end
+
+    define_method("playoff_wins_#{year}") do
+      send(:"games_#{year}").select(&:playoff?).select(&:won?).size
+    end
+
+    define_method("playoff_losses_#{year}") do
+      send(:"games_#{year}").select(&:playoff?).select(&:lost?).size
     end
 
     define_method("wins_#{year}") do

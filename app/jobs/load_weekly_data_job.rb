@@ -1,3 +1,5 @@
+require 'csv'
+
 class LoadWeeklyDataJob < ApplicationJob
   queue_as :default
 
@@ -116,7 +118,20 @@ class LoadWeeklyDataJob < ApplicationJob
         season_year: @year.to_i,
         user_id: user_id_for(team),
         opponent_id: user_id_for(other_team_data['teamId'])
-      ) || Game.new
+      )
+
+      if [14, 16].include?(week) && game
+        game.active_total += game_data[:active_total]
+        game.bench_total += game_data[:bench_total]
+        game.projected_total += game_data[:projected_total]
+        game.opponent_active_total += game_data[:opponent_active_total]
+        game.opponent_bench_total += game_data[:opponent_bench_total]
+        game.opponent_projected_total += game_data[:opponent_projected_total]
+        game.save
+        next
+      end
+
+      game ||= Game.new
 
       game.update(game_data)
     end
@@ -152,6 +167,50 @@ class LoadWeeklyDataJob < ApplicationJob
 
         game_to_create.update(game_data)
       end
+    end
+  end
+
+  def perform_csv
+    csv = '/home/sjweil/Documents/Coding/data_backups/westhoochington/20190727.csv'
+    CSV.foreach(csv) do |row|
+      season_year, week, user_email, opp_email, active_points, bench_points, projected_points, opp_active_points, opp_bench_points, opp_projected_points = row
+      next unless season_year.to_i.to_s == season_year.to_s
+
+      @year = season_year
+      game_data = {
+        active_total: active_points,
+        season_year: season_year,
+        week: week,
+        user_id: user_by_email(user_email),
+        opponent_id: user_by_email(opp_email),
+        bench_total: bench_points,
+        projected_total: projected_points,
+        opponent_active_total: opp_active_points,
+        opponent_bench_total: opp_bench_points,
+        opponent_projected_total: opp_projected_points,
+      }
+
+      game_to_create = Game.find_by(
+        week: week,
+        season_year: season_year,
+        user_id: user_by_email(user_email),
+        opponent_id: user_by_email(opp_email)
+      )
+
+      if [14, 16].include?(week.to_i) && game_to_create && @year.to_i >= 2018
+        game_to_create.active_total += game_data[:active_total].to_f
+        game_to_create.bench_total += game_data[:bench_total].to_f
+        game_to_create.projected_total += game_data[:projected_total].to_f
+        game_to_create.opponent_active_total += game_data[:opponent_active_total].to_f
+        game_to_create.opponent_bench_total += game_data[:opponent_bench_total].to_f
+        game_to_create.opponent_projected_total += game_data[:opponent_projected_total].to_f
+        game_to_create.save
+        next
+      end
+
+      game_to_create ||= Game.new
+
+      game_to_create.update(game_data)
     end
   end
 
@@ -206,6 +265,11 @@ class LoadWeeklyDataJob < ApplicationJob
   def user_id_for(team_id)
     @user_ids ||= {}
     @user_ids[team_id.to_s] ||= User.find_by(email: EMAIL_MAPPING[@year][team_id.to_s])&.id
+  end
+
+  def user_by_email(email)
+    @user_ids ||= {}
+    @user_ids[email] ||= User.find_by(email: email)&.id
   end
 
   def matchup_period_for_week(week)

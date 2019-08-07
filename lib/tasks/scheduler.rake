@@ -28,4 +28,8 @@ namespace :stats do
       LoadWeeklyDataJob.new.perform_historical(year)
     end
   end
+
+  task :load_csv => :environment do
+    LoadWeeklyDataJob.new.perform_csv
+  end
 end
