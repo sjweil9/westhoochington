@@ -16,7 +16,7 @@
         <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
           <option selected value="<%= @week || 'season' %>"><%= @week || 'Season Stats' %></option>
           <% (1..17).each do |week| %>
-            <option value="<% week %>">Week <% week %></option>
+            <option value="<%= week %>">Week <%= week %></option>
           <% end %>
         </select>
       </div>
