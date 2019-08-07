@@ -35,12 +35,15 @@
   </form>
   <% if @week %>
     <div class="row justify-content-center">
-      <h4>*** Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <a href="<%= user_profile_path(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> (<%= @narrowest.winning_score %>)
-        - <a href="<%= user_profile_path(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> (<%= @narrowest.losing_score %>) ***
-      </h4>
+      <div class="alert alert-primary" role="alert">
+        Narrowest Cucking of the Week (<%= @narrowest.margin_of_victory %>): <a href="<%= user_profile_path(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> (<%= @narrowest.winning_score %>)
+        - <a href="<%= user_profile_path(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> (<%= @narrowest.losing_score %>)
+      </div>
     </div>
     <div class="row justify-content-center">
-      <h4>*** High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>) ***</h4>
+      <div class="alert alert-primary" role="alert">
+        High Score of the Week: <a href="<%= user_profile_path(@highest_score_game.user.id) %>"><%= @highest_score_game.user.random_nickname %></a> (<%= @highest_score_game.active_total %>)
+      </div>
     </div>
     <div class="row">
       <div class="col-xs-12 col-lg-6">
