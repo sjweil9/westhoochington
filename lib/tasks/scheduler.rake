@@ -11,6 +11,18 @@ namespace :stats do
     puts "Completed weekly data load."
   end
 
+  desc "Called by Heroku scheduler to send newsletter"
+  task :send_weekly_newsletter => :environment do
+    week = Time.now.strftime('%U').to_i - 35
+    year = Date.today.year
+    return unless Time.now.tuesday? && week.positive?
+
+    involved_users = Game.where(season_year: year, week: week).map(&:user)
+    involved_users.each do |user|
+      UserNotificationsMailer.send_newsletter(user, week, year)
+    end
+  end
+
   desc "This task would be run on demand"
   task :load_backlog_data => :environment do
     current_year = Time.now.year

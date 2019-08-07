@@ -9,8 +9,8 @@ class SideBet < ApplicationRecord
     only_integer: true,
   }
   validates :terms, length: {
-    in: 5..80,
-    message: 'must be 5-80 characters. Let me know if that really isnt gonna cut it for ya.',
+    in: 1..80,
+    message: 'must be 1-80 characters. Let me know if that really isnt gonna cut it for ya.',
   }
 
   before_create :set_defaults
@@ -25,6 +25,14 @@ class SideBet < ApplicationRecord
 
   def maxed_out?
     max_takers && side_bet_acceptances.count >= max_takers
+  end
+
+  def completed?
+    completed || closed?
+  end
+
+  def closed?
+    closing_date && closing_date <= Date.today
   end
 
   private

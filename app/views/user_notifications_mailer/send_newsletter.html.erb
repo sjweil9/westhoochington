@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body>
+<h1>Weekly Westhoochington - <%= @year %> #<%= @week %></h1>
+<h3>Narrowest Cucking of the Week</h3>
+<p>
+  <% if @narrowest.margin.abs < 5 %>
+    Quite the nail-biter this week with <a href="<%= user_profile_url(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> scraping by <a href="<%= user_profile_url(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> by only <%= @narrowest.margin.abs %> points.
+  <% elsif @narrowest.margin.abs < 10 %>
+    <a href="<%= user_profile_url(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> gave <a href="<%= user_profile_url(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> a mild cucking this week, squeezing out a <%= @narrowest.margin.abs %> point victory.
+  <% else %>
+    Not the tightest gooch this week as <a href="<%= user_profile_url(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> defeated <a href="<%= user_profile_url(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> by a comfortable margin of <%= @narrowest.margin.abs %> points.
+  <% end %>
+</p>
+<h3>Biggest T-Bagging of the Week</h3>
+<p>
+  <% if @largest.margin > 50 %>
+    Somebody needs to report a homicide, because <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a> left <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a> in a ditch after a <%= @largest.margin %> point spanking.
+  <% elsif @largest.margin > 30 %>
+    It was a rough week for <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a>, who got dumpstered by a <%= @largest.margin %> point margin by <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a>.
+  <% elsif @largest.margin > 10 %>
+    Just a good old-fashioned <%= @largest.margin %> point beatdown by <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a> over <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a>.
+  <% else %>
+   It was a tight week overall, as the biggest margin was only <%= @largest.margin %> points by <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a> over <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a>.
+  <% end %>
+</p>
+<% if @week > 1 && @games.none?(&:playoff?) %>
+  <h3>Biggest Over-Performer</h3>
+  <p>
+    <% if @overperformer.send("points_above_average_for_week_#{@year}", @week) > 30 %>
+      A truly impressive performance by <a href="<%= user_profile_url(@overperformer.id) %>"><%= @overperformer.random_nickname %></a>, who laid down <%= @overperformer.send("game_for_week_#{@year}", @week)&.active_total %> points, crushing their season average of <%= @overperformer.send("average_active_total_#{@year}") %>.
+    <% elsif @overperformer.send("points_above_average_for_week_#{@year}", @week) > 10 %>
+      <a href="<%= user_profile_url(@overperformer.id) %>"><%= @overperformer.random_nickname %></a> demonstrated some real improvement this week after beating their season average of <%= @overperformer.send("average_active_total_#{@year}") %> with a score of <%= @overperformer.send("game_for_week_#{@year}", @week)&.active_total %> points.
+    <% else %>
+      It was not a shining week for improvements, but <a href="<%= user_profile_url(@overperformer.id) %>"><%= @overperformer.random_nickname %></a> managed to out-perform their season average of <%= @overperformer.send("average_active_total_#{@year}") %> by putting up <%= @overperformer.send("game_for_week_#{@year}", @week)&.active_total %> points.
+    <% end %>
+  </p>
+<% end %>
+<% if @outprojector.send("points_above_projection_for_week_#{@year}", @week).positive? %>
+<h3>Projections, Shmrojections</h3>
+<p>
+  <% if @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 30 %>
+   <a href="<%= user_profile_url(@outprojector.id) %>"><%= @outprojector.random_nickname %></a> had no fucks to give about ESPN's projections, as they dropped <%= @outprojector.send("game_for_week_#{@year}", @week)&.active_total %> points despite being projected for only <%= @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2) %>.
+  <% elsif @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 10 %>
+    ESPN's fantasy projection dart-throwing monkeys missed the mark this week on <a href="<%= user_profile_url(@outprojector.id) %>"><%= @outprojector.random_nickname %></a>, who beat out their <%= @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2) %> projection with a solid <%= @outprojector.send("game_for_week_#{@year}", @week)&.active_total %> points.
+  <% else %>
+    ESPN's fantasy oracle didn't sell anyone too short this week, but <a href="<%= user_profile_url(@outprojector.id) %>"><%= @outprojector.random_nickname %></a> did manage to outperform their <%= @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2) %> point projection by <%= @outprojector.send("points_above_projection_for_week_#{@year}", @week) %>.
+  <% end %>
+</p>
+<% end %>
+</body>
+</html>

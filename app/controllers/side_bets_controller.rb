@@ -2,8 +2,7 @@ class SideBetsController < ApplicationController
   def index
     @side_bets =
       SideBet
-        .joins(user: { nicknames: :votes })
-        .includes(side_bet_acceptances: { user: { nicknames: :votes } })
+        .includes(user: { nicknames: :votes }, side_bet_acceptances: { user: { nicknames: :votes } })
         .references(side_bet_acceptances: { user: { nicknames: :votes } })
         .all
   end
@@ -36,6 +35,6 @@ class SideBetsController < ApplicationController
   end
 
   def new_bet_params
-    params.require(:side_bet).permit(:amount, :terms, :max_takers).merge(user_id: current_user[:id])
+    params.require(:side_bet).permit(:amount, :terms, :max_takers, :closing_date).merge(user_id: current_user[:id])
   end
 end

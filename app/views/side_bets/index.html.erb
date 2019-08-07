@@ -1,101 +1,116 @@
-<div class="container-fluid">
+<div class="container-fluid side-bet-container">
   <div class="row profile-header">
-    <h1>Active Side Hustles</h1>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th scope="col">Bet</th>
-          <th scope="col">Amount</th>
-          <th scope="col">Proposer</th>
-          <th scope="col">Taker(s)</th>
-          <th scope="col">Max Takers</th>
-          <th scope="col">Action(s)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @side_bets.reject(&:completed).each do |side_bet| %>
+    <div class="col">
+      <h1>Active Side Hustles</h1>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
           <tr>
-            <td><%= side_bet.terms %></td>
-            <td><%= '$%.2f' % side_bet.amount %></td>
-            <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
-            <td>
-              <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
-                <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
-              <% end %>
-            </td>
-            <td><%= side_bet.max_takers ? side_bet.max_takers.to_i : 'N/A'  %></td>
-            <td>
-              <% if side_bet.user.id == current_user[:id] %>
-                <a class="btn btn-success" href="<%= complete_side_bet_path(side_bet.id, 'proposer') %>" data-method="patch" role="button">Mark Won</a>
-                <a class="btn btn-danger" href="<%= complete_side_bet_path(side_bet.id, 'takers') %>" data-method="patch" role="button">Mark Lost</a>
-              <% elsif side_bet.side_bet_acceptances.none? { |taker| taker.user.id == current_user[:id] } && !side_bet.maxed_out? %>
-                <a class="btn btn-primary" href="<%= accept_side_bet_path(side_bet.id) %>" data-method="post" role="button">Accept Bet</a>
-              <% end %>
-            </td>
+            <th scope="col">Bet</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Proposer</th>
+            <th scope="col">Taker(s)</th>
+            <th scope="col">Max Takers</th>
+            <th scope="col">Closing Date</th>
+            <th scope="col">Action(s)</th>
           </tr>
-        <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          <% @side_bets.reject(&:completed).each do |side_bet| %>
+            <tr>
+              <td><%= side_bet.terms %></td>
+              <td><%= '$%.2f' % side_bet.amount %></td>
+              <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
+              <td>
+                <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
+                  <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
+                <% end %>
+              </td>
+              <td><%= side_bet.max_takers ? side_bet.max_takers.to_i : 'N/A'  %></td>
+              <td><%= side_bet.closing_date&.to_date || 'N/A' %></td>
+              <td>
+                <% if side_bet.user.id == current_user[:id] %>
+                  <a class="btn btn-success" href="<%= complete_side_bet_path(side_bet.id, 'proposer') %>" data-method="patch" role="button">Mark Won</a>
+                  <a class="btn btn-danger" href="<%= complete_side_bet_path(side_bet.id, 'takers') %>" data-method="patch" role="button">Mark Lost</a>
+                <% elsif side_bet.side_bet_acceptances.none? { |taker| taker.user.id == current_user[:id] } && !side_bet.maxed_out? && !side_bet.closed? %>
+                  <a class="btn btn-primary" href="<%= accept_side_bet_path(side_bet.id) %>" data-method="post" role="button">Accept Bet</a>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <div class="row profile-header">
-    <h1>Completed Side Hustles</h1>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th scope="col">Bet</th>
-          <th scope="col">Amount</th>
-          <th scope="col">Proposer</th>
-          <th scope="col">Taker(s)</th>
-          <th scope="col">Won By</th>
-          <th scope="col">Completed On</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @side_bets.select(&:completed).each do |side_bet| %>
+    <div class="col">
+      <h1>Completed Side Hustles</h1>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
           <tr>
-            <td><%= side_bet.terms %></td>
-            <td><%= '$%.2f' % side_bet.amount %></td>
-            <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
-            <td>
-              <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
-                <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
-              <% end %>
-            </td>
-            <td><%= side_bet.status.humanize %></td>
-            <td><%= side_bet.updated_at.strftime('%m-%d-%Y') %></td>
+            <th scope="col">Bet</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Proposer</th>
+            <th scope="col">Taker(s)</th>
+            <th scope="col">Won By</th>
+            <th scope="col">Completed On</th>
           </tr>
-        <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          <% @side_bets.select(&:completed).each do |side_bet| %>
+            <tr>
+              <td><%= side_bet.terms %></td>
+              <td><%= '$%.2f' % side_bet.amount %></td>
+              <td><a href="<%= user_profile_path(side_bet.user.id) %>"><%= side_bet.user.random_nickname %></a></td>
+              <td>
+                <% side_bet.side_bet_acceptances.map(&:user).each do |user| %>
+                  <a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a>
+                <% end %>
+              </td>
+              <td><%= side_bet.status.humanize %></td>
+              <td><%= side_bet.updated_at.strftime('%m-%d-%Y') %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <div class="row profile-header">
-    <h1>Propose Bet</h1>
+    <div class="col">
+      <h1>Propose Bet</h1>
+    </div>
   </div>
   <div class="row">
-    <form action="<%= propose_bet_path %>" method="post">
-      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-      <div class="form-group">
-        <label for="terms">Terms</label>
-        <input type="text" class="form-control" id="terms" name="side_bet[terms]" placeholder="What are the terms?">
-        <%= render "shared/errors", type: "terms" %>
-      </div>
-      <div class="form-group">
-        <label for="amount">Amount</label>
-        <input type="number" class="form-control" id="amount" name="side_bet[amount]" step="0.1">
-        <%= render "shared/errors", type: "amount" %>
-      </div>
-      <div class="form-group">
-        <label for="max_takers">Max Takers (Leave Blank if You Aren't a Pussy)</label>
-        <input type="number" class="form-control" id="max_takers" name="side_bet[max_takers]" step="1">
-        <%= render "shared/errors", type: "max_takers" %>
-      </div>
-      <button type="submit" class="btn btn-primary">Propose</button>
-    </form>
+    <div class="col">
+      <form action="<%= propose_bet_path %>" method="post">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <div class="form-group">
+          <label for="terms">Terms</label>
+          <input type="text" class="form-control" id="terms" name="side_bet[terms]" placeholder="What are the terms?">
+          <%= render "shared/errors", type: "terms" %>
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount</label>
+          <input type="number" class="form-control" id="amount" name="side_bet[amount]" step="0.1">
+          <%= render "shared/errors", type: "amount" %>
+        </div>
+        <div class="form-group">
+          <label for="max_takers">Max Takers (Leave Blank if You Aren't a Pussy)</label>
+          <input type="number" class="form-control" id="max_takers" name="side_bet[max_takers]" step="1">
+          <%= render "shared/errors", type: "max_takers" %>
+        </div>
+        <div class="form-group">
+          <label for="closing_date">Closing Date</label>
+          <input type="date" class="form-control" id="closing_date" name="side_bet[closing_date]">
+          <%= render "shared/errors", type: "closing_date" %>
+        </div>
+        <button type="submit" class="btn btn-primary">Propose</button>
+      </form>
+    </div>
   </div>
 </div>

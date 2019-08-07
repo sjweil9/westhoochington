@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_07_132604) do
+ActiveRecord::Schema.define(version: 2019_08_07_195419) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -128,6 +128,7 @@ ActiveRecord::Schema.define(version: 2019_08_07_132604) do
     t.boolean "completed"
     t.string "status"
     t.decimal "max_takers"
+    t.datetime "closing_date"
     t.index ["user_id"], name: "index_side_bets_on_user_id"
   end
 
