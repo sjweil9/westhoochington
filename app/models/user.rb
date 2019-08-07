@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :historical_games, class_name: 'Game'
   has_many :side_bets
   has_many :side_bet_acceptances
+  has_many :seasons
 
   (2015..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
@@ -33,6 +34,28 @@ class User < ApplicationRecord
       weight.times { arr << nickname }
       arr
     end.flatten
+  end
+
+  #
+  # season-level stat methods
+  #
+
+  def regular_rank(year)
+    seasons.detect { |season| season.season_year.to_i == year.to_i }&.regular_rank&.to_i&.ordinalize
+  end
+
+  def playoff_rank(year)
+    seasons.detect { |season| season.season_year.to_i == year.to_i }&.playoff_rank&.to_i&.ordinalize
+  end
+
+  def average_regular_season_finish
+    season_count = seasons.size
+    (seasons.map(&:regular_rank).reduce(:+) / season_count.to_f).round(2)
+  end
+
+  def average_final_finish
+    season_count = seasons.size
+    (seasons.map(&:playoff_rank).reduce(:+) / season_count.to_f).round(2)
   end
 
   #

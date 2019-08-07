@@ -51,6 +51,8 @@
             <th scope="col">Season</th>
             <th scope="col">Wins</th>
             <th scope="col">Losses</th>
+            <th scope="col">Regular Season Rank</th>
+            <th scope="col">Final Rank</th>
           </tr>
           </thead>
           <tbody>
@@ -58,12 +60,16 @@
               <th scope="row">All Time</th>
               <th><%= @user.historical_wins %></th>
               <th><%= @user.historical_losses %></th>
+              <th><%= @user.average_regular_season_finish %></th>
+              <th scope="row"><%= @user.average_final_finish %></th>
             </tr>
             <% @involved_years.each do |year| %>
               <tr>
                 <th scope="row"><%= year %></th>
                 <th><%= @user.send("wins_#{year}") %></th>
                 <th><%= @user.send("losses_#{year}") %></th>
+                <th><%= @user.send("regular_rank", year) %></th>
+                <th scope="row"><%= @user.send("playoff_rank", year) %></th>
               </tr>
           <% end %>
           </tbody>

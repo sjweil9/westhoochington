@@ -146,27 +146,43 @@ class LoadWeeklyDataJob < ApplicationJob
 
     games = parsed_response['schedule']
 
-    games.each do |game|
-      %w[home away].each do |side|
-        other_side = side == 'home' ? 'away' : 'home'
-        game_data = {
-          active_total: game.dig(side, 'totalPoints'),
-          season_year: @year.to_i,
-          week: game['matchupPeriodId'],
-          user_id: user_id_for(game.dig(side, 'teamId')),
-          opponent_id: user_id_for(game.dig(other_side, 'teamId')),
-          opponent_active_total: game.dig(other_side, 'totalPoints'),
-        }
+    unless @year.to_i >= 2018 # this doesn't have projected numbers, so not overriding
+      games.each do |game|
+        %w[home away].each do |side|
+          other_side = side == 'home' ? 'away' : 'home'
+          game_data = {
+            active_total: game.dig(side, 'totalPoints'),
+            season_year: @year.to_i,
+            week: game['matchupPeriodId'],
+            user_id: user_id_for(game.dig(side, 'teamId')),
+            opponent_id: user_id_for(game.dig(other_side, 'teamId')),
+            opponent_active_total: game.dig(other_side, 'totalPoints'),
+          }
 
-        game_to_create = Game.find_by(
-          week: game['matchupPeriodId'],
-          season_year: @year.to_i,
-          user_id: user_id_for(game.dig(side, 'teamId')),
-          opponent_id: user_id_for(game.dig(other_side, 'teamId'))
-        ) || Game.new
+          game_to_create = Game.find_by(
+            week: game['matchupPeriodId'],
+            season_year: @year.to_i,
+            user_id: user_id_for(game.dig(side, 'teamId')),
+            opponent_id: user_id_for(game.dig(other_side, 'teamId'))
+          ) || Game.new
 
-        game_to_create.update(game_data)
+          game_to_create.update(game_data)
+        end
       end
+    end
+
+    user_results = parsed_response['teams']
+
+    user_results.each do |result|
+      season_data = {
+        user_id: user_id_for(result['id']),
+        regular_rank: result['playoffSeed'],
+        playoff_rank: result['rankCalculatedFinal'],
+        season_year: @year.to_i,
+      }
+
+      user_season = Season.find_by(season_year: @year.to_i, user_id: user_id_for(result['id'])) || Season.new
+      user_season.update(season_data)
     end
   end
 
