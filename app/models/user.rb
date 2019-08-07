@@ -48,6 +48,30 @@ class User < ApplicationRecord
     seasons.detect { |season| season.season_year.to_i == year.to_i }&.playoff_rank&.to_i&.ordinalize
   end
 
+  def total_regular_season_wins
+    seasons.select(&:regular_season_win?).count
+  end
+
+  def total_championship_wins
+    seasons.select(&:championship?).count
+  end
+
+  def championship_seasons
+    seasons.select(&:championship?)
+  end
+
+  def regular_season_win_seasons
+    seasons.select(&:regular_season_win?)
+  end
+
+  def total_playoff_appearances
+    playoff_appearance_seasons.count
+  end
+
+  def playoff_appearance_seasons
+    seasons.select(&:playoff_appearance?)
+  end
+
   def average_regular_season_finish
     season_count = seasons.size
     (seasons.map(&:regular_rank).reduce(:+) / season_count.to_f).round(2)
@@ -56,6 +80,11 @@ class User < ApplicationRecord
   def average_final_finish
     season_count = seasons.size
     (seasons.map(&:playoff_rank).reduce(:+) / season_count.to_f).round(2)
+  end
+
+  def average_points_scored
+    games_played = historical_games.count + (2 * seasons.count) # playoff games are collapsed into one, so adding 2/season
+    (historical_games.map(&:active_total).reduce(:+) / games_played.to_f).round(2)
   end
 
   #

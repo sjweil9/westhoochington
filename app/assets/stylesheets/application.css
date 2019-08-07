@@ -58,6 +58,13 @@ img.contract {
     max-height: 2.5vh;
 }
 
+img.hof {
+    max-height: 25vh;
+    display: block;
+    margin: auto;
+    margin-bottom: 2.5vh;
+}
+
 .profile-title {
   margin-bottom: 5vh;
 }
