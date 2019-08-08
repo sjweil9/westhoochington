@@ -108,7 +108,7 @@
       <form action="<%= propose_bet_path %>" method="post">
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
         <div class="form-group">
-          <label for="terms">Terms</label>
+          <label for="terms">Terms <img class="questionmark" data-toggle="tooltip" title="For example, 'Senghas -2.5 Patch, Week 3'" src="<%= image_path('tooltip.png') %>" /></label>
           <input type="text" class="form-control" id="terms" name="side_bet[terms]" placeholder="What are the terms?">
           <%= render "shared/errors", type: "terms" %>
         </div>

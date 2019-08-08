@@ -34,3 +34,10 @@
     </div>
   </div>
 </nav>
+<% if flash[:banner_error] %>
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger" role="alert"><%= flash[:banner_error] %></div>
+    </div>
+  </div>
+<% end %>

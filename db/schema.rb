@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_08_000507) do
+ActiveRecord::Schema.define(version: 2019_08_08_014351) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -128,7 +128,7 @@ ActiveRecord::Schema.define(version: 2019_08_08_000507) do
     t.datetime "updated_at", null: false
     t.boolean "completed"
     t.string "status"
-    t.decimal "max_takers"
+    t.integer "max_takers"
     t.datetime "closing_date"
     t.boolean "paid"
     t.datetime "completed_date"

@@ -33,7 +33,7 @@ class SideBet < ApplicationRecord
   end
 
   def closed?
-    closing_date && closing_date <= Date.today
+    closing_date && closing_date <= Time.now
   end
 
   def won?
