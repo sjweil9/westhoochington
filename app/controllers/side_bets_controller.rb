@@ -1,10 +1,15 @@
 class SideBetsController < ApplicationController
   def index
+    @starting_date = safe_time(params[:starting_date])&.beginning_of_day || Time.now.utc.beginning_of_year
+    @ending_date = safe_time(params[:ending_date])&.end_of_day || Time.now.utc.end_of_day
     @side_bets =
       SideBet
         .includes(user: { nicknames: :votes }, side_bet_acceptances: { user: { nicknames: :votes } })
         .references(side_bet_acceptances: { user: { nicknames: :votes } })
+        .where(created_at: @starting_date..@ending_date)
         .all
+    @starting_date = @starting_date.to_date
+    @ending_date = @ending_date.to_date
   end
 
   def create
@@ -47,6 +52,12 @@ class SideBetsController < ApplicationController
       user_id: current_user[:id],
       side_bet_id: params[:side_bet_id],
     }
+  end
+
+  def safe_time(date)
+    Time.parse(date)
+  rescue => _e
+    nil
   end
 
   def new_bet_params

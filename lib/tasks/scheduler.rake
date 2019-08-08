@@ -34,13 +34,6 @@ namespace :stats do
   end
 end
 
-namespace :side_bets do
-  desc "Called by Heroku scheduler to close out side bets"
-  task :close => :environment do
-    SideBet.where('closing_date <= ?', Time.now).where(completed: false).update(completed: true, completed_date: Time.now)
-  end
-end
-
 namespace :newsletter do
   desc "Called by Heroku scheduler to send newsletter"
   task :send => :environment do

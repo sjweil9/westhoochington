@@ -1,4 +1,17 @@
 <div class="container-fluid side-bet-container">
+  <form action="<%= side_hustles_path %>" method="get">
+    <div class="row justify-content-center margin-below">
+      <div class="col-xs-12 col-lg-5">
+        <input type="date" class="form-control" id="starting_date" name="starting_date" class="inline" value="<%= @starting_date %>">
+      </div>
+      <div class="col-xs-12 col-lg-5">
+        <input type="date" class="form-control" id="ending_date" name="ending_date" class="inline" value="<%= @ending_date %>">
+      </div>
+      <div class="col-xs-12 col-lg-2 align-self-center">
+        <button type="submit" class="btn btn-primary mb-2">Go</button> <img class="questionmark" data-toggle="tooltip" title="'Created Dates' are in UTC" src="<%= image_path('tooltip.png') %>" />
+      </div>
+    </div>
+  </form>
   <div class="row profile-header">
     <div class="col">
       <h1>Active Side Hustles</h1>
@@ -11,6 +24,7 @@
             <th scope="col">Proposer</th>
             <th scope="col">Taker(s)</th>
             <th scope="col">Max Takers</th>
+            <th scope="col">Created Date</th>
             <th scope="col">Closing Date</th>
             <th scope="col">Action(s)</th>
           </tr>
@@ -27,7 +41,8 @@
                 <% end %>
               </td>
               <td><%= side_bet.max_takers ? side_bet.max_takers.to_i : 'N/A'  %></td>
-              <td><%= side_bet.closing_date&.to_date || 'N/A' %></td>
+              <td><%= side_bet.created_at&.strftime('%m-%d-%Y') %></td>
+              <td><%= side_bet.closing_date&.strftime('%m-%d-%Y') || 'N/A' %></td>
               <td>
                 <% if side_bet.user.id == current_user[:id] %>
                   <a class="btn btn-success" href="<%= complete_side_bet_path(side_bet.id, 'proposer') %>" data-method="patch" role="button">Mark Won</a>
@@ -56,7 +71,8 @@
             <th scope="col">Proposer</th>
             <th scope="col">Taker(s)</th>
             <th scope="col">Won By</th>
-            <th scope="col">Completed On</th>
+            <th scope="col">Created Date</th>
+            <th scope="col">Completed Date</th>
             <th scope="col">Paid Out</th>
           </tr>
           </thead>
@@ -72,6 +88,7 @@
                 <% end %>
               </td>
               <td><%= side_bet.status.humanize %></td>
+              <td><%= side_bet.created_at&.strftime('%m-%d-%Y') %></td>
               <td><%= side_bet.completed_date&.strftime('%m-%d-%Y') %></td>
               <td>
                 <% if side_bet.side_bet_acceptances.none? %>
