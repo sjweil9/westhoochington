@@ -291,7 +291,7 @@
                 <th><%= user.send("total_high_weekly_scores_#{@year}", @games) %></th>
                 <td>
                   <% user.send("games_#{@year}").select { |g| g.weekly_high_score?(@games) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                    <a href="<%= stats_path(year: game.season_year, week: game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if (idx + 1).ordinalize != user.send("total_high_weekly_scores_#{@year}", @games) %>,<% end %>
+                    <a href="<%= stats_path(year: game.season_year, week: game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("total_high_weekly_scores_#{@year}", @games) %>,<% end %>
                   <% end %>
                 </td>
               </tr>
