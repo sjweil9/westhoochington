@@ -21,6 +21,10 @@ class UsersController < ApplicationController
 
   def edit_password
     @user = User.find(params[:user_id])
+    if unauthorized?
+      flash[:banner_error] = "Hey! You aren't authorized to edit this account."
+      return redirect_back(fallback_location: home_path)
+    end
     if user.valid_password?(params[:old_password])
       if params[:password] != params[:password_confirmation]
         flash[:password_confirmation] = 'did not match password'
@@ -38,9 +42,30 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: home_path)
   end
 
+  def edit_settings
+    @user = User.find(params[:user_id])
+    if unauthorized?
+      flash[:banner_error] = "Hey! You aren't authorized to edit this account."
+      return redirect_back(fallback_location: home_path)
+    end
+    @user.update(settings_params)
+
+    redirect_back(fallback_location: home_path)
+  end
+
   private
 
   attr_reader :user
+
+  def unauthorized?
+    @user.id != current_user[:id]
+  end
+
+  def settings_params
+    {
+      newsletter: params[:newsletter] == 'on',
+    }
+  end
 
   def new_user_params
     params.require(:user).permit(:email, :password, :password_confirmation)

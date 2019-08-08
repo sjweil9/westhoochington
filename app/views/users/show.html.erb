@@ -39,7 +39,7 @@
     <% end %>
     </div>
   </div>
-  <div class="row profile-header">
+  <div class="row">
     <div class="col-xs-12 col-md-6">
       <h2><img class="expand" data-toggle="collapse" data-target="#ffbrecord" aria-expanded="true" aria-controls="ffbrecord" src="<%= image_path('expand.png') %>" />
         FFB Record
@@ -77,7 +77,7 @@
       </div>
     </div>
   </div>
-  <div class="row profile-header">
+  <div class="row">
     <div class="col-xs-12 col-md-6">
       <h2><img class="expand" data-toggle="collapse" data-target="#sidebetrecord" aria-expanded="true" aria-controls="sidebetrecord" src="<%= image_path('expand.png') %>" /> Side Hustle Record</h2>
       <div class="collapse" id="sidebetrecord">
@@ -99,12 +99,12 @@
         </form>
       </div>
     <% else %>
-      <h2><img class="expand" data-toggle="collapse" data-target="#changepassword" aria-expanded="true" aria-controls="changepassword" src="<%= image_path('expand.png') %>" /> Change Password</h2>
+      <h2><img class="expand" data-toggle="collapse" data-target="#changepassword" aria-expanded="true" aria-controls="changepassword" src="<%= image_path('expand.png') %>" /> Change Password and Settings</h2>
       <% if flash[:password_success] %>
         <p class="success"><%= flash[:password_success] %></p>
       <% end %>
       <div class="collapse" id="changepassword">
-        <form action="<%= edit_password_path(@user.id) %>" method="post">
+        <form action="<%= edit_password_path(@user.id) %>" method="post" class="margin-below">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
           <input type="hidden" name="_method" value="PUT">
           <div class="form-group">
@@ -124,6 +124,20 @@
           </div>
           <button type="submit" class="btn btn-primary">Update</button>
         </form>
+        <div class="row profile-header">
+          <div class="col">
+            <h4>Settings</h4>
+            <form class="margin-below" action="<%= edit_settings_path(@user.id) %>" method="post">
+              <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+              <input type="hidden" name="_method" value="PUT">
+              <div class="form-check margin-below">
+                <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter" <%= @user.newsletter ? 'checked' : '' %>>
+                <label class="form-check-label" for="newsletter">I would like to receive the Weekly Westhoochington Newsletter</label>
+              </div>
+              <button type="submit" class="btn btn-primary">Confirm Update</button>
+            </form>
+          </div>
+        </div>
       </div>
     <% end %>
     </div>

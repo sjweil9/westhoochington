@@ -43,7 +43,7 @@ namespace :newsletter do
 
     involved_users = Game.where(season_year: year, week: week).map(&:user)
     involved_users.each do |user|
-      UserNotificationsMailer.send_newsletter(user, week, year)
+      UserNotificationsMailer.send_newsletter(user, week, year).deliver if user.newsletter
     end
   end
 end

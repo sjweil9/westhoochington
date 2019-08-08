@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   post '/users', to: 'users#create', as: 'register'
   post '/users/:user_id/nicknames', to: 'nicknames#create', as: 'create_nickname'
   put '/users/:user_id/password', to: 'users#edit_password', as: 'edit_password'
+  put '/users/:user_id/settings', to: 'users#edit_settings', as: 'edit_settings'
 
   post '/sessions', to: 'sessions#create', as: 'login'
 
