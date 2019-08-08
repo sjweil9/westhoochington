@@ -25,6 +25,12 @@ class SideBetsController < ApplicationController
     redirect_to side_hustles_path
   end
 
+  def mark_as_paid
+    acceptance = SideBetAcceptance.find(params[:acceptance_id])
+    acceptance.mark_as_paid!
+    redirect_to side_hustles_path
+  end
+
   private
 
   def accept_bet_params

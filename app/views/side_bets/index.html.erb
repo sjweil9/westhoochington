@@ -57,6 +57,7 @@
             <th scope="col">Taker(s)</th>
             <th scope="col">Won By</th>
             <th scope="col">Completed On</th>
+            <th scope="col">Paid Out</th>
           </tr>
           </thead>
           <tbody>
@@ -71,7 +72,24 @@
                 <% end %>
               </td>
               <td><%= side_bet.status.humanize %></td>
-              <td><%= side_bet.updated_at.strftime('%m-%d-%Y') %></td>
+              <td><%= side_bet.completed_date&.strftime('%m-%d-%Y') %></td>
+              <td>
+                <% if side_bet.side_bet_acceptances.none? %>
+                  N/A
+                <% else %>
+                  <% side_bet.side_bet_acceptances.each do |acceptance| %>
+                    <p>
+                      <% if side_bet.won? && side_bet.user.id == current_user[:id] && !side_bet.paid? %>
+                        <%= side_bet.won? ? 'From' : 'To' %> <%= acceptance.user.random_nickname %> <% if acceptance.paid? %>Yes<% else %><a class="btn btn-primary" href="<%= mark_as_paid_path(acceptance.id) %>" data-method="post" role="button">Mark as Paid</a><% end %>
+                      <% elsif side_bet.lost? && acceptance.user.id == current_user[:id] && !acceptance.paid? %>
+                        <%= side_bet.won? ? 'From' : 'To' %> <%= acceptance.user.random_nickname %> <% if acceptance.paid? %>Yes<% else %><a class="btn btn-primary" href="<%= mark_as_paid_path(acceptance.id) %>" data-method="post" role="button">Mark as Paid</a><% end %>
+                      <% else %>
+                        <%= side_bet.won? ? 'From' : 'To' %> <%= acceptance.user.random_nickname %> - <%= acceptance.paid? ? 'Yes' : 'No' %>
+                      <% end %>
+                    </p>
+                  <% end %>
+                <% end %>
+              </td>
             </tr>
           <% end %>
           </tbody>

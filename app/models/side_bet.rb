@@ -18,6 +18,7 @@ class SideBet < ApplicationRecord
   def process_update(status)
     taker_status = status == 'takers' ? 'won' : 'lost'
     self.completed = true
+    self.completed_date = Time.now
     self.status = status
     side_bet_acceptances.update(status: taker_status)
     save
@@ -35,10 +36,29 @@ class SideBet < ApplicationRecord
     closing_date && closing_date <= Date.today
   end
 
+  def won?
+    status == 'proposer'
+  end
+
+  def lost?
+    status == 'takers'
+  end
+
+  def winners
+    return unless completed?
+
+    status == 'takers' ? side_bet_acceptances.map(&:user) : [user]
+  end
+
+  def check_paid_status!
+    update(paid: true) if side_bet_acceptances.all?(&:paid?)
+  end
+
   private
 
   def set_defaults
     self.completed = false
     self.status = 'pending'
+    self.paid = false
   end
 end
