@@ -308,7 +308,7 @@ class User < ApplicationRecord
   def side_bet_losses
     return @side_bet_losses if @side_bet_losses.present?
 
-    proposed_losses = side_bets.where(status: 'takers', completed: true).count
+    proposed_losses = side_bets.where(status: 'takers', completed: true).all.select { |bet| bet.side_bet_acceptances.any? }.size
     accepted_losses = side_bet_acceptances.where(status: 'lost').count
     @side_bet_losses = proposed_losses + accepted_losses
   end
