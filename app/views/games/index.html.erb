@@ -255,14 +255,16 @@
               <th scope="col">Rank</th>
               <th scope="col">User</th>
               <th scope="col">Record</th>
+              <th scope="col">Win %</th>
             </tr>
             </thead>
             <tbody>
-            <% @users.sort_by { |a| -a.matchup_independent_record(@games).split(' - ').first.to_i }.each_with_index do |user, idx| %>
+            <% @users.sort_by { |a| -a.points_for_mir(a.matchup_independent_record(@games)) }.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
                 <td><%= user.matchup_independent_record(@games) %></td>
+                <td><%= user.points_for_mir(user.matchup_independent_record(@games)) %>%</td>
               </tr>
             <% end %>
             </tbody>

@@ -5,7 +5,7 @@ class GamesController < ApplicationController
     return weekly if @week && @week != 'season'
 
     @week = nil
-    @games = Game.where(season_year: params[:year])
+    @games = Game.includes(game_joins).references(game_joins).where(season_year: params[:year])
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id))
     @playoffs = @games.any?(&:playoff?)
     render :index
@@ -37,6 +37,6 @@ class GamesController < ApplicationController
   end
 
   def game_joins
-    %i[user opponent]
+    [user: { nicknames: :votes }, opponent: { nicknames: :votes }]
   end
 end

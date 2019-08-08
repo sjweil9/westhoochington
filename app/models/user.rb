@@ -49,11 +49,11 @@ class User < ApplicationRecord
   end
 
   def total_regular_season_wins
-    seasons.select(&:regular_season_win?).count
+    seasons.select(&:regular_season_win?).size
   end
 
   def total_championship_wins
-    seasons.select(&:championship?).count
+    seasons.select(&:championship?).size
   end
 
   def championship_seasons
@@ -65,11 +65,19 @@ class User < ApplicationRecord
   end
 
   def total_playoff_appearances
-    playoff_appearance_seasons.count
+    playoff_appearance_seasons.size
   end
 
   def playoff_appearance_seasons
     seasons.select(&:playoff_appearance?)
+  end
+
+  def total_seasons
+    seasons.size
+  end
+
+  def playoff_rate
+    ((playoff_appearance_seasons.size.to_f / total_seasons.to_f) * 100.0).round(2)
   end
 
   def average_regular_season_finish
@@ -83,8 +91,17 @@ class User < ApplicationRecord
   end
 
   def average_points_scored
-    games_played = historical_games.count + (2 * seasons.count) # playoff games are collapsed into one, so adding 2/season
+    games_played = historical_games.size + (2 * seasons.size) # playoff games are collapsed into one, so adding 2/season
     (historical_games.map(&:active_total).reduce(:+) / games_played.to_f).round(2)
+  end
+
+  def average_margin_of_victory
+    games_played = historical_games.size + (2 * seasons.size)
+    (historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
+  end
+
+  def games_from_involved_seasons
+    @games_from_involved_seasons ||= Game.where(season_year: seasons.map(&:season_year)).all
   end
 
   #
@@ -123,11 +140,11 @@ class User < ApplicationRecord
     end
 
     define_method("lucky_wins_#{year}") do
-      send(:"games_#{year}").select(&:lucky?).count
+      send(:"games_#{year}").select(&:lucky?).size
     end
 
     define_method("unlucky_losses_#{year}") do
-      send(:"games_#{year}").select(&:unlucky?).count
+      send(:"games_#{year}").select(&:unlucky?).size
     end
 
     %w[margin_of_victory margin_of_defeat].each do |method|
@@ -209,7 +226,7 @@ class User < ApplicationRecord
       var_name = :"@total_high_weekly_scores_#{year}"
       return instance_variable_get(var_name) if instance_variable_get(var_name)
 
-      instance_variable_set(var_name, (passed_games.select { |pg| pg.user_id == id } || send(:"games_#{year}")).select { |g| g.weekly_high_score?(passed_games) }.count)
+      instance_variable_set(var_name, (passed_games.select { |pg| pg.user_id == id } || send(:"games_#{year}")).select { |g| g.weekly_high_score?(passed_games) }.size)
       instance_variable_get(var_name)
     end
 
@@ -238,9 +255,9 @@ class User < ApplicationRecord
     historical_games.select(&:lost?).size
   end
 
-  def matchup_independent_record(games = nil)
+  def matchup_independent_record(games = nil, season_year = nil)
     @matchup_independent_records ||= {}
-    season_year = games&.first&.week || Date.today.year.to_s
+    season_year ||= games&.first&.week || Date.today.year.to_s
     return @matchup_independent_records[season_year] if @matchup_independent_records[season_year].present?
 
     games ||= Game.where(season_year: season_year)
@@ -271,6 +288,11 @@ class User < ApplicationRecord
     @matchup_independent_records[season_year] = "#{win} - #{loss} - #{tie}"
   end
 
+  def points_for_mir(record_string)
+    win, loss, tie = record_string.split(' - ').map(&:to_f)
+    ((win / (loss + tie + win)) * 100.0).round(2)
+  end
+
   #
   ## side bet methods
   #
@@ -289,6 +311,12 @@ class User < ApplicationRecord
     proposed_losses = side_bets.where(status: 'takers', completed: true).count
     accepted_losses = side_bet_acceptances.where(status: 'lost').count
     @side_bet_losses = proposed_losses + accepted_losses
+  end
+
+  def side_bet_winrate
+    return 0.0 unless side_bet_wins.positive? || side_bet_losses.positive?
+
+    @side_bet_winrate ||= ((side_bet_wins.to_f / (side_bet_losses + side_bet_wins).to_f) * 100.0).round(2)
   end
 
   def pending_side_bets

@@ -79,6 +79,35 @@
       </div>
     </div>
     <div class="col-xs-12 col-lg-6">
+      <h3>Highest Playoff Rate</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Playoffs</th>
+            <th scope="col">Seasons</th>
+            <th scope="col">Playoff Rate</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% rank = 1; sorted = @users.sort_by { |user| -user.playoff_rate }; sorted.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= sorted[[idx - 1, 0].max]&.playoff_rate == sorted[idx]&.playoff_rate ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+              <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+              <th><%= user.total_playoff_appearances %></th>
+              <th><%= user.total_seasons %></th>
+              <th><%= user.playoff_rate %>%</th>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
       <h3>Best Average Finish</h3>
       <div class="table-responsive">
         <table class="table table-striped">
@@ -101,8 +130,6 @@
         </table>
       </div>
     </div>
-  </div>
-  <div class="row">
     <div class="col-xs-12 col-lg-6">
       <h3>Best Average Regular Season Finish</h3>
       <div class="table-responsive">
@@ -126,16 +153,18 @@
         </table>
       </div>
     </div>
+  </div>
+  <div class="row">
     <div class="col-xs-12 col-lg-6">
       <h3>Highest Average Points Scored</h3>
       <div class="table-responsive">
         <table class="table table-striped">
           <thead>
-            <tr>
-              <th scope="col">Rank</th>
-              <th scope="col">User</th>
-              <th scope="col">Average Points</th>
-            </tr>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Average Points</th>
+          </tr>
           </thead>
           <tbody>
           <% rank = 1; sorted = @users.sort_by { |user| -user.average_points_scored }; sorted.each_with_index do |user, idx| %>
@@ -143,6 +172,83 @@
               <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_points_scored == sorted[idx]&.average_points_scored ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
               <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
               <th><%= user.average_points_scored %></th>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-6">
+      <h3>Highest Average Margin of Victory</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Average Margin</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% rank = 1; sorted = @users.sort_by { |user| -user.average_margin_of_victory }; sorted.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_margin_of_victory == sorted[idx]&.average_margin_of_victory ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+              <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+              <th><%= user.average_margin_of_victory %></th>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <h3>Matchup Independent Record</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Record</th>
+              <th scope="col">Win %</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% rank = 1; sorted = @users.sort_by { |user| -user.points_for_mir(user.matchup_independent_record(user.games_from_involved_seasons, 'alltime')) }; sorted.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_points_scored == sorted[idx]&.average_points_scored ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+              <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+              <th><%= user.matchup_independent_record(user.games_from_involved_seasons, 'alltime') %></th>
+              <th><%= user.points_for_mir(user.matchup_independent_record(user.games_from_involved_seasons, 'alltime')) %></th>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-6">
+      <h3>Highest Side Bet Winrate</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Wins</th>
+            <th scope="col">Losses</th>
+            <th scope="col">Win %</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% rank = 1; sorted = @users.sort_by { |user| -user.side_bet_winrate }; sorted.each_with_index do |user, idx| %>
+            <tr>
+              <th scope="row"><%= sorted[[idx - 1, 0].max]&.side_bet_winrate == sorted[idx]&.side_bet_winrate ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+              <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+              <th><%= user.side_bet_wins %></th>
+              <th><%= user.side_bet_losses %></th>
+              <th><%= user.side_bet_winrate %>%</th>
             </tr>
           <% end %>
           </tbody>
