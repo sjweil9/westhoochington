@@ -187,7 +187,7 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def perform_csv
-    csv = '/home/sjweil/Documents/Coding/data_backups/westhoochington/20190727.csv'
+    csv = Rails.root.join('lib', 'assets', 'backup.csv')
     CSV.foreach(csv) do |row|
       season_year, week, user_email, opp_email, active_points, bench_points, projected_points, opp_active_points, opp_bench_points, opp_projected_points = row
       next unless season_year.to_i.to_s == season_year.to_s
