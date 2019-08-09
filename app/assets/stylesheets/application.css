@@ -49,8 +49,8 @@ img.questionmark {
 }
 
 img.expand {
-    max-width: 2.5vh;
-    max-height: 2.5vh;
+    max-width: 5vh;
+    max-height: 5vh;
 }
 
 img.contract {
@@ -94,4 +94,35 @@ ul.horizontal_list > li {
 
 .margin-below {
     margin-bottom: 2.5%;
+}
+
+.main-title {
+    font-size: 32px;
+}
+
+.mobile-margin-below {
+    margin-bottom: 1vh;
+}
+
+button.min-width-button {
+    min-width: 25vw;
+}
+
+@media (min-width: 992px) {
+    .main-title {
+        font-size: 24px;
+    }
+
+    .mobile-margin-below {
+        margin-bottom: 0;
+    }
+
+    button.min-width-button {
+        min-width: 5vw;
+    }
+
+    img.expand {
+        max-width: 2.5vh;
+        max-height: 2.5vh;
+    }
 }
