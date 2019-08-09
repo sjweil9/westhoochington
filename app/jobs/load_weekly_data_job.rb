@@ -193,6 +193,9 @@ class LoadWeeklyDataJob < ApplicationJob
       next unless season_year.to_i.to_s == season_year.to_s
 
       @year = season_year
+      week = 14 if week.to_i == 13 && @year.to_i >= 2018
+      week = 16 if week.to_i == 15 && @year.to_i >= 2018
+
       game_data = {
         active_total: active_points,
         season_year: season_year,
@@ -205,9 +208,6 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_bench_total: opp_bench_points,
         opponent_projected_total: opp_projected_points,
       }
-
-      week = 14 if week.to_i == 13
-      week = 16 if week.to_i == 15
 
       game_to_create = Game.find_by(
         week: week,
