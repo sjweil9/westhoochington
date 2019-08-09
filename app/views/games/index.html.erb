@@ -19,7 +19,7 @@
           <% else %>
             <option selected value="season">Season Stats</option>
           <% end %>
-          <% (1..17).each do |week| %>
+          <% (1..16).each do |week| %>
             <% if week.to_i == @week.to_i %>
               <option selected value="<%= week %>">Week <%= week %></option>
             <% else %>
