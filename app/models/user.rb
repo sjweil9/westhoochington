@@ -234,7 +234,15 @@ class User < ApplicationRecord
       var_name = :"@game_count_#{year}"
       return instance_variable_get(var_name) if instance_variable_get(var_name)
 
-      instance_variable_set(var_name, send(:"games_#{year}").size.to_f)
+      current_week = Time.now.strftime('%U').to_i - 35
+      extra_games = if year.to_i < Date.today.year || current_week >= 16
+                      2.0
+                    elsif year.to_i == Date.today.year && [14, 15].include?(current_week)
+                      1.0
+                    else
+                      0.0
+                    end
+      instance_variable_set(var_name, send(:"games_#{year}").size.to_f + extra_games)
       instance_variable_get(var_name)
     end
 
@@ -242,7 +250,15 @@ class User < ApplicationRecord
       var_name = :"@opponent_game_count_#{year}"
       return instance_variable_get(var_name) if instance_variable_get(var_name)
 
-      instance_variable_set(var_name, send(:"games_#{year}").size.to_f)
+      current_week = Time.now.strftime('%U').to_i - 35
+      extra_games = if year.to_i < Date.today.year || current_week >= 16
+                      2.0
+                    elsif year.to_i == Date.today.year && [14, 15].include?(current_week)
+                      1.0
+                    else
+                      0.0
+                    end
+      instance_variable_set(var_name, send(:"games_#{year}").size.to_f + extra_games)
       instance_variable_get(var_name)
     end
   end
