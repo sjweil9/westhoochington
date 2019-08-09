@@ -206,6 +206,9 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_projected_total: opp_projected_points,
       }
 
+      week = 14 if week.to_i == 13
+      week = 16 if week.to_i == 15
+
       game_to_create = Game.find_by(
         week: week,
         season_year: season_year,
