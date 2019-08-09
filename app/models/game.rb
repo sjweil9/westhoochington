@@ -39,6 +39,7 @@ class Game < ApplicationRecord
   def lucky?
     # won, but would have lost to opponent average score
     return false if lost?
+    return (active_total / 2) < opponent.send("average_active_total_#{season_year}") if playoff?
     
     active_total < opponent.send("average_active_total_#{season_year}")
   end
@@ -46,6 +47,7 @@ class Game < ApplicationRecord
   def unlucky?
     # lost, but would have beaten opponent average score
     return false if won?
+    return (active_total / 2) > opponent.send("average_active_total_#{season_year}") if playoff?
 
     active_total > opponent.send("average_active_total_#{season_year}")
   end
