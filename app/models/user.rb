@@ -14,7 +14,7 @@ class User < ApplicationRecord
   has_many :side_bet_acceptances
   has_many :seasons
 
-  (2015..Date.today.year).each do |year|
+  (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
     has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id
   end
@@ -56,8 +56,24 @@ class User < ApplicationRecord
     seasons.select(&:championship?).size
   end
 
+  def total_second_place_seasons
+    seasons.select(&:second_place?).size
+  end
+
+  def total_sacko_seasons
+    seasons.select(&:sacko?).size
+  end
+
+  def sacko_seasons
+    seasons.select(&:sacko?)
+  end
+
   def championship_seasons
     seasons.select(&:championship?)
+  end
+
+  def second_place_seasons
+    seasons.select(&:second_place?)
   end
 
   def regular_season_win_seasons
@@ -90,13 +106,27 @@ class User < ApplicationRecord
     (seasons.map(&:playoff_rank).reduce(:+) / season_count.to_f).round(2)
   end
 
-  def average_points_scored
-    games_played = historical_games.size + (2 * seasons.size) # playoff games are collapsed into one, so adding 2/season
-    (historical_games.map(&:active_total).reduce(:+) / games_played.to_f).round(2)
+  def average_points_scored(platform = nil)
+    @average_points_scored ||= {}
+    return @average_points_scored[platform] if @average_points_scored[platform]
+
+    games_played = if platform
+                     historical_games.select(&:"#{platform}?").size + (2 * seasons.select(&:"#{platform}?").select(&:two_game_playoff?).size)
+                   else
+                     # playoff games are collapsed into one, so adding 2/season
+                     historical_games.size + (2 * seasons.select(&:two_game_playoff?).size)
+                   end
+    points_total = if platform
+                     historical_games.select(&:"#{platform}?").map(&:active_total).reduce(:+)
+                   else
+                     historical_games.map(&:active_total).reduce(:+)
+                   end
+    @average_points_scored[platform] = 0 if !points_total || !games_played
+    @average_points_scored[platform] ||= (points_total / games_played.to_f).round(2)
   end
 
   def average_margin_of_victory
-    games_played = historical_games.size + (2 * seasons.size)
+    games_played = historical_games.size + (2 * seasons.select(&:two_game_playoff?).size)
     (historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
   end
 
@@ -108,7 +138,7 @@ class User < ApplicationRecord
   # stat related methods
   #
 
-  (2015..Date.today.year).each do |year|
+  (2012..Date.today.year).each do |year|
     %w[active_total bench_total projected_total opponent_active_total].each do |method|
       define_method(:"yearly_#{method}_#{year}") do
         send(:"games_#{year}").map(&:"#{method}").reduce(:+).to_f.round(2)
@@ -333,6 +363,10 @@ class User < ApplicationRecord
     return 0.0 unless side_bet_wins.positive? || side_bet_losses.positive?
 
     @side_bet_winrate ||= ((side_bet_wins.to_f / (side_bet_losses + side_bet_wins).to_f) * 100.0).round(2)
+  end
+
+  def side_bets_proposed
+    @side_bets_proposed ||= side_bets.size
   end
 
   def pending_side_bets

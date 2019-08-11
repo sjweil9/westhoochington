@@ -11,6 +11,16 @@ namespace :stats do
     puts "Completed weekly data load."
   end
 
+  desc "Load on demand from Yahoo archives"
+  task :load_yahoo_data => :environment do
+    LoadWeeklyDataJob.new.perform_csv(yahoo: true)
+  end
+
+  desc "Load on demand seasons data from yahoo"
+  task :load_yahoo_seasons => :environment do
+    LoadWeeklyDataJob.new.perform_yahoo_seasons
+  end
+
   desc "This task would be run on demand"
   task :load_backlog_data => :environment do
     current_year = Time.now.year

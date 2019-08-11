@@ -7,7 +7,7 @@
       <div class="col">
         <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
           <option selected value="<%= @year %>"><%= @year %></option>
-          <% ((2015..Date.today.year).to_a - [@year.to_i]).each do |year| %>
+          <% ((2012..Date.today.year).to_a - [@year.to_i]).each do |year| %>
             <option value="<%= year %>"><%= year %></option>
           <% end %>
         </select>

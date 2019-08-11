@@ -104,6 +104,10 @@ ul.horizontal_list > li {
     margin-bottom: 1vh;
 }
 
+h1.line-below {
+    border-bottom: 1vh black;
+}
+
 button.min-width-button {
     min-width: 25vw;
 }

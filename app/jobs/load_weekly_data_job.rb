@@ -186,8 +186,8 @@ class LoadWeeklyDataJob < ApplicationJob
     end
   end
 
-  def perform_csv
-    csv = Rails.root.join('lib', 'assets', 'backup.csv')
+  def perform_csv(yahoo: false)
+    csv = Rails.root.join('lib', 'assets', yahoo ? 'yahoo.csv' : 'backup.csv')
     CSV.foreach(csv) do |row|
       season_year, week, user_email, opp_email, active_points, bench_points, projected_points, opp_active_points, opp_bench_points, opp_projected_points = row
       next unless season_year.to_i.to_s == season_year.to_s
@@ -230,6 +230,24 @@ class LoadWeeklyDataJob < ApplicationJob
       game_to_create ||= Game.new
 
       game_to_create.update(game_data)
+    end
+  end
+
+  def perform_yahoo_seasons
+    csv = Rails.root.join('lib', 'assets', 'yahoo_seasons.csv')
+    CSV.foreach(csv) do |row|
+      year, user, playoff_rank, regular_rank = row
+      next unless year.to_i.to_s == year.to_s
+
+      @year = year
+      season = Season.find_by(user_id: user_by_email(user), season_year: year) || Season.new
+      season_data = {
+        season_year: year,
+        user_id: user_by_email(user),
+        playoff_rank: playoff_rank,
+        regular_rank: regular_rank,
+      }
+      season.update(season_data)
     end
   end
 

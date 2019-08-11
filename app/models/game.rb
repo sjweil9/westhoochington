@@ -31,15 +31,24 @@ class Game < ApplicationRecord
   end
 
   def playoff?
+    return week > 14 if season_year < 2015
     return week >= 14 if season_year < 2018
 
     week >= 13
   end
 
+  def espn?
+    season_year >= 2015
+  end
+
+  def yahoo?
+    season_year < 2015
+  end
+
   def lucky?
     # won, but would have lost to opponent average score
     return false if lost?
-    return (active_total / 2) < opponent.send("average_active_total_#{season_year}") if playoff?
+    return (active_total / 2) < opponent.send("average_active_total_#{season_year}") if playoff? && season_year >= 2015
     
     active_total < opponent.send("average_active_total_#{season_year}")
   end
@@ -47,7 +56,7 @@ class Game < ApplicationRecord
   def unlucky?
     # lost, but would have beaten opponent average score
     return false if won?
-    return (active_total / 2) > opponent.send("average_active_total_#{season_year}") if playoff?
+    return (active_total / 2) > opponent.send("average_active_total_#{season_year}") if playoff? && season_year >= 2015
 
     active_total > opponent.send("average_active_total_#{season_year}")
   end

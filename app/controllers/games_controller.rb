@@ -8,6 +8,7 @@ class GamesController < ApplicationController
     @games = Game.includes(game_joins).references(game_joins).where(season_year: params[:year])
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id))
     @playoffs = @games.any?(&:playoff?)
+    @completed = Season.find_by(season_year: @year)&.completed?
     render :index
   end
 
@@ -33,7 +34,7 @@ class GamesController < ApplicationController
   end
 
   def user_joins
-    [:"games_#{@year}", :"opponent_games_#{@year}", nicknames: :votes]
+    [:"games_#{@year}", :"opponent_games_#{@year}", :seasons, nicknames: :votes]
   end
 
   def game_joins

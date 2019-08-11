@@ -3,7 +3,7 @@
     <div class="row justify-content-center margin-below">
       <div class="col-xs-3 col-lg-2 mobile-margin-below">
         <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="year">
-          <% (2015..Date.today.year).reverse_each do |year| %>
+          <% (2012..Date.today.year).reverse_each do |year| %>
             <% if year.to_i == @year.to_i %>
               <option selected value="<%= year %>"><%= year %></option>
             <% else %>
@@ -172,10 +172,10 @@
       <% end %>
     </div>
   <% else %>
-    <% if @playoffs %>
+    <% if @completed %>
       <div class="row">
         <div class="col-xs-12 col-lg-6">
-          <h3>Playoff Standings</h3>
+          <h3>Final Standings</h3>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
@@ -187,37 +187,12 @@
               </tr>
               </thead>
               <tbody>
-              <% @users.sort_by { |a| [-a.send("playoff_wins_#{@year}"), -a.send("playoff_yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
+              <% @users.sort_by { |a| a.seasons.detect(&:"#{@year}?").playoff_rank }.each_with_index do |user, idx| %>
                 <tr>
                   <th scope="row"><%= (idx + 1).ordinalize %></th>
                   <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                  <th><%= user.send("playoff_wins_#{@year}") %> - <%= user.send("playoff_losses_#{@year}") %></th>
-                  <td><%= user.send("playoff_yearly_active_total_#{@year}") %></td>
-                </tr>
-              <% end %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="col-xs-12 col-lg-6">
-          <h3>Regular Season Standings</h3>
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-              <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">User</th>
-                <th scope="col">Record</th>
-                <th scope="col">Points</th>
-              </tr>
-              </thead>
-              <tbody>
-              <% @users.sort_by { |a| [-a.send("regular_wins_#{@year}"), -a.send("regular_yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
-                <tr>
-                  <th scope="row"><%= (idx + 1).ordinalize %></th>
-                  <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                  <th><%= user.send("regular_wins_#{@year}") %> - <%= user.send("regular_losses_#{@year}") %></th>
-                  <td><%= user.send("regular_yearly_active_total_#{@year}") %></td>
+                  <th><%= user.send("wins_#{@year}") %> - <%= user.send("losses_#{@year}") %></th>
+                  <td><%= user.send("yearly_active_total_#{@year}") %></td>
                 </tr>
               <% end %>
               </tbody>
@@ -228,7 +203,7 @@
     <% end %>
     <div class="row">
       <div class="col-xs-12 col-lg-6">
-        <h3>Overall Standings</h3>
+        <h3>Regular Season Standings</h3>
         <div class="table-responsive">
           <table class="table table-striped">
             <thead>
@@ -240,12 +215,12 @@
             </tr>
             </thead>
             <tbody>
-            <% @users.sort_by { |a| [-a.send("wins_#{@year}"), -a.send("yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
+            <% @users.sort_by { |a| [-a.send("regular_wins_#{@year}"), -a.send("regular_yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                <th><%= user.send("wins_#{@year}") %> - <%= user.send("losses_#{@year}") %></th>
-                <td><%= user.send("yearly_active_total_#{@year}") %></td>
+                <th><%= user.send("regular_wins_#{@year}") %> - <%= user.send("regular_losses_#{@year}") %></th>
+                <td><%= user.send("regular_yearly_active_total_#{@year}") %></td>
               </tr>
             <% end %>
             </tbody>
@@ -292,14 +267,14 @@
             </tr>
             </thead>
             <tbody>
-            <% @users.sort_by { |a| -a.send("total_high_weekly_scores_#{@year}", @games) }.each_with_index do |user, idx| %>
+            <% @users.sort_by { |a| -a.send("total_high_weekly_scores_#{@year}", @games.reject(&:playoff?)) }.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                <th><%= user.send("total_high_weekly_scores_#{@year}", @games) %></th>
+                <th><%= user.send("total_high_weekly_scores_#{@year}") %></th>
                 <td>
-                  <% user.send("games_#{@year}").select { |g| g.weekly_high_score?(@games) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                    <a href="<%= stats_path(year: game.season_year, week: game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("total_high_weekly_scores_#{@year}", @games) %>,<% end %>
+                  <% user.send("games_#{@year}").reject(&:playoff?).select { |g| g.weekly_high_score?(@games.reject(&:playoff?)) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
+                    <a href="<%= stats_path(year: game.season_year, week: game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("total_high_weekly_scores_#{@year}") %>,<% end %>
                   <% end %>
                 </td>
               </tr>
