@@ -38,9 +38,7 @@ div#overlay {
   position: relative;
   z-index: 1;
 }
-  form button:hover, form button:active, form button:focus {
-      background: #43A047;
-  }
+
   #login input, #register input, #reset input {
       width: 80%;
       margin: 1em auto;
@@ -65,4 +63,52 @@ div#overlay {
 }
 #register {
   display: none;
+}
+
+div#overlay {
+    width: 100%;
+    margin: 0 auto;
+    background: rgb(40, 40, 40);
+    opacity: 0.9;
+    padding: 1.5em;
+    text-align: center;
+    color: white;
+    box-shadow: 1.5em 1.5em 1.5em black;
+    border-radius: 1.5em;
+    z-index: 1;
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+
+.mobile-max-width {
+    width: 80%;
+    min-width: 80%;
+    margin-bottom: 2.5vh;
+}
+
+@media (min-width: 992px) {
+    div#overlay {
+        width: 50%;
+        margin: 0 auto;
+        background: rgb(40, 40, 40);
+        opacity: 0.9;
+        padding: 1.5em;
+        text-align: center;
+        color: white;
+        box-shadow: 1.5em 1.5em 1.5em black;
+        border-radius: 1.5em;
+        z-index: 1;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .mobile-max-width {
+        width: 60%;
+        margin-bottom: 2.5vh;
+        min-width: 60%;
+    }
 }

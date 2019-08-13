@@ -11,37 +11,45 @@
 
 <div class="welcome">
     <div id="overlay">
-        <form action="<%= register_path %>" id="register" method="post">
+        <form action="<%= register_path %>" id="register" method="post" class="mobile-max-width">
             <h1>Haven't registered yet, you lazy fuck?</h1>
             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-            <input type="email" name="user[email]" placeholder="Email Address">
-            <%= render "shared/errors", type: "email" %>
-            <input type="password" name="user[password]" placeholder="Password">
-            <%= render "shared/errors", type: "password" %>
-            <p class="error">*It's gonna complain if yours is shitty</p>
-            <input type="password" name="user[password_confirmation]" placeholder="Confirm Password">
-            <%= render "shared/errors", type: "password_confirmation" %>
-            <button type="submit">Register</button>
+            <div class="form-group">
+              <input type="email" class="form-control" name="user[email]" placeholder="Email Address">
+              <%= render "shared/errors", type: "email" %>
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" name="user[password]" placeholder="Password">
+              <%= render "shared/errors", type: "password" %>
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" name="user[password_confirmation]" placeholder="Confirm Password">
+              <%= render "shared/errors", type: "password_confirmation" %>
+            </div>
 
-            <p><a href="#" class="flip">Done this already? Click here</a></p>
+            <button type="submit" class="btn btn-primary mobile-max-width">Register</button>
+
+            <a href="#" class="flip btn btn-primary mobile-max-width">Sign In?</a>
         </form>
 
-        <form action="<%= user_session_path %>" id="login" method="post">
+        <form action="<%= user_session_path %>" id="login" method="post" class="mobile-max-width">
             <h1>Which one of you assholes is this?</h1>
             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-            <input type="email" name="user[email]" placeholder="Email Address">
-            <input type="password" name="user[password]" placeholder="Password">
-            <% if flash[:alert] %>
+            <div class="form-group">
+              <input type="email" class="form-control" name="user[email]" placeholder="Email Address">
+            </div>
+            <div class="form-group">
+              <input type="password" class="form-control" name="user[password]" placeholder="Password">
+              <% if flash[:alert] %>
                 <%= render "shared/errors", type: "alert" %>
-            <% end %>
-            <button type="submit">Login</button>
-            <p>
+              <% end %>
+            </div>
+            <button type="submit" class="btn btn-primary mobile-max-width">Login</button>
               <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-                <%= link_to "Forgot your password?", new_password_path(resource_name) %><br />
+                <%= link_to "Forgot your password?", new_password_path(resource_name), class: 'btn btn-primary mobile-max-width' %><br />
               <% end -%>
-            </p>
 
-            <p><a href="#" class="flip">Haven't registered yet? Click here to sign up</a></p>
+            <a href="#" class="flip btn btn-primary mobile-max-width">Need to register?</a>
         </form>
     </div>
 </div>
