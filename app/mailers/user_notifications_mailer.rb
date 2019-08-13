@@ -17,6 +17,7 @@ class UserNotificationsMailer < ApplicationMailer
     @outprojector = @users.sort_by { |a| -a.send("points_above_projection_for_week_#{@year}", @week) }.first
     @narrowest = @games.sort_by { |a| a.margin.abs }.first
     @largest = @games.sort_by { |a| -a.margin.abs }.first
+    @high_score = @games.detect { |game| game.weekly_high_score?(@games) }
     mail(to: @user.email, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
 
