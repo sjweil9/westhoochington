@@ -33,6 +33,7 @@ gem "railties", ">= 5.2.2.1"
 gem "actionview", ">= 5.2.2.1"
 gem "rack", ">= 2.0.6"
 gem "loofah", ">= 2.2.3"
+gem 'aws-sdk', '~> 2'
 
 gem 'jquery-rails'
 gem 'bootstrap', '>= 4.3.1'

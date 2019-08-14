@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_08_131858) do
+ActiveRecord::Schema.define(version: 2019_08_14_031850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,6 +99,16 @@ ActiveRecord::Schema.define(version: 2019_08_08_131858) do
     t.index ["user_id"], name: "index_over_unders_on_user_id"
   end
 
+  create_table "podcasts", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "week"
+    t.integer "year"
+    t.text "file_path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_podcasts_on_user_id"
+  end
+
   create_table "seasons", force: :cascade do |t|
     t.bigint "user_id"
     t.decimal "playoff_rank"
@@ -160,6 +170,7 @@ ActiveRecord::Schema.define(version: 2019_08_08_131858) do
   add_foreign_key "over_under_bets", "lines"
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
+  add_foreign_key "podcasts", "users"
   add_foreign_key "seasons", "users"
   add_foreign_key "side_bet_acceptances", "side_bets"
   add_foreign_key "side_bet_acceptances", "users"

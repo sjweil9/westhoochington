@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   get '/hall-of-fame', to: 'seasons#index', as: 'hall_of_fame'
 
   get '/podcasts', to: 'podcasts#index', as: 'podcasts'
+  post '/podcasts', to: 'podcasts#create', as: 'upload_podcast'
 
   post '/nicknames/:nickname_id/upvote', to: 'nicknames#upvote', as: 'nickname_upvote'
   post '/nicknames/:nickname_id/downvote', to: 'nicknames#downvote', as: 'nickname_downvote'

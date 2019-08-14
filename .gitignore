@@ -26,6 +26,7 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 sendgrid.env
+.env
 .todos
 .initial_pws
 .todos_list_id

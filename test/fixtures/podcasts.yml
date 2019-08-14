@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  week: 1
+  year: 1
+  file_path: MyText
+
+two:
+  user: two
+  week: 1
+  year: 1
+  file_path: MyText
