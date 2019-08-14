@@ -6,7 +6,7 @@
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
         <div class="form-group">
           <label for="terms">Select Podcast</label>
-          <input type="file" class="form-control" id="podcast" name="podcast">
+          <input type="file" class="form-control" id="podcast" name="file_path">
           <%= render "shared/errors", type: "podcast" %>
         </div>
         <div class="form-group">
