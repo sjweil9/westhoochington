@@ -8,9 +8,14 @@ class PodcastsController < ApplicationController
     redirect_to podcasts_path
   end
 
+  def index
+    @podcasts = Podcast.all.sort_by(&:week)
+    @years = @podcasts.map(&:year).uniq
+  end
+
   private
 
   def new_podcast_params
-    params.permit(:week, :year, :file_path).merge(user_id: current_user[:id])
+    params.permit(:week, :year, :file_path, :title).merge(user_id: current_user[:id])
   end
 end

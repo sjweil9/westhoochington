@@ -96,6 +96,10 @@ ul.horizontal_list > li {
     margin-bottom: 2.5%;
 }
 
+.margin-above {
+    margin-top: 2.5%;
+}
+
 .main-title {
     font-size: 32px;
 }

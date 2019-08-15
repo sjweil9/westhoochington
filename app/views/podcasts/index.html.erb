@@ -1,26 +1,81 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-10">
-      <h3>WHIFFB Podcasts</h3>
-      <form action="<%= upload_podcast_path %>" method="post" enctype="multipart/form-data" class="directUpload" data-form-data="<%= @s3_direct_post.fields.to_json %>" data-url="<%= @s3_direct_post.url %>" data-host="<%= URI.parse(@s3_direct_post.url).host %>">
-        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-        <div class="form-group">
-          <label for="terms">Select Podcast</label>
-          <input type="file" class="form-control" id="podcast" name="file_path">
-          <%= render "shared/errors", type: "podcast" %>
+    <div class="col">
+      <h1>WHIFFB Podcasts</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <% @years.each do |year| %>
+        <h2><img class="expand" data-toggle="collapse" data-target="#<%= 'podcasts' + year.to_s %>" aria-expanded="true" aria-controls="<%= 'podcasts' + year.to_s %>" src="<%= image_path('collapse.png') %>" />
+          <%= year.to_s %> Pods
+        </h2>
+        <div class="collapse show table-responsive" id="<%= 'podcasts' + year.to_s %>">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Week</th>
+              <th scope="col">Title</th>
+              <th scope="col">Uploaded At</th>
+              <th scope="col">Uploaded By</th>
+              <th scope="col">Download</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @podcasts.select(&:"#{year}?").each do |podcast| %>
+              <tr>
+                <td><%= podcast.week %></td>
+                <td><%= podcast.title %></td>
+                <td><%= podcast.created_at.strftime('%m-%d-%Y') %></td>
+                <td><a href="<%= user_profile_path(podcast.user.id) %>"><%= podcast.user.random_nickname %></a></td>
+                <td><a href="<%= podcast.download_url %>" class="btn btn-primary">Download</a></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
         </div>
-        <div class="form-group">
-          <label for="amount">Year</label>
-          <input type="text" class="form-control" id="year" name="year">
-          <%= render "shared/errors", type: "year" %>
-        </div>
-        <div class="form-group">
-          <label for="terms">Week</label>
-          <input type="text" class="form-control" id="week" name="week">
-          <%= render "shared/errors", type: "week" %>
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
+      <% end %>
+    </div>
+  </div>
+  <div class="row margin-above">
+    <div class="col">
+      <h2><img class="expand" data-toggle="collapse" data-target="#upload-form" aria-expanded="true" aria-controls="upload-form" src="<%= image_path('collapse.png') %>" /> Upload New Podcast</h2>
+      <div class="collapse show" id="upload-form">
+        <form action="<%= upload_podcast_path %>" method="post" enctype="multipart/form-data" class="directUpload" data-form-data="<%= @s3_direct_post.fields.to_json %>" data-url="<%= @s3_direct_post.url %>" data-host="<%= URI.parse(@s3_direct_post.url).host %>">
+          <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+          <div class="form-group">
+            <label for="terms">Select Podcast</label>
+            <input type="file" class="form-control" id="podcast" name="file_path">
+            <%= render "shared/errors", type: "podcast" %>
+          </div>
+          <div class="form-group">
+            <label for="amount">Year</label>
+            <select class="form-control" id="year" name="year">
+              <% (2015..Date.today.year).each do |year| %>
+                <option value="<%= year.to_i %>"><%= year.to_s %></option>
+              <% end %>
+            </select>
+            <%= render "shared/errors", type: "year" %>
+          </div>
+          <div class="form-group">
+            <label for="terms">Week</label>
+            <select class="form-control" id="week" name="week">
+              <option value="0">Pre-Season</option>
+              <% (1..17).each do |week| %>
+                <option value="<%= week %>"><%= week.to_s %></option>
+              <% end %>
+              <option value="20">Post-Season</option>
+            </select>
+            <%= render "shared/errors", type: "week" %>
+          </div>
+          <div class="form-group">
+            <label for="amount">Title</label>
+            <input type="text" class="form-control" id="title" name="title">
+            <%= render "shared/errors", type: "title" %>
+          </div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
