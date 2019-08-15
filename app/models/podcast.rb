@@ -6,8 +6,8 @@ class Podcast < ApplicationRecord
   validates :title, length: { in: 1..50, message: 'Keep it between 1-50 characters you greedy fuck.' }
   validates :file_path, presence: true
 
-  (2015..Date.today.year).each do |year|
-    define_method("#{year}?") { year.to_i == year.to_i }
+  (2015..Date.today.year).each do |yr|
+    define_method("#{yr}?") { year.to_i == yr.to_i }
   end
 
   def download_url
