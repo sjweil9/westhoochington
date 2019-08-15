@@ -9,7 +9,7 @@ class PodcastsController < ApplicationController
   end
 
   def index
-    @podcasts = Podcast.all.sort_by(&:week)
+    @podcasts = Podcast.includes(user: :nicknames).references(user: :nicknames).all.sort_by(&:week)
     @years = @podcasts.map(&:year).uniq
   end
 
