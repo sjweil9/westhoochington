@@ -7,7 +7,6 @@ $(function() {
         var progressBar  = $("<div class='bar'></div>");
         var barContainer = $("<div class='progress'></div>").append(progressBar);
         fileInput.after(barContainer);
-        console.log(form.data('form-data'));
         fileInput.fileupload({
             fileInput:       fileInput,
             url:             form.data('url'),
