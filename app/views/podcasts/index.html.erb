@@ -51,7 +51,7 @@
           <div class="form-group">
             <label for="amount">Year</label>
             <select class="form-control" id="year" name="year">
-              <% (2015..Date.today.year).each do |year| %>
+              <% (2017..Date.today.year).each do |year| %>
                 <option value="<%= year.to_i %>"><%= year.to_s %></option>
               <% end %>
             </select>
