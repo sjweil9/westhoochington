@@ -4,39 +4,39 @@
       <h1>WHIFFB Podcasts</h1>
     </div>
   </div>
-      <% @years.each do |year| %>
-        <div class="row">
-          <div class="col">
-            <h2><img class="expand" data-toggle="collapse" data-target="#<%= 'podcasts' + year.to_s %>" aria-expanded="true" aria-controls="<%= 'podcasts' + year.to_s %>" src="<%= image_path('collapse.png') %>" />
-              <%= year.to_s %> Pods
-            </h2>
-            <div class="collapse show table-responsive" id="<%= 'podcasts' + year.to_s %>">
-              <table class="table table-striped">
-                <thead>
-                <tr>
-                  <th scope="col">Week</th>
-                  <th scope="col">Title</th>
-                  <th scope="col">Uploaded At</th>
-                  <th scope="col">Uploaded By</th>
-                  <th scope="col">Download</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% @podcasts.select(&:"#{year}?").each do |podcast| %>
-                  <tr>
-                    <td><%= podcast.week %></td>
-                    <td><%= podcast.title %></td>
-                    <td><%= podcast.created_at.strftime('%m-%d-%Y') %></td>
-                    <td><a href="<%= user_profile_path(podcast.user.id) %>"><%= podcast.user.random_nickname %></a></td>
-                    <td><a href="<%= podcast.download_url %>" class="btn btn-primary">Download</a></td>
-                  </tr>
-                <% end %>
-                </tbody>
-              </table>
-            </div>
-          </div>
+  <% @years.each do |year| %>
+    <div class="row">
+      <div class="col">
+        <h2><img class="expand" data-toggle="collapse" data-target="#<%= 'podcasts' + year.to_s %>" aria-expanded="true" aria-controls="<%= 'podcasts' + year.to_s %>" src="<%= image_path('collapse.png') %>" />
+          <%= year.to_s %> Pods
+        </h2>
+        <div class="collapse show table-responsive" id="<%= 'podcasts' + year.to_s %>">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col" style="width:10%">Week</th>
+                <th scope="col" style="width:30%">Title</th>
+                <th scope="col" style="width:20%">Uploaded At</th>
+                <th scope="col" style="width:20%">Uploaded By</th>
+                <th scope="col" style="width:20%">Download</th>
+              </tr>
+            </thead>
+            <tbody>
+            <% @podcasts.select(&:"#{year}?").each do |podcast| %>
+              <tr>
+                <td><%= podcast.week %></td>
+                <td><%= podcast.title %></td>
+                <td><%= podcast.created_at.strftime('%m-%d-%Y') %></td>
+                <td><a href="<%= user_profile_path(podcast.user.id) %>"><%= podcast.user.random_nickname %></a></td>
+                <td><a href="<%= podcast.download_url %>" class="btn btn-primary">Download</a></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
         </div>
-      <% end %>
+      </div>
+    </div>
+  <% end %>
   <div class="row margin-above">
     <div class="col">
       <h2><img class="expand" data-toggle="collapse" data-target="#upload-form" aria-expanded="true" aria-controls="upload-form" src="<%= image_path('collapse.png') %>" /> Upload New Podcast</h2>
