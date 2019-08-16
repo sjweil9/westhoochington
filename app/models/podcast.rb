@@ -10,8 +10,8 @@ class Podcast < ApplicationRecord
     define_method("#{yr}?") { year.to_i == yr.to_i }
   end
 
-  def download_url
+  def download_url(expiration = 900)
     object = S3_BUCKET.object(file_path.scan(/uploads*.+/).first)
-    object.exists? ? object.presigned_url(:get).to_s : nil
+    object&.exists? ? object.presigned_url(:get, expires_in: expiration).to_s : nil
   end
 end

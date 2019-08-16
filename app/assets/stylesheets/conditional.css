@@ -1,0 +1,7 @@
+.control:checked ~ .conditional {
+    display: block;
+}
+
+.control:not(:checked) ~ .conditional {
+    display: none;
+}

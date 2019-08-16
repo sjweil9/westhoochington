@@ -21,6 +21,13 @@ class UserNotificationsMailer < ApplicationMailer
     mail(to: @user.email, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
 
+  def send_podcast_blast(subject, body, podcast_link)
+    users = User.where(podcast_flag: true).all
+    @body = body
+    @url = podcast_link
+    mail(to: users.map(&:email), subject: subject)
+  end
+
   private
 
   def game_joins
