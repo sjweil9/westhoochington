@@ -134,6 +134,10 @@
                 <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter" <%= @user.newsletter ? 'checked' : '' %>>
                 <label class="form-check-label" for="newsletter">I would like to receive the Weekly Westhoochington Newsletter</label>
               </div>
+              <div class="form-check margin-below">
+                <input type="checkbox" class="form-check-input" id="podcast_flag" name="podcast_flag" <%= @user.podcast_flag ? 'checked' : '' %>>
+                <label class="form-check-label" for="podcast_flag">I would like to receive WHIFFBP Email Blasts</label>
+              </div>
               <button type="submit" class="btn btn-primary">Confirm Update</button>
             </form>
           </div>

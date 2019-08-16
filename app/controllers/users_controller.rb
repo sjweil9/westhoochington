@@ -64,6 +64,7 @@ class UsersController < ApplicationController
   def settings_params
     {
       newsletter: params[:newsletter] == 'on',
+      podcast_flag: params[:podcast_flag] == 'on'
     }
   end
 
