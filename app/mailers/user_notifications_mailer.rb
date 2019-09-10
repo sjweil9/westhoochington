@@ -7,8 +7,7 @@ class UserNotificationsMailer < ApplicationMailer
     :subject => 'Welcome to Westhoochington.com, you cuck bastard.' )
   end
 
-  def send_newsletter(user, week, year)
-    @user = user
+  def send_newsletter(emails, week, year)
     @year = year
     @week = week
     @games = Game.includes(game_joins).references(game_joins).where(week: @week, season_year: @year).all
@@ -18,7 +17,7 @@ class UserNotificationsMailer < ApplicationMailer
     @narrowest = @games.sort_by { |a| a.margin.abs }.first
     @largest = @games.sort_by { |a| -a.margin.abs }.first
     @high_score = @games.detect { |game| game.weekly_high_score?(@games) }
-    mail(to: @user.email, subject: "Weekly Westhoochington - #{year} ##{week}")
+    mail(to: emails, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
 
   def send_podcast_blast(subject, body, podcast_link)
