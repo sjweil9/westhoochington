@@ -73,7 +73,7 @@ class LoadWeeklyDataJob < ApplicationJob
       '8': 'stephen.weil@gmail.com',
       '9': 'captrf@gmail.com',
       '10': 'seidmangar@gmail.com',
-      '12': 'sccrrckstr@gmail.com'
+      '11': 'sccrrckstr@gmail.com'
     }
   }.with_indifferent_access
 
