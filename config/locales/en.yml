@@ -31,3 +31,23 @@
 
 en:
   hello: "Hello world"
+  newsletter:
+    high_score:
+      very_high:
+        dominant: "%{nickname} put up a dominant performance this week, posting %{score} points."
+        hot_damn: "Hot damn boys! %{nickname} just put on a show to the tune of %{score} points."
+      high:
+        solid_week: "It would be fair to say it was a solid week for %{nickname}, who took the high score with an impressive %{score} points."
+      medium:
+        not_flash: "You don't always need to put up flashy 150+ games to take home the big $20 prize, as %{nickname} and his %{score} points will attest."
+        richer: "%{nickname} is now $20 richer after putting up %{score} points."
+      low:
+        pathetic: "It's honestly pathetic that %{nickname} was able to take $20 off only %{score} points. Everyone else should feel ashamed."
+    narrowest:
+      very_narrow:
+        nail_biter: "Quite the nail-biter this week, with %{winner} scraping by %{loser} by only %{margin} points."
+      medium:
+        mild_cucking: "%{winner} gave %{loser} a mild cucking this week, squeezing out a %{margin} point victory."
+        taint_tickler: "%{winner} got his taint tickled real good by %{loser} this week, but held on for the sweet %{margin} victory."
+      not_narrow:
+        loose_gooch: "Not the tightest gooch this week as %{winner} defeated %{loser} by a comfortable margin of %{margin} points."

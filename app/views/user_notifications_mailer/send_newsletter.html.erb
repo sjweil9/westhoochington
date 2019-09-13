@@ -6,17 +6,9 @@
 <body>
 <h1>Weekly Westhoochington - <%= @year %> #<%= @week %></h1>
 <h3>High Score</h3>
-<p><%= @high_score.winner.random_nickname %> is now $20 richer after putting up <%= @high_score.active_total %> points.</p>
+<p><%= @high_score_message %></p>
 <h3>Narrowest Cucking of the Week</h3>
-<p>
-  <% if @narrowest.margin.abs < 5 %>
-    Quite the nail-biter this week with <a href="<%= user_profile_url(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> scraping by <a href="<%= user_profile_url(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> by only <%= @narrowest.margin.abs %> points.
-  <% elsif @narrowest.margin.abs < 10 %>
-    <a href="<%= user_profile_url(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> gave <a href="<%= user_profile_url(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> a mild cucking this week, squeezing out a <%= @narrowest.margin.abs %> point victory.
-  <% else %>
-    Not the tightest gooch this week as <a href="<%= user_profile_url(@narrowest.winner.id) %>"><%= @narrowest.winner.random_nickname %></a> defeated <a href="<%= user_profile_url(@narrowest.loser.id) %>"><%= @narrowest.loser.random_nickname %></a> by a comfortable margin of <%= @narrowest.margin.abs %> points.
-  <% end %>
-</p>
+<p><%= @narrowest_cucking_message %></p>
 <h3>Biggest T-Bagging of the Week</h3>
 <p>
   <% if @largest.margin.abs > 50 %>
