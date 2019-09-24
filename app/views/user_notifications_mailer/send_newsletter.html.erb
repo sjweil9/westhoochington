@@ -10,43 +10,19 @@
 <h3>Narrowest Cucking of the Week</h3>
 <p><%= @narrowest_cucking_message %></p>
 <h3>Biggest T-Bagging of the Week</h3>
-<p>
-  <% if @largest.margin.abs > 50 %>
-    Somebody needs to report a homicide, because <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a> left <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a> in a ditch after a <%= @largest.margin %> point spanking.
-  <% elsif @largest.margin.abs > 30 %>
-    It was a rough week for <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a>, who got dumpstered by a <%= @largest.margin.abs %> point margin by <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a>.
-  <% elsif @largest.margin.abs > 10 %>
-    Just a good old-fashioned <%= @largest.margin.abs %> point beatdown by <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a> over <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a>.
-  <% else %>
-   It was a tight week overall, as the biggest margin was only <%= @largest.margin.abs %> points by <a href="<%= user_profile_url(@largest.winner.id) %>"><%= @largest.winner.random_nickname %></a> over <a href="<%= user_profile_url(@largest.loser.id) %>"><%= @largest.loser.random_nickname %></a>.
-  <% end %>
-</p>
+<p><%= @biggest_bagging_message %></p>
 <% if @week > 1 && @games.none?(&:playoff?) %>
   <h3>Biggest Over-Performer</h3>
-  <p>
-    <% if @overperformer.send("points_above_average_for_week_#{@year}", @week) > 30 %>
-      A truly impressive performance by <a href="<%= user_profile_url(@overperformer.id) %>"><%= @overperformer.random_nickname %></a>, who laid down <%= @overperformer.send("game_for_week_#{@year}", @week)&.active_total %> points, crushing their season average of <%= @overperformer.send("average_active_total_#{@year}") %>.
-    <% elsif @overperformer.send("points_above_average_for_week_#{@year}", @week) > 10 %>
-      <a href="<%= user_profile_url(@overperformer.id) %>"><%= @overperformer.random_nickname %></a> demonstrated some real improvement this week after beating their season average of <%= @overperformer.send("average_active_total_#{@year}") %> with a score of <%= @overperformer.send("game_for_week_#{@year}", @week)&.active_total %> points.
-    <% else %>
-      It was not a shining week for improvements, but <a href="<%= user_profile_url(@overperformer.id) %>"><%= @overperformer.random_nickname %></a> managed to out-perform their season average of <%= @overperformer.send("average_active_total_#{@year}") %> by putting up <%= @overperformer.send("game_for_week_#{@year}", @week)&.active_total %> points.
-    <% end %>
-  </p>
+  <p><%= @overperformer_message %></p>
 <% end %>
 <% if @outprojector.send("points_above_projection_for_week_#{@year}", @week).positive? %>
 <h3>Projections, Shmrojections</h3>
-<p>
-  <% if @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 30 %>
-   <a href="<%= user_profile_url(@outprojector.id) %>"><%= @outprojector.random_nickname %></a> had no fucks to give about ESPN's projections, as they dropped <%= @outprojector.send("game_for_week_#{@year}", @week)&.active_total %> points despite being projected for only <%= @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2) %>.
-  <% elsif @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 10 %>
-    ESPN's fantasy projection dart-throwing monkeys missed the mark this week on <a href="<%= user_profile_url(@outprojector.id) %>"><%= @outprojector.random_nickname %></a>, who beat out their <%= @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2) %> projection with a solid <%= @outprojector.send("game_for_week_#{@year}", @week)&.active_total %> points.
-  <% else %>
-    ESPN's fantasy oracle didn't sell anyone too short this week, but <a href="<%= user_profile_url(@outprojector.id) %>"><%= @outprojector.random_nickname %></a> did manage to outperform their <%= @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2) %> point projection by <%= @outprojector.send("points_above_projection_for_week_#{@year}", @week) %>.
-  <% end %>
-</p>
+<p><%= @projections_message %></p>
 <% end %>
-<h3>What if God was one of us?</h3>
-<p>I mean, we will never know the answer to that question. But we can answer "what would by record have been if I wasn't fucked by playing X?". The answer is below:</p>
+<h3><%= @mis_header %></h3>
+<% @mis_body_lines.each do |line| %>
+  <p><%= line %></p>
+<% end %>
 <table>
   <thead>
     <tr>
@@ -54,21 +30,23 @@
       <th>User</th>
       <th>Record</th>
       <th>Win %</th>
+      <th>Average</th>
     </tr>
   </thead>
   <tbody>
-    <% rank = 1; sorted = @users.sort_by { |a| -a.points_for_mir(a.matchup_independent_record(@games)) }; sorted.each_with_index do |user, idx| %>
+    <% @users.sort_by { |a| -a.points_for_mir(a.matchup_independent_record(@season_games)) }.each_with_index do |user, idx| %>
       <tr>
-        <th scope="row"><%= sorted[[idx - 1, 0].max]&.matchup_independent_record(@games) == sorted[idx]&.matchup_independent_record(@games) ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+        <th scope="row"><%= (idx + 1).ordinalize %></th>
         <td><a href="<%= user_profile_url(user.id) %>"><%= user.random_nickname %></a></td>
-        <td><%= user.matchup_independent_record(@games) %></td>
-        <td><%= user.points_for_mir(user.matchup_independent_record(@games)) %>%</td>
+        <td><%= user.matchup_independent_record(@season_games) %></td>
+        <td><%= user.points_for_mir(user.matchup_independent_record(@season_games)) %>%</td>
+        <td><%= user.send("average_active_total_#{@year}") %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 <h3>Current Standings</h3>
-<p>Well, ladies and other ladies, that leaves us with these standings:</p>
+<p><%= @standings_message %></p>
 <table>
   <thead>
     <tr>
@@ -76,15 +54,17 @@
       <th>User</th>
       <th>W/L</th>
       <th>Points</th>
+      <th>Average</th>
     </tr>
   </thead>
   <tbody>
     <% @users.sort_by { |a| [-a.send("regular_wins_#{@year}"), -a.send("regular_yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
       <tr>
-        <td><%= (idx + 1).ordinalize %></td>
+        <th scope="row"><%= (idx + 1).ordinalize %></th>
         <td><a href="<%= user_profile_url(user.id) %>"><%= user.random_nickname %></a></td>
         <td><%= user.send("regular_wins_#{@year}") %> - <%= user.send("regular_losses_#{@year}") %></td>
         <td><%= user.send("regular_yearly_active_total_#{@year}") %></td>
+        <td><%= user.send("average_active_total_#{@year}") %></td>
       </tr>
     <% end %>
   </tbody>

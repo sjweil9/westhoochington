@@ -36,18 +36,63 @@ en:
       very_high:
         dominant: "%{nickname} put up a dominant performance this week, posting %{score} points."
         hot_damn: "Hot damn boys! %{nickname} just put on a show to the tune of %{score} points."
+        paving_a_point: "%{nickname} was really pavin' a fuckin' point with a %{score} point spectacle."
       high:
         solid_week: "It would be fair to say it was a solid week for %{nickname}, who took the high score with an impressive %{score} points."
+        big_money: "Big money baller alert! %{nickname} is gonna make that $20 rain at the clurrrb after showing off to the tune of %{score} points."
       medium:
         not_flash: "You don't always need to put up flashy 150+ games to take home the big $20 prize, as %{nickname} and his %{score} points will attest."
         richer: "%{nickname} is now $20 richer after putting up %{score} points."
+        two_birds_stoned: "%{nickname} basically got two birds stoned at once, taking down the win and walking away with $20 on the back of their %{score} points."
       low:
         pathetic: "It's honestly pathetic that %{nickname} was able to take $20 off only %{score} points. Everyone else should feel ashamed."
     narrowest:
       very_narrow:
         nail_biter: "Quite the nail-biter this week, with %{winner} scraping by %{loser} by only %{margin} points."
+        ugly_win: "Not the prettiest win, with %{winner} getting by %{loser} by only %{margin} points. But beauty is in the eye when you hold her, after all..."
       medium:
         mild_cucking: "%{winner} gave %{loser} a mild cucking this week, squeezing out a %{margin} point victory."
         taint_tickler: "%{winner} got his taint tickled real good by %{loser} this week, but held on for the sweet %{margin} victory."
       not_narrow:
         loose_gooch: "Not the tightest gooch this week as %{winner} defeated %{loser} by a comfortable margin of %{margin} points."
+    biggest:
+      very_large:
+        homicide: "Somebody needs to report a homicide, because %{winner} left %{loser} in a ditch after a %{margin} point spanking."
+        good_at_the_gate: "%{loser} got absolutely trucked by %{winner} this week, losing by a remarkable %{margin} points. Don't worry %{loser}, good things come to those at the gate."
+      large:
+        rough_week: "It was a rough week for %{loser}, who got dumpstered by a %{margin} point margin by %{winner}."
+        bad_beats: "Bad beats for %{loser}, who was thumped by %{winner} by a healthy %{margin} point margin."
+        khunt_punch: "%{winner} kicked %{loser} right in the khunt with their %{margin} point victory."
+      medium:
+        old_fashioned: "Just a good old-fashioned %{margin} point beatdown by %{winner} over %{loser}."
+      small:
+        tight_week: "It was a tight week overall, as the biggest margin was only %{margin} points by %{winner} over %{loser}."
+    overperformer:
+      big:
+        impressive_performance: "A truly impressive performance by %{name}, who laid down %{points} points, crushing their season average of %{average}."
+      medium:
+        real_improvement: "%{name} demonstrated some real improvement this week after beating their season average of %{average} with a score of %{points} points."
+      low:
+        not_shining_week: "It was not a shining week for improvements, but %{name} managed to out-perform their season average of %{average} by putting up %{points} points."
+    outprojector:
+      high:
+        no_fucks: "%{name} had no fucks to give about ESPN's projections, as they dropped %{points} points despite being only projected for %{projected}."
+        cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{name} for %{projected} points when they actually droppeds %{points}."
+      medium:
+        monkeys_missed: "ESPN's fantasy projection dart-throwing monkeys missed the mark this week on %{name}, who beat out their %{projected} projection with a solid %{points} points."
+      low:
+        fantasy_oracle: "ESPN's fantasy oracle didn't sell anyone too short this week, but %{name} did manage to outperform their %{projected} point projection with %{points} points."
+    standings:
+      #ladies: "Well, ladies and other ladies, that leaves us with these standings:"
+      validation: "Oh, so you need validation, huh? Well, some of you can get it from looking at these standings:"
+    matchup_independent:
+      #god:
+      #  header: "What if God was one of us?"
+      #  body:
+      #    l1: "I mean, we will never know the answer to that question. But we can answer \"what would by record have been if I wasn't fucked by playing X?\". The answer is below:"
+      shitfister:
+        header: "Words of Wisdom"
+        body:
+          l1: "Fantasy Football is often frustrating. We shake our fists in the air, wondering, 'How, how, how did I get fucked so bad this week?!?' In these times of turmoil, just remember these words from the always wise Mr. Lahey:"
+          l2: "\"This old Shitfisher took his bagpipes down to the river and he played his pipes in hopes that the shitfish would rise up out of the water. But not one shitfish rose, Julian. So he took a shitnet and threw it in the river and, lo, soon he drew it forth filled with shitfish. Then he took his bagpipes and then he played them again and all the shitfish jumped up in the shitnet. 'Oh, you dance now when I play, said the Shitfisher.' And then the little old shitfish spoke up in the end and he said, when you're in a man's power, you must do as he bids you. Shitnets, Julian, and Shitpower.\""
+          l3: "Actually, that probably doesn't help you much. But you can at least check out what the standings would have been if it weren't for your fucking matchups:"

@@ -11,6 +11,7 @@ class UserNotificationsMailer < ApplicationMailer
     @year = year
     @week = week
     @games = Game.includes(game_joins).references(game_joins).where(week: @week, season_year: @year).all
+    @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
     @overperformer = @users.sort_by { |a| -a.send("points_above_average_for_week_#{@year}", @week) }.first
     @outprojector = @users.sort_by { |a| -a.send("points_above_projection_for_week_#{@year}", @week) }.first
@@ -41,6 +42,11 @@ class UserNotificationsMailer < ApplicationMailer
   def set_random_messages!
     @high_score_message = random_high_score_message
     @narrowest_cucking_message = random_narrow_cucking_message
+    @biggest_bagging_message = random_biggest_bagging_message
+    @overperformer_message = random_overperformer_message
+    @projections_message = random_projections_message
+    @standings_message = random_standings_message
+    @mis_header, @mis_body_lines = random_mis_message
   end
 
   def random_high_score_message
@@ -67,5 +73,58 @@ class UserNotificationsMailer < ApplicationMailer
                end
     possible_messages = I18n.t(i18n_key).keys
     I18n.t([i18n_key, possible_messages.sample].join('.'), winner: @narrowest.winner.random_nickname, loser: @narrowest.loser.random_nickname, margin: @narrowest.margin.abs)
+  end
+
+  def random_biggest_bagging_message
+    i18n_key = if @largest.margin.abs > 50
+                 'newsletter.biggest.very_large'
+               elsif @largest.margin.abs > 30
+                 'newsletter.biggest.large'
+               elsif @largest.margin.abs > 10
+                 'newsletter.biggest.medium'
+               else
+                 'newsletter.biggest.small'
+               end
+    possible_messages = I18n.t(i18n_key).keys
+    I18n.t([i18n_key, possible_messages.sample].join('.'), winner: @largest.winner.random_nickname, loser: @largest.loser.random_nickname, margin: @largest.margin.abs)
+  end
+
+  def random_overperformer_message
+    i18n_key = if @overperformer.send("points_above_average_for_week_#{@year}", @week) > 30
+                 'newsletter.overperformer.big'
+               elsif @overperformer.send("points_above_average_for_week_#{@year}", @week) > 10
+                 'newsletter.overperformer.medium'
+               else
+                 'newsletter.overperformer.low'
+               end
+    possible_messages = I18n.t(i18n_key).keys
+    I18n.t([i18n_key, possible_messages.sample].join('.'), name: @overperformer.random_nickname, points: @overperformer.send("game_for_week_#{@year}", @week)&.active_total, average: @overperformer.send("average_active_total_#{@year}"))
+  end
+
+  def random_projections_message
+    i18n_key = if @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 30
+                 'newsletter.outprojector.high'
+               elsif @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 10
+                 'newsletter.outprojector.medium'
+               else
+                 'newsletter.outprojector.low'
+               end
+    possible_messages = I18n.t(i18n_key).keys
+    I18n.t([i18n_key, possible_messages.sample].join('.'), name: @outprojector.random_nickname, points: @outprojector.send("game_for_week_#{@year}", @week)&.active_total, projected: @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2))
+  end
+
+  def random_standings_message
+    base_key = 'newsletter.standings'
+    possible_messages = I18n.t(base_key).keys
+    I18n.t([base_key, possible_messages.sample].join('.'))
+  end
+
+  def random_mis_message
+    base_key = 'newsletter.matchup_independent'
+    possible_messages = I18n.t(base_key).keys
+    selected_key = [base_key, possible_messages.sample].join('.')
+    body_keys = I18n.t("#{selected_key}.body").keys
+    body_lines = body_keys.map { |key| I18n.t("#{selected_key}.body.#{key}") }
+    [I18n.t("#{selected_key}.header"), body_lines]
   end
 end
