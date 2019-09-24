@@ -5,4 +5,8 @@ class OverUnderBet < ApplicationRecord
   def created_by_user?
     user.id == Thread.current[:current_user][:id]
   end
+
+  def direction
+    over ? 'Over' : 'Under'
+  end
 end

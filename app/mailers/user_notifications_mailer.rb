@@ -18,6 +18,9 @@ class UserNotificationsMailer < ApplicationMailer
     @narrowest = @games.sort_by { |a| a.margin.abs }.first
     @largest = @games.sort_by { |a| -a.margin.abs }.first
     @high_score = @games.detect { |game| game.weekly_high_score?(@games) }
+    @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
+    @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
+    @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
     set_random_messages!
     mail(to: emails, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
@@ -30,6 +33,10 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   private
+
+  def last_week
+    (Time.now - 7.days)..Time.now
+  end
 
   def game_joins
     %i[user opponent]
