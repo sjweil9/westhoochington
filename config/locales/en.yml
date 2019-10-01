@@ -50,6 +50,7 @@ en:
       very_narrow:
         nail_biter: "Quite the nail-biter this week, with %{winner} scraping by %{loser} by only %{margin} points."
         ugly_win: "Not the prettiest win, with %{winner} getting by %{loser} by only %{margin} points. But beauty is in the eye when you hold her, after all..."
+        nuns_vagina: "The margin between %{winner} and %{loser} was tighter than a nun's vagina this week, with %{winner} surviving by a %{margin} point margin."
       medium:
         mild_cucking: "%{winner} gave %{loser} a mild cucking this week, squeezing out a %{margin} point victory."
         taint_tickler: "%{winner} got his taint tickled real good by %{loser} this week, but held on for the sweet %{margin} victory."
@@ -80,19 +81,27 @@ en:
         cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{name} for %{projected} points when they actually droppeds %{points}."
       medium:
         monkeys_missed: "ESPN's fantasy projection dart-throwing monkeys missed the mark this week on %{name}, who beat out their %{projected} projection with a solid %{points} points."
+        vegas_trip: "%{name} should plan a Vegas trip this week, since the odds clearly don't mean shit to a man who beat out their %{projected} projection with %{points} points."
       low:
         fantasy_oracle: "ESPN's fantasy oracle didn't sell anyone too short this week, but %{name} did manage to outperform their %{projected} point projection with %{points} points."
     standings:
-      #ladies: "Well, ladies and other ladies, that leaves us with these standings:"
+      ladies: "Well, ladies and other ladies, that leaves us with these standings:"
       validation: "Oh, so you need validation, huh? Well, some of you can get it from looking at these standings:"
     matchup_independent:
       #god:
       #  header: "What if God was one of us?"
       #  body:
       #    l1: "I mean, we will never know the answer to that question. But we can answer \"what would by record have been if I wasn't fucked by playing X?\". The answer is below:"
-      shitfister:
+      #shitfister:
+      #  header: "Words of Wisdom"
+      #  body:
+      #    l1: "Fantasy Football is often frustrating. We shake our fists in the air, wondering, 'How, how, how did I get fucked so bad this week?!?' In these times of turmoil, just remember these words from the always wise Mr. Lahey:"
+      #    l2: "\"This old Shitfisher took his bagpipes down to the river and he played his pipes in hopes that the shitfish would rise up out of the water. But not one shitfish rose, Julian. So he took a shitnet and threw it in the river and, lo, soon he drew it forth filled with shitfish. Then he took his bagpipes and then he played them again and all the shitfish jumped up in the shitnet. 'Oh, you dance now when I play, said the Shitfisher.' And then the little old shitfish spoke up in the end and he said, when you're in a man's power, you must do as he bids you. Shitnets, Julian, and Shitpower.\""
+      #    l3: "Actually, that probably doesn't help you much. But you can at least check out what the standings would have been if it weren't for your fucking matchups:"
+      scuba:
         header: "Words of Wisdom"
         body:
-          l1: "Fantasy Football is often frustrating. We shake our fists in the air, wondering, 'How, how, how did I get fucked so bad this week?!?' In these times of turmoil, just remember these words from the always wise Mr. Lahey:"
-          l2: "\"This old Shitfisher took his bagpipes down to the river and he played his pipes in hopes that the shitfish would rise up out of the water. But not one shitfish rose, Julian. So he took a shitnet and threw it in the river and, lo, soon he drew it forth filled with shitfish. Then he took his bagpipes and then he played them again and all the shitfish jumped up in the shitnet. 'Oh, you dance now when I play, said the Shitfisher.' And then the little old shitfish spoke up in the end and he said, when you're in a man's power, you must do as he bids you. Shitnets, Julian, and Shitpower.\""
-          l3: "Actually, that probably doesn't help you much. But you can at least check out what the standings would have been if it weren't for your fucking matchups:"
+          l1: "We just can't all be champions. Maybe God hates us, or maybe we keep getting blasted by variance, or maybe we are just garbage at fantasy football and incapable of admitting it."
+          l2: "To those of us that can't let go, heed these words of wisdom from the renowned Philosopher/Scuba Instructor, Claude:"
+          l3: "\"Zee heeppopotamoose, he is not born saying, \"Cool beans. I am a heeppo.\" No way, Joesay. So he try to paint zee stripe on him to be like zee zebra, but he fool no one. Then he try to put zee spot on zee skin to be like the leopard, but everyboody know he is a heeppo. So, at certain point, he look himself in zee mirror and he just say, \"Hey. I am a heeppopotamoose and zere is nothing I can do about it.\" As soon as he accepts zis, he live life happy. Happy as a heeppo. You understand zis, Luban?\""
+          l4: "If you can't accept that, please find either solace or despair in what the rankings would be if only it weren't for your god-damn matchups:"
