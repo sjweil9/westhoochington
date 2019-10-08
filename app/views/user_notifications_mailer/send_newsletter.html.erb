@@ -21,7 +21,7 @@
 <% end %>
 <h3><%= @mis_header %></h3>
 <% @mis_body_lines.each do |line| %>
-  <p><%= line %></p>
+  <p><%= line.html_safe %></p>
 <% end %>
 <table>
   <thead>

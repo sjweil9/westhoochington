@@ -90,7 +90,6 @@ class LoadWeeklyDataJob < ApplicationJob
     matchup_period = matchup_period_for_week(week.to_i)
     data_for_week = parsed_response.dig('schedule').select { |game| game['matchupPeriodId'].to_i == matchup_period }
 
-
     teams.each do |team|
       game_data = data_for_week.detect { |game| game.dig('away', 'teamId') == team || game.dig('home', 'teamId') == team }
 
@@ -271,7 +270,7 @@ class LoadWeeklyDataJob < ApplicationJob
   ACTUAL_ID = 0
 
   def bench_total(players)
-    players.reduce(0) do |total, player|
+    players&.reduce(0) do |total, player|
       if player['lineupSlotId'] == 20
         total + player.dig('playerPoolEntry', 'appliedStatTotal')
       else
@@ -281,7 +280,7 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def projected_total(players)
-    players.reduce(0) do |total, player|
+    players&.reduce(0) do |total, player|
       if ACTIVE_PLAYER_SLOTS.include?(player['lineupSlotId'])
         projected_stat_entry = player.dig('playerPoolEntry', 'player', 'stats').detect { |stat| stat['statSourceId'] == PROJECTED_ID }
         total + (projected_stat_entry&.dig('appliedTotal') || 0)

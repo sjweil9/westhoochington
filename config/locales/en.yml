@@ -33,6 +33,8 @@ en:
   hello: "Hello world"
   newsletter:
     high_score:
+      crushed:
+        record_books: "%{nickname} put up one for the record books this week with a %{score} point performance."
       very_high:
         dominant: "%{nickname} put up a dominant performance this week, posting %{score} points."
         hot_damn: "Hot damn boys! %{nickname} just put on a show to the tune of %{score} points."
@@ -98,10 +100,15 @@ en:
       #    l1: "Fantasy Football is often frustrating. We shake our fists in the air, wondering, 'How, how, how did I get fucked so bad this week?!?' In these times of turmoil, just remember these words from the always wise Mr. Lahey:"
       #    l2: "\"This old Shitfisher took his bagpipes down to the river and he played his pipes in hopes that the shitfish would rise up out of the water. But not one shitfish rose, Julian. So he took a shitnet and threw it in the river and, lo, soon he drew it forth filled with shitfish. Then he took his bagpipes and then he played them again and all the shitfish jumped up in the shitnet. 'Oh, you dance now when I play, said the Shitfisher.' And then the little old shitfish spoke up in the end and he said, when you're in a man's power, you must do as he bids you. Shitnets, Julian, and Shitpower.\""
       #    l3: "Actually, that probably doesn't help you much. But you can at least check out what the standings would have been if it weren't for your fucking matchups:"
-      scuba:
-        header: "Words of Wisdom"
+      #scuba:
+      #  header: "Words of Wisdom"
+      #  body:
+      #    l1: "We just can't all be champions. Maybe God hates us, or maybe we keep getting blasted by variance, or maybe we are just garbage at fantasy football and incapable of admitting it."
+      #    l2: "To those of us that can't let go, heed these words of wisdom from the renowned Philosopher/Scuba Instructor, Claude:"
+      #    l3: "\"Zee heeppopotamoose, he is not born saying, \"Cool beans. I am a heeppo.\" No way, Joesay. So he try to paint zee stripe on him to be like zee zebra, but he fool no one. Then he try to put zee spot on zee skin to be like the leopard, but everyboody know he is a heeppo. So, at certain point, he look himself in zee mirror and he just say, \"Hey. I am a heeppopotamoose and zere is nothing I can do about it.\" As soon as he accepts zis, he live life happy. Happy as a heeppo. You understand zis, Luban?\""
+      #    l4: "If you can't accept that, please find either solace or despair in what the rankings would be if only it weren't for your god-damn matchups:"
+      denial:
+        header: "Meme of the Week"
         body:
-          l1: "We just can't all be champions. Maybe God hates us, or maybe we keep getting blasted by variance, or maybe we are just garbage at fantasy football and incapable of admitting it."
-          l2: "To those of us that can't let go, heed these words of wisdom from the renowned Philosopher/Scuba Instructor, Claude:"
-          l3: "\"Zee heeppopotamoose, he is not born saying, \"Cool beans. I am a heeppo.\" No way, Joesay. So he try to paint zee stripe on him to be like zee zebra, but he fool no one. Then he try to put zee spot on zee skin to be like the leopard, but everyboody know he is a heeppo. So, at certain point, he look himself in zee mirror and he just say, \"Hey. I am a heeppopotamoose and zere is nothing I can do about it.\" As soon as he accepts zis, he live life happy. Happy as a heeppo. You understand zis, Luban?\""
-          l4: "If you can't accept that, please find either solace or despair in what the rankings would be if only it weren't for your god-damn matchups:"
+          l1: "Fantasy Football, like life, is full of frustration. Sometimes you need to approach them both <a href='https://trailerpark.fandom.com/wiki/Rickyisms?file=Tpb-ricky3.jpg'>like Ricky would</a>."
+          l2: "Hopefully these matchup-independent standings help you with your denial:"

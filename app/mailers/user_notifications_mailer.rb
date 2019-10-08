@@ -57,7 +57,9 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def random_high_score_message
-    i18n_key = if @high_score.active_total > 150
+    i18n_key = if @high_score.active_total > 180
+                 'newsletter.high_score.crushed'
+               elsif @high_score.active_total > 150
                  'newsletter.high_score.very_high'
                elsif @high_score.active_total > 130
                  'newsletter.high_score.high'
