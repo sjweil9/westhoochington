@@ -107,8 +107,13 @@ en:
       #    l2: "To those of us that can't let go, heed these words of wisdom from the renowned Philosopher/Scuba Instructor, Claude:"
       #    l3: "\"Zee heeppopotamoose, he is not born saying, \"Cool beans. I am a heeppo.\" No way, Joesay. So he try to paint zee stripe on him to be like zee zebra, but he fool no one. Then he try to put zee spot on zee skin to be like the leopard, but everyboody know he is a heeppo. So, at certain point, he look himself in zee mirror and he just say, \"Hey. I am a heeppopotamoose and zere is nothing I can do about it.\" As soon as he accepts zis, he live life happy. Happy as a heeppo. You understand zis, Luban?\""
       #    l4: "If you can't accept that, please find either solace or despair in what the rankings would be if only it weren't for your god-damn matchups:"
-      denial:
+      # denial:
+      #   header: "Meme of the Week"
+      #   body:
+      #     l1: "Fantasy Football, like life, is full of frustration. Sometimes you need to approach them both <a href='https://trailerpark.fandom.com/wiki/Rickyisms?file=Tpb-ricky3.jpg'>like Ricky would</a>."
+      #     l2: "Hopefully these matchup-independent standings help you with your denial:"
+      garbage:
         header: "Meme of the Week"
         body:
-          l1: "Fantasy Football, like life, is full of frustration. Sometimes you need to approach them both <a href='https://trailerpark.fandom.com/wiki/Rickyisms?file=Tpb-ricky3.jpg'>like Ricky would</a>."
-          l2: "Hopefully these matchup-independent standings help you with your denial:"
+          l1: "Many of you may be feeling like your team is absolute trash. In these times of turmoil, just heed these words of advice from the wise sage Ricky: <a href='https://www.youtube.com/watch?v=i5YpZP7clwk'>\"One man's garbage is another man person's good ungarbage\"</a>."
+          l2: "Alternatively, you might be able to take solace in knowing that your team could have been better, if only for those damn matchups:"
