@@ -112,8 +112,12 @@ en:
       #   body:
       #     l1: "Fantasy Football, like life, is full of frustration. Sometimes you need to approach them both <a href='https://trailerpark.fandom.com/wiki/Rickyisms?file=Tpb-ricky3.jpg'>like Ricky would</a>."
       #     l2: "Hopefully these matchup-independent standings help you with your denial:"
-      garbage:
+      # garbage:
+      #  header: "Meme of the Week"
+      #  body:
+      #    l1: "Many of you may be feeling like your team is absolute trash. In these times of turmoil, just heed these words of advice from the wise sage Ricky: <a href='https://www.youtube.com/watch?v=i5YpZP7clwk'>\"One man's garbage is another man person's good ungarbage\"</a>."
+      #    l2: "Alternatively, you might be able to take solace in knowing that your team could have been better, if only for those damn matchups:"
+      haters:
         header: "Meme of the Week"
         body:
-          l1: "Many of you may be feeling like your team is absolute trash. In these times of turmoil, just heed these words of advice from the wise sage Ricky: <a href='https://www.youtube.com/watch?v=i5YpZP7clwk'>\"One man's garbage is another man person's good ungarbage\"</a>."
-          l2: "Alternatively, you might be able to take solace in knowing that your team could have been better, if only for those damn matchups:"
+          l1: "You already know these are the matchup-independent rankings <a href='https://i.imgur.com/8b8Ti2P.jpg'>your markass tricks</a>."

@@ -15,14 +15,6 @@
   <h3>Biggest Over-Performer</h3>
   <p><%= @overperformer_message %></p>
 <% end %>
-<% if @outprojector.send("points_above_projection_for_week_#{@year}", @week).positive? %>
-<h3>Projections, Shmrojections</h3>
-<p><%= @projections_message %></p>
-<% end %>
-<h3><%= @mis_header %></h3>
-<% @mis_body_lines.each do |line| %>
-  <p><%= line.html_safe %></p>
-<% end %>
 <table>
   <thead>
     <tr>
