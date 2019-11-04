@@ -134,6 +134,33 @@ class User < ApplicationRecord
     @games_from_involved_seasons ||= Game.where(season_year: seasons.map(&:season_year)).all
   end
 
+  def lifetime_record_against(opponent)
+    @lifetime_record ||= {}
+    return @lifetime_record[opponent.id] if @lifetime_record[opponent.id]
+
+    @lifetime_record[opponent.id] = calculate_lifetime_record_against(opponent)
+  end
+
+  def calculate_lifetime_record_against(opponent)
+    relevant_games = historical_games.select { |game| game.opponent.id == opponent.id }
+    wins = relevant_games.select(&:won?)
+    losses = relevant_games.select(&:lost?)
+    ties = relevant_games.select { |game| !game.won? && !game.lost? }
+
+    "#{wins.count} - #{losses.count} - #{ties.count}"
+  end
+
+  def lifetime_record_against_color(opponent)
+    win, loss, draw = lifetime_record_against(opponent).split(' - ').map(&:to_i)
+    if win > loss
+      'green-bg'
+    elsif loss > win
+      'red-bg'
+    else
+      ''
+    end
+  end
+
   #
   # stat related methods
   #

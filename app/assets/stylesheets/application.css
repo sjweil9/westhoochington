@@ -25,6 +25,14 @@
   margin: 0;
 }
 
+.green-bg {
+    background-color: lightgreen;
+}
+
+.red-bg {
+    background-color: indianred;
+}
+
 small.green {
     color: green;
 }

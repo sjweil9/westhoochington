@@ -393,4 +393,41 @@
       </div>
     </div>
   </div>
+  <div class="row margin-below">
+    <h1 class="col border-bottom">
+      <img class="expand" data-toggle="collapse" data-target="#h2h" aria-expanded="true" aria-controls="h2h" src="<%= image_path('expand.png') %>" /> Head to Head Records
+    </h1>
+  </div>
+  <div class="collapse" id="h2h">
+    <div class="row">
+      <div class="col-xs-12 col-lg-12">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <% @users.each do |user| %>
+                  <th>vs. <%= user.random_nickname %></th>
+                <% end %>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.each do |user| %>
+                <tr>
+                  <td><%= user.random_nickname %></td>
+                  <% @users.each do |opponent| %>
+                    <% if user == opponent %>
+                      <td>N/A</td>
+                    <% else %>
+                      <td class="<%= user.lifetime_record_against_color(opponent) %>"><%= user.lifetime_record_against(opponent) %></td>
+                    <% end %>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
