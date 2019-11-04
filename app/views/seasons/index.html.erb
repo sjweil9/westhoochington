@@ -336,65 +336,6 @@
   </div>
   <div class="row margin-below">
     <h1 class="col border-bottom">
-      <img class="expand" data-toggle="collapse" data-target="#bets" aria-expanded="true" aria-controls="bets" src="<%= image_path('expand.png') %>" /> Side Bets
-    </h1>
-  </div>
-  <div class="collapse" id="bets">
-    <div class="row">
-      <div class="col-xs-12 col-lg-6">
-        <h3>Top Shark <img class="questionmark" data-toggle="tooltip" title="Highest Side Bet Winrate" src="<%= image_path('tooltip.png') %>" /></h3>
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-            <tr>
-              <th scope="col">Rank</th>
-              <th scope="col">User</th>
-              <th scope="col">Win %</th>
-              <th scope="col">Wins</th>
-              <th scope="col">Losses</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| -user.side_bet_winrate }; sorted.each_with_index do |user, idx| %>
-              <tr>
-                <th scope="row"><%= sorted[[idx - 1, 0].max]&.side_bet_winrate == sorted[idx]&.side_bet_winrate ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
-                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.side_bet_winrate %>%</th>
-                <th><%= user.side_bet_wins %></th>
-                <th><%= user.side_bet_losses %></th>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="col-xs-12 col-lg-6">
-        <h3>Life of the Party <img class="questionmark" data-toggle="tooltip" title="Most Side Bets Proposed" src="<%= image_path('tooltip.png') %>" /></h3>
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-            <tr>
-              <th scope="col">Rank</th>
-              <th scope="col">User</th>
-              <th scope="col">Side Bets Proposed</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| -user.side_bets_proposed }; sorted.each_with_index do |user, idx| %>
-              <tr>
-                <th scope="row"><%= sorted[[idx - 1, 0].max]&.side_bets_proposed == sorted[idx]&.side_bets_proposed ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
-                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.side_bets_proposed %></th>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row margin-below">
-    <h1 class="col border-bottom">
       <img class="expand" data-toggle="collapse" data-target="#h2h" aria-expanded="true" aria-controls="h2h" src="<%= image_path('expand.png') %>" /> Head to Head Records
     </h1>
   </div>
