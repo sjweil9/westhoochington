@@ -40,7 +40,7 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def game_joins
-    [user: :historical_games, opponent: :historical_games]
+    %i[user opponent]
   end
 
   def user_joins
