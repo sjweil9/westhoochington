@@ -94,5 +94,16 @@
 <% else %>
   <p>Nobody added any over-unders this week. Booooorrrriinnngggggg</p>
 <% end %>
-</body>
+<h3>Movers and Shakers</h3>
+<% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
+<p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
+<% else %>
+  <% @trend_breakers[:tie].each do |game| %>
+    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.lifetime_record_against(game.opponent) %></p>
+  <% end %>
+  <% @trend_breakers[:lead].each do |game| %>
+    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
+<% end %>
+<% end %>
+  </body>
 </html>

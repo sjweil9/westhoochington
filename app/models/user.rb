@@ -142,7 +142,7 @@ class User < ApplicationRecord
   end
 
   def calculate_lifetime_record_against(opponent)
-    relevant_games = historical_games.select { |game| game.opponent.id == opponent.id }
+    relevant_games = historical_games.select { |game| game.opponent_id == opponent.id }
     wins = relevant_games.select(&:won?)
     losses = relevant_games.select(&:lost?)
     ties = relevant_games.select { |game| !game.won? && !game.lost? }

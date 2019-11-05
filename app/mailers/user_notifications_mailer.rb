@@ -21,6 +21,7 @@ class UserNotificationsMailer < ApplicationMailer
     @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
     @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
     @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
+    @trend_breakers = calculate_trend_breakers
     set_random_messages!
     mail(to: emails, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
@@ -39,11 +40,34 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def game_joins
-    %i[user opponent]
+    [user: :historical_games, opponent: :historical_games]
   end
 
   def user_joins
     [:"games_#{@year}", :"opponent_games_#{@year}", nicknames: :votes]
+  end
+
+  def calculate_trend_breakers
+    @games.reduce(tie: [], lead: []) do |memo, game|
+      record = game.user.lifetime_record_against(game.opponent)
+      if established_tie?(record, game)
+        memo[:tie] << game
+      elsif took_lead?(record, game)
+        memo[:lead] << game
+      end
+      memo
+    end
+  end
+
+  def established_tie?(record, game)
+    # only count ties from behind so you get only one of the two applicable games
+    win, loss, _draw = record.split(' - ').map(&:to_i)
+    game.won? && (loss == win)
+  end
+
+  def took_lead?(record, game)
+    win, loss, _draw = record.split(' - ').map(&:to_i)
+    game.won? && ((win - loss) == 1)
   end
 
   def set_random_messages!

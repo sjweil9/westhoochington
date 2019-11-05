@@ -73,8 +73,10 @@ en:
     overperformer:
       big:
         impressive_performance: "A truly impressive performance by %{name}, who laid down %{points} points, crushing their season average of %{average}."
+        feeling_lucky: "%{name} was either on fire or just really feeling lucky this week, but either way they crushed their season average of %{average} with %{points} points."
       medium:
         real_improvement: "%{name} demonstrated some real improvement this week after beating their season average of %{average} with a score of %{points} points."
+        steps_up: "%{name} took some steps up in the world today, going from a season average of %{average} to a more impressive %{points}."
       low:
         not_shining_week: "It was not a shining week for improvements, but %{name} managed to out-perform their season average of %{average} by putting up %{points} points."
     outprojector:
@@ -89,6 +91,7 @@ en:
     standings:
       ladies: "Well, ladies and other ladies, that leaves us with these standings:"
       validation: "Oh, so you need validation, huh? Well, some of you can get it from looking at these standings:"
+      not_the_sacko: "Here are the current reverse standings for the Sacko:"
     matchup_independent:
       #god:
       #  header: "What if God was one of us?"
@@ -117,7 +120,11 @@ en:
       #  body:
       #    l1: "Many of you may be feeling like your team is absolute trash. In these times of turmoil, just heed these words of advice from the wise sage Ricky: <a href='https://www.youtube.com/watch?v=i5YpZP7clwk'>\"One man's garbage is another man person's good ungarbage\"</a>."
       #    l2: "Alternatively, you might be able to take solace in knowing that your team could have been better, if only for those damn matchups:"
-      haters:
+      # haters:
+      #   header: "Meme of the Week"
+      #   body:
+      #     l1: "You already know these are the matchup-independent rankings <a href='https://i.imgur.com/8b8Ti2P.jpg'>you markass tricks</a>."
+      optometrist:
         header: "Meme of the Week"
         body:
-          l1: "You already know these are the matchup-independent rankings <a href='https://i.imgur.com/8b8Ti2P.jpg'>you markass tricks</a>."
+          l1: "Feeling down about your team's chances? Just channel your <a href='http://www.quickmeme.com/img/00/00357a3803161ec1bd5305d27ddf40c363b2190cd01fd65606fc3d842c4951a7.jpg'>inner Ricky</a>."
