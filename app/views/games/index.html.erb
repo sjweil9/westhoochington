@@ -160,7 +160,7 @@
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
                 <td><%= user.send("game_for_week_#{@year}", @week)&.active_total %></td>
-                <td><%= user.send("game_for_week_#{@year}", @week)&.projected_total %></td>
+                <td><%= user.send("game_for_week_#{@year}", @week)&.projected_total&.to_f&.round(2) %></td>
                 <th scope="row"><%= user.send("points_above_projection_for_week_#{@year}", @week) %></th>
                 <td><% if user.send("game_for_week_#{@year}", @week)&.won? %>Won<% elsif user.send("game_for_week_#{@year}", @week)&.lost? %>Lost<% end %></td>
               </tr>
