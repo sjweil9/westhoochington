@@ -103,7 +103,10 @@
   <% end %>
   <% @trend_breakers[:lead].each do |game| %>
     <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
-<% end %>
+  <% end %>
+  <% @trend_breakers[:trend].each do |game| %>
+    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
+  <% end %>
 <% end %>
   </body>
 </html>

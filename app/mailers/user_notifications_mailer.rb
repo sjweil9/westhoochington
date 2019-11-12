@@ -48,12 +48,14 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def calculate_trend_breakers
-    @games.reduce(tie: [], lead: []) do |memo, game|
+    @games.reduce(tie: [], lead: [], trend: []) do |memo, game|
       record = game.user.lifetime_record_against(game.opponent)
       if established_tie?(record, game)
         memo[:tie] << game
       elsif took_lead?(record, game)
         memo[:lead] << game
+      elsif broke_trend?(record, game)
+        memo[:trend] << game
       end
       memo
     end
@@ -68,6 +70,11 @@ class UserNotificationsMailer < ApplicationMailer
   def took_lead?(record, game)
     win, loss, _draw = record.split(' - ').map(&:to_i)
     game.won? && ((win - loss) == 1)
+  end
+
+  def broke_trend?(record, game)
+    win, loss, _draw = record.split(' - ').map(&:to_i)
+    game.won? && ((loss - win) > 2)
   end
 
   def set_random_messages!
