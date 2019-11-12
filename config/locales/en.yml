@@ -124,12 +124,12 @@ en:
       #   header: "Meme of the Week"
       #   body:
       #     l1: "You already know these are the matchup-independent rankings <a href='https://i.imgur.com/8b8Ti2P.jpg'>you markass tricks</a>."
-      optometrist:
-        header: "Meme of the Week"
-        body:
-          l1: "Feeling down about your team's chances? Just channel your <a href='http://www.quickmeme.com/img/00/00357a3803161ec1bd5305d27ddf40c363b2190cd01fd65606fc3d842c4951a7.jpg'>inner Ricky</a>."
+      # optometrist:
+      #  header: "Meme of the Week"
+      #  body:
+      #    l1: "Feeling down about your team's chances? Just channel your <a href='http://www.quickmeme.com/img/00/00357a3803161ec1bd5305d27ddf40c363b2190cd01fd65606fc3d842c4951a7.jpg'>inner Ricky</a>."
       way_she_goes:
         header: "Meme of the Week"
-          body:
-            l1: "Frustrated by all those Ls you've been taking recently? Don't beat yourself up, <a href='https://i.pinimg.com/474x/24/03/d3/2403d3148610d9df4764309ad771cc4a--trailer-park-boys-trailer-trash.jpg'>somtimes she goes, sometimes she doesn't</a>."
-            l2: "If that doesn't make you feel any better, maybe these matchup-independent records will:"
+        body:
+          l1: "Frustrated by all those Ls you've been taking recently? Don't beat yourself up, <a href='https://i.pinimg.com/474x/24/03/d3/2403d3148610d9df4764309ad771cc4a--trailer-park-boys-trailer-trash.jpg'>somtimes she goes, sometimes she doesn't</a>."
+          l2: "If that doesn't make you feel any better, maybe these matchup-independent records will:"
