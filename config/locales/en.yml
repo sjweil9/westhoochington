@@ -36,9 +36,10 @@ en:
       crushed:
         record_books: "%{nickname} put up one for the record books this week with a %{score} point performance."
       very_high:
-        dominant: "%{nickname} put up a dominant performance this week, posting %{score} points."
-        hot_damn: "Hot damn boys! %{nickname} just put on a show to the tune of %{score} points."
-        paving_a_point: "%{nickname} was really pavin' a fuckin' point with a %{score} point spectacle."
+        #dominant: "%{nickname} put up a dominant performance this week, posting %{score} points."
+        #hot_damn: "Hot damn boys! %{nickname} just put on a show to the tune of %{score} points."
+        #paving_a_point: "%{nickname} was really pavin' a fuckin' point with a %{score} point spectacle."
+        bear_on_the_pope: "Did %{nickname} get the high score this week with %{score} points? I don't know, does a bear shit on the pope?"
       high:
         solid_week: "It would be fair to say it was a solid week for %{nickname}, who took the high score with an impressive %{score} points."
         big_money: "Big money baller alert! %{nickname} is gonna make that $20 rain at the clurrrb after showing off to the tune of %{score} points."
@@ -60,8 +61,10 @@ en:
         loose_gooch: "Not the tightest gooch this week as %{winner} defeated %{loser} by a comfortable margin of %{margin} points."
     biggest:
       very_large:
-        homicide: "Somebody needs to report a homicide, because %{winner} left %{loser} in a ditch after a %{margin} point spanking."
-        good_at_the_gate: "%{loser} got absolutely trucked by %{winner} this week, losing by a remarkable %{margin} points. Don't worry %{loser}, good things come to those at the gate."
+        #homicide: "Somebody needs to report a homicide, because %{winner} left %{loser} in a ditch after a %{margin} point spanking."
+        #good_at_the_gate: "%{loser} got absolutely trucked by %{winner} this week, losing by a remarkable %{margin} points. Don't worry %{loser}, good things come to those at the gate."
+        come_to_turns: "%{loser} is just going to have to come to turns with their %{margin} point defeat at the hands of %{winner}."
+        everything_he_caught: "%{winner} really hit %{loser} with everything he caught this week, to the tune of a %{margin} point victory."
       large:
         rough_week: "It was a rough week for %{loser}, who got dumpstered by a %{margin} point margin by %{winner}."
         bad_beats: "Bad beats for %{loser}, who was thumped by %{winner} by a healthy %{margin} point margin."
@@ -72,8 +75,9 @@ en:
         tight_week: "It was a tight week overall, as the biggest margin was only %{margin} points by %{winner} over %{loser}."
     overperformer:
       big:
-        impressive_performance: "A truly impressive performance by %{name}, who laid down %{points} points, crushing their season average of %{average}."
-        feeling_lucky: "%{name} was either on fire or just really feeling lucky this week, but either way they crushed their season average of %{average} with %{points} points."
+        #impressive_performance: "A truly impressive performance by %{name}, who laid down %{points} points, crushing their season average of %{average}."
+        #feeling_lucky: "%{name} was either on fire or just really feeling lucky this week, but either way they crushed their season average of %{average} with %{points} points."
+        phrases: "%{name} really seemed like a different person this week, leaving their %{average} average behind in favor of a %{points} point performance. Well hey, everybody goes through phrases after all."
       medium:
         real_improvement: "%{name} demonstrated some real improvement this week after beating their season average of %{average} with a score of %{points} points."
         steps_up: "%{name} took some steps up in the world today, going from a season average of %{average} to a more impressive %{points}."
@@ -89,8 +93,8 @@ en:
       low:
         fantasy_oracle: "ESPN's fantasy oracle didn't sell anyone too short this week, but %{name} did manage to outperform their %{projected} point projection with %{points} points."
     standings:
-      ladies: "Well, ladies and other ladies, that leaves us with these standings:"
-      validation: "Oh, so you need validation, huh? Well, some of you can get it from looking at these standings:"
+      #ladies: "Well, ladies and other ladies, that leaves us with these standings:"
+      #validation: "Oh, so you need validation, huh? Well, some of you can get it from looking at these standings:"
       not_the_sacko: "Here are the current reverse standings for the Sacko:"
     matchup_independent:
       #god:
@@ -128,8 +132,15 @@ en:
       #  header: "Meme of the Week"
       #  body:
       #    l1: "Feeling down about your team's chances? Just channel your <a href='http://www.quickmeme.com/img/00/00357a3803161ec1bd5305d27ddf40c363b2190cd01fd65606fc3d842c4951a7.jpg'>inner Ricky</a>."
-      way_she_goes:
-        header: "Meme of the Week"
+      # way_she_goes:
+      #   header: "Meme of the Week"
+      #   body:
+      #     l1: "Frustrated by all those Ls you've been taking recently? Don't beat yourself up, <a href='https://i.pinimg.com/474x/24/03/d3/2403d3148610d9df4764309ad771cc4a--trailer-park-boys-trailer-trash.jpg'>somtimes she goes, sometimes she doesn't</a>."
+      #     l2: "If that doesn't make you feel any better, maybe these matchup-independent records will:"
+      shit_spark:
+        header: "Words of Wisdom"
         body:
-          l1: "Frustrated by all those Ls you've been taking recently? Don't beat yourself up, <a href='https://i.pinimg.com/474x/24/03/d3/2403d3148610d9df4764309ad771cc4a--trailer-park-boys-trailer-trash.jpg'>somtimes she goes, sometimes she doesn't</a>."
-          l2: "If that doesn't make you feel any better, maybe these matchup-independent records will:"
+          l1: "It has been a long (and, for 60% of us, frustrating) season."
+          l2: "While stepping back to reflect on another regular season in the books, we need some words of wisdom to center us. So heed this advice from the venerable Mr. Lahey:"
+          l4: "\"When you keep getting pelted by shit balls, Deputy, you gotta get a shit bat.\""
+          l5: "What's a shit bat, you ask? I don't fucking know, this wasn't supposed to actually be helpful, and neither are these:"
