@@ -32,6 +32,20 @@
 en:
   hello: "Hello world"
   newsletter:
+    playoffs:
+      winning:
+        narrow:
+          edge_of_seat: "%{winner} is still holding on to the edge of his seat, with a narrow %{winning_score} to %{losing_score} lead over %{loser}."
+        medium:
+          holds_a_nice_lead: "%{winner} holds a nice lead over %{loser} to the tune of %{winning_score} to %{losing_score}."
+          out_the_gates: "%{winner} got out the gates quickly, putting up a %{winning_score} to %{losing_score} lead against %{loser}."
+          strong_start: "%{winner} is off to a strong start against %{loser}, currently holding a %{winning_score} to %{losing_score} edge."
+        big:
+          commanding: "%{winner} took a commanding lead over %{loser} by a margin of %{winning_score} to %{losing_score}."
+          dominant: "%{winner} started with a dominant performance, getting out to a %{winning_score} to %{losing_score} lead against %{loser}."
+          piss_away: "%{winner} will try their best not to piss away their %{winning_score} to %{losing_score} lead against %{loser}."
+      wisdom:
+        liquor_gif: "I wish that I could provide some meaningful guidance in these trying times, but <a href='https://media.giphy.com/media/LjQ9fHdgFTSY8/giphy.gif'>sometimes there just aren't words for the situation.</a>"
     high_score:
       crushed:
         record_books: "%{nickname} put up one for the record books this week with a %{score} point performance."

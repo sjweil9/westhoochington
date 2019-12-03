@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body>
+<h1>Weekly Westhoochington - <%= @year %> Playoffs #<%= @week - 12 %></h1>
+<p>Let's check in on the playoff matchups:</p>
+<h2>Championship Rounds</h2>
+<% @championship_games.each do |game| %>
+  <h3><%= game.user.random_nickname %> (<%= game.user.playoff_seed(@year) %>) vs. <%= game.opponent.random_nickname %> (<%= game.opponent.playoff_seed(@year) %>)</h3>
+  <% if game.margin.abs > 30 %>
+    <%= I18n.t(@big_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% elsif game.margin.abs > 10 %>
+    <%= I18n.t(@medium_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% else %>
+    <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% end %>
+<% end %>
+<h2>The Irrelevance Bowl</h2>
+<p>In the matchups between people who are now playing for absolutely nothing (except of course for pride and the immortal glory that comes from padding your <a href="http://www.westhoochington.com/hall-of-fame">historical stats</a>):</p>
+<% @irrelevant_games.each do |game| %>
+  <h3><%= game.user.random_nickname %> (<%= game.user.playoff_seed(@year) %>) vs. <%= game.opponent.random_nickname %> (<%= game.opponent.playoff_seed(@year) %>)</h3>
+  <% if game.margin.abs > 30 %>
+    <%= I18n.t(@big_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% elsif game.margin.abs > 10 %>
+    <%= I18n.t(@medium_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% else %>
+    <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% end %>
+<% end %>
+<h2>The Sacko Bowl</h2>
+<p>Who will the Butler be? Let's check in:</p>
+<% @sacko_games.each do |game| %>
+  <h3><%= game.user.random_nickname %> (<%= game.user.playoff_seed(@year) %>) vs. <%= game.opponent.random_nickname %> (<%= game.opponent.playoff_seed(@year) %>)</h3>
+  <% if game.margin.abs > 30 %>
+    <%= I18n.t(@big_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% elsif game.margin.abs > 10 %>
+    <%= I18n.t(@medium_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% else %>
+    <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+  <% end %>
+<% end %>
+<h2>Words of Wisdom</h2>
+  <%= @words_of_wisdom.html_safe %>
+</body>
+</html>

@@ -96,6 +96,18 @@ class User < ApplicationRecord
     ((playoff_appearance_seasons.size.to_f / total_seasons.to_f) * 100.0).round(2)
   end
 
+  def playoff_seed(year)
+    @playoff_seeds ||= {}
+    @playoff_seeds[year] ||= seasons.detect { |season| season.send("#{year}?") } || calculate_playoff_seed(year)
+  end
+
+  def calculate_playoff_seed(year)
+    users = User.includes("games_#{year}").references("games_#{year}").all.reject { |user| user.send("games_#{year}").count.zero? }
+    users.sort_by { |a| [-a.send("regular_wins_#{year}"), -a.send("regular_yearly_active_total_#{year}")] }.each_with_index do |user, index|
+      return index + 1 if user.id == id
+    end
+  end
+
   def average_regular_season_finish
     season_count = seasons.size
     (seasons.map(&:regular_rank).reduce(:+) / season_count.to_f).round(2)

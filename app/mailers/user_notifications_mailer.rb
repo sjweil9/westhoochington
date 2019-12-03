@@ -8,11 +8,7 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def send_newsletter(emails, week, year)
-    @year = year
-    @week = week
-    @games = Game.includes(game_joins).references(game_joins).where(week: @week, season_year: @year).all
-    @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
-    @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
+    set_basic_variables(week, year)
     @overperformer = @users.sort_by { |a| -a.send("points_above_average_for_week_#{@year}", @week) }.first
     @outprojector = @users.sort_by { |a| -a.send("points_above_projection_for_week_#{@year}", @week) }.first
     @narrowest = @games.sort_by { |a| a.margin.abs }.first
@@ -26,6 +22,15 @@ class UserNotificationsMailer < ApplicationMailer
     mail(to: emails, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
 
+  def send_playoff_newsletter(emails, week, year)
+    set_basic_variables(week, year)
+    @championship_games = @games.select { |game| championship_bracket?(game) }
+    @irrelevant_games = @games.select { |game| irrelevant?(game) }
+    @sacko_games = @games.select { |game| sacko?(game) }
+    set_random_playoff_messages!
+    mail(to: emails, subject: "Weekly Westhoochington - #{year} Playoffs - Week #{week - 12}")
+  end
+
   def send_podcast_blast(subject, body, podcast_link)
     users = User.where(podcast_flag: true).all
     @body = body
@@ -34,6 +39,32 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   private
+
+  def set_basic_variables(week, year)
+    @year = year
+    @week = week
+    @games = Game.includes(game_joins).references(game_joins).where(week: @week, season_year: @year).all
+    @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
+    @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
+  end
+
+  def championship_bracket?(game)
+    game.user.playoff_seed(@year) <= 4 && game.user.playoff_seed(@year) < game.opponent.playoff_seed(@year)
+  end
+
+  def irrelevant?(game)
+    return false unless game.user.playoff_seed(@year) < game.opponent.playoff_seed(@year)
+    return true if [5, 6].include?(game.user.playoff_seed(@year))
+    return false unless @week >= 15
+
+    game.user.send("games_#{@year}").detect { |game| game.week == 13 }.won?
+  end
+
+  def sacko?(game)
+    return false unless game.user.playoff_seed(@year) < game.opponent.playoff_seed(@year)
+
+    game.user.playoff_seed(@year) >= 7 && !irrelevant?(game)
+  end
 
   def last_week
     (Time.now - 7.days)..Time.now
@@ -85,6 +116,25 @@ class UserNotificationsMailer < ApplicationMailer
     @projections_message = random_projections_message
     @standings_message = random_standings_message
     @mis_header, @mis_body_lines = random_mis_message
+  end
+
+  def set_random_playoff_messages!
+    return set_random_playoff_round_over_messages! if [14, 16].include?(@week.to_i)
+
+    @narrow_win_messages = I18n.t('newsletter.playoffs.winning.narrow').keys.map { |key| ['newsletter.playoffs.winning.narrow', key].join('.') }
+    @medium_win_messages = I18n.t('newsletter.playoffs.winning.medium').keys.map { |key| ['newsletter.playoffs.winning.medium', key].join('.') }
+    @big_win_messages = I18n.t('newsletter.playoffs.winning.big').keys.map { |key| ['newsletter.playoffs.winning.big', key].join('.') }
+    @words_of_wisdom = random_playoff_wisdom
+  end
+
+  def set_random_playoff_round_over_messages!
+    # TODO: messages for second week of each playoff round
+  end
+
+  def random_playoff_wisdom
+    base_key = 'newsletter.playoffs.wisdom'
+    possible_messages = I18n.t(base_key).keys
+    I18n.t([base_key, possible_messages.sample].join('.'))
   end
 
   def random_high_score_message
