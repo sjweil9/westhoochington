@@ -2,9 +2,9 @@ namespace :stats do
   desc "This task is called by the Heroku scheduler add-on"
   task :load_weekly_data => :environment do
     # last scoring week still not complete, wait until Tuesday to load
-    unless Time.now.sunday? || Time.now.monday?
+    last_week = Time.now.strftime('%U').to_i - 35
+    if Time.now.tuesday? && last_week.positive? && last_week <= 16
       current_year = Time.now.strftime('%Y')
-      last_week = Time.now.strftime('%U').to_i - 35
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(last_week, current_year)
       puts "Completed weekly data load."
@@ -49,7 +49,7 @@ namespace :newsletter do
   task :send => :environment do
     week = Time.now.strftime('%U').to_i - 35
     year = Date.today.year
-    if Time.now.tuesday? && week.positive?
+    if Time.now.tuesday? && week.positive? && week <= 16
       involved_users = Game.where(season_year: year, week: week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 
       if week >= 13 && week <= 16

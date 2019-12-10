@@ -41,6 +41,49 @@
     <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
   <% end %>
 <% end %>
+<h3>Movers and Shakers</h3>
+<% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
+  <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
+<% else %>
+  <% @trend_breakers[:tie].each do |game| %>
+    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.lifetime_record_against(game.opponent) %></p>
+  <% end %>
+  <% @trend_breakers[:lead].each do |game| %>
+    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
+  <% end %>
+  <% @trend_breakers[:trend].each do |game| %>
+    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
+  <% end %>
+<% end %>
+<h3>Over/Unders</h3>
+<% if @new_over_unders.size.positive? || @new_over_under_lines.size.positive? || @new_over_under_bets.size.positive? %>
+  <% if @new_over_unders.size.positive? %>
+    <p>New Over/Unders:</p>
+    <ul>
+      <% @new_over_unders.each do |over_under| %>
+        <li><%= over_under.user.random_nickname %>: "<%= over_under.description %>"</li>
+      <% end %>
+    </ul>
+  <% end %>
+  <% if @new_over_under_lines.size.positive? %>
+    <p>New Lines:</p>
+    <ul>
+      <% @new_over_under_lines.each do |line| %>
+        <li><%= line.user.random_nickname %>: <%= line.value %> on "<%= line.over_under.description %>"</li>
+      <% end %>
+    </ul>
+  <% end %>
+  <% if @new_over_under_bets.size.positive? %>
+    <p>New Bets:</p>
+    <ul>
+      <% @new_over_under_bets.each do |bet| %>
+        <li><%= bet.user.random_nickname %>: <%= bet.direction %> on <%= bet.line.value %> for "<%= bet.line.over_under.description %>"</li>
+      <% end %>
+    </ul>
+  <% end %>
+<% else %>
+  <p>Nobody added any over-unders this week. Booooorrrriinnngggggg</p>
+<% end %>
 <h2>Words of Wisdom</h2>
   <%= @words_of_wisdom.html_safe %>
 </body>

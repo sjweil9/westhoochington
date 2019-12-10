@@ -44,8 +44,18 @@ en:
           commanding: "%{winner} took a commanding lead over %{loser} by a margin of %{winning_score} to %{losing_score}."
           dominant: "%{winner} started with a dominant performance, getting out to a %{winning_score} to %{losing_score} lead against %{loser}."
           piss_away: "%{winner} will try their best not to piss away their %{winning_score} to %{losing_score} lead against %{loser}."
+      won:
+        narrow:
+          mild_cucking: "%{winner} got away with a mild cucking against %{loser}, surviving with a %{winning_score}-%{losing_score} victory."
+          nuns_vagina: "The margin between %{winner} and %{loser} was tighter than a nun's vagina this week, with %{winner} surviving by a %{winning_score} to %{losing_score} margin."
+          taint_tickler: "%{winner} got his taint tickled real good by %{loser} this week, but held on for the sweet %{winning_score}-%{losing_score} victory."
+        medium:
+          old_fashioned: "Just a good old-fashioned playoff victory by %{winner}, taking it %{winning_score}-%{losing_score} over %{loser}."
+        big:
+          smackdown: "%{winner} laid the smackdown on %{loser} to the tune of a nice %{winning_score} to %{losing_score} win."
       wisdom:
-        liquor_gif: "I wish that I could provide some meaningful guidance in these trying times, but <a href='https://media.giphy.com/media/LjQ9fHdgFTSY8/giphy.gif'>sometimes there just aren't words for the situation.</a>"
+        #liquor_gif: "I wish that I could provide some meaningful guidance in these trying times, but <a href='https://media.giphy.com/media/LjQ9fHdgFTSY8/giphy.gif'>sometimes there just aren't words for the situation.</a>"
+        rocket_appliances: "Looking for some critical wisdom to guide your final lineup decisions? Well stop, because <a href='https://thechive.files.wordpress.com/2016/03/cea442d5784ae37fe9615b15aefd265fb4a7b9a376549dd5da9bcd4bdadaf5e0.jpg?quality=100&strip=info&w=600'>it's pretty simple</a>."
     high_score:
       crushed:
         record_books: "%{nickname} put up one for the record books this week with a %{score} point performance."

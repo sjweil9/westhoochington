@@ -14,10 +14,6 @@ class UserNotificationsMailer < ApplicationMailer
     @narrowest = @games.sort_by { |a| a.margin.abs }.first
     @largest = @games.sort_by { |a| -a.margin.abs }.first
     @high_score = @games.detect { |game| game.weekly_high_score?(@games) }
-    @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
-    @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
-    @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
-    @trend_breakers = calculate_trend_breakers
     set_random_messages!
     mail(to: emails, subject: "Weekly Westhoochington - #{year} ##{week}")
   end
@@ -27,6 +23,10 @@ class UserNotificationsMailer < ApplicationMailer
     @championship_games = @games.select { |game| championship_bracket?(game) }
     @irrelevant_games = @games.select { |game| irrelevant?(game) }
     @sacko_games = @games.select { |game| sacko?(game) }
+    @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
+    @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
+    @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
+    @trend_breakers = calculate_trend_breakers
     set_random_playoff_messages!
     mail(to: emails, subject: "Weekly Westhoochington - #{year} Playoffs - Week #{week - 12}")
   end
@@ -43,7 +43,7 @@ class UserNotificationsMailer < ApplicationMailer
   def set_basic_variables(week, year)
     @year = year
     @week = week
-    @games = Game.includes(game_joins).references(game_joins).where(week: @week, season_year: @year).all
+    @games = Game.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all
     @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
   end
@@ -119,11 +119,11 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def set_random_playoff_messages!
-    return set_random_playoff_round_over_messages! if [14, 16].include?(@week.to_i)
+    win_key = [14, 16].include?(@week.to_i) ? 'won' : 'winning'
 
-    @narrow_win_messages = I18n.t('newsletter.playoffs.winning.narrow').keys.map { |key| ['newsletter.playoffs.winning.narrow', key].join('.') }
-    @medium_win_messages = I18n.t('newsletter.playoffs.winning.medium').keys.map { |key| ['newsletter.playoffs.winning.medium', key].join('.') }
-    @big_win_messages = I18n.t('newsletter.playoffs.winning.big').keys.map { |key| ['newsletter.playoffs.winning.big', key].join('.') }
+    @narrow_win_messages = I18n.t("newsletter.playoffs.#{win_key}.narrow").keys.map { |key| ["newsletter.playoffs.#{win_key}.narrow", key].join('.') }
+    @medium_win_messages = I18n.t("newsletter.playoffs.#{win_key}.medium").keys.map { |key| ["newsletter.playoffs.#{win_key}.medium", key].join('.') }
+    @big_win_messages = I18n.t("newsletter.playoffs.#{win_key}.big").keys.map { |key| ["newsletter.playoffs.#{win_key}.big", key].join('.') }
     @words_of_wisdom = random_playoff_wisdom
   end
 
