@@ -13,7 +13,7 @@ class GamesController < ApplicationController
   end
 
   def weekly
-    @season = Season.find_by(season_year: @year)
+    @season = Season.find_by(season_year: @year) || Season.new(season_year: @year)
     @week = @week.to_i
     @week = @year.to_i >= 2019 && (@season&.two_game_playoff? || @season.nil?) && [14, 16].include?(@week) ? @week - 1 : @week
     if (games = Game.where(season_year: @year, week: @week)).present?
