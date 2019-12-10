@@ -29,6 +29,13 @@ class Season < ApplicationRecord
     season_year.to_i >= 2015
   end
 
+  def playoff_week?(week)
+    return week > 14 if season_year < 2015
+    return week >= 14 if season_year < 2018
+
+    week >= 13
+  end
+
   def yahoo?
     season_year.to_i < 2015
   end

@@ -87,7 +87,7 @@
             <tr>
               <th scope="col">Rank</th>
               <th scope="col">User</th>
-              <th scope="col">Points Scored</th>
+              <th scope="col">Points Scored <% if @season.two_game_playoff? && @season.playoff_week?(@week) %>(Per Week)<% end %></th>
               <th scope="col">Season Average</th>
               <th scope="col">Diff</th>
               <th scope="col">Result</th>
@@ -98,7 +98,7 @@
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                <td><%= user.send("game_for_week_#{@year}", @week)&.active_total %></td>
+                <td><%= user.send("game_for_week_#{@year}", @week)&.playoff_weighted_active_total %></td>
                 <td><%= user.send("average_active_total_#{@year}") %></td>
                 <th><%= user.send("points_above_average_for_week_#{@year}", @week) %></th>
                 <td><% if user.send("game_for_week_#{@year}", @week)&.won? %>Won<% elsif user.send("game_for_week_#{@year}", @week)&.lost? %>Lost<% end %></td>
@@ -118,7 +118,7 @@
             <tr>
               <th scope="col">Rank</th>
               <th scope="col">User</th>
-              <th scope="col">Points Scored</th>
+              <th scope="col">Points Scored <% if @season.two_game_playoff? && @season.playoff_week?(@week) %>(Per Week)<% end %></th>
               <th scope="col">Opponent Season Average</th>
               <th scope="col">Diff</th>
               <th scope="col">Result</th>
@@ -129,7 +129,7 @@
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                <td><%= user.send("game_for_week_#{@year}", @week)&.active_total %></td>
+                <td><%= user.send("game_for_week_#{@year}", @week)&.playoff_weighted_active_total %></td>
                 <td><%= user.send("game_for_week_#{@year}", @week)&.opponent&.send("average_active_total_#{@year}") %></td>
                 <th><%= user.send("points_above_opponent_average_for_week_#{@year}", @week) %></th>
                 <td><% if user.send("game_for_week_#{@year}", @week)&.won? %>Won<% elsif user.send("game_for_week_#{@year}", @week)&.lost? %>Lost<% end %></td>

@@ -113,7 +113,7 @@ class LoadWeeklyDataJob < ApplicationJob
       }
 
       game = Game.find_by(
-        week: week,
+        week: [14, 16].include?(week) ? week - 1 : week,
         season_year: @year.to_i,
         user_id: user_id_for(team),
         opponent_id: user_id_for(other_team_data['teamId'])

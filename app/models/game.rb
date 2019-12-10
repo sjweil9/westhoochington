@@ -86,11 +86,35 @@ class Game < ApplicationRecord
   end
 
   def points_above_opponent_average
-    active_total - opponent.send("average_active_total_#{season_year}")
+    playoff_weighted_active_total - opponent.send("average_active_total_#{season_year}")
   end
 
   def points_above_average
-    active_total - user.send("average_active_total_#{season_year}")
+    playoff_weighted_active_total - user.send("average_active_total_#{season_year}")
+  end
+
+  def playoff_weighted_active_total
+    return active_total unless two_game_playoff?
+
+    active_total / 2
+  end
+
+  def two_game_playoff?
+    return false unless (13..16).cover?(week) && both_weeks_completed?
+
+    Rails.cache.fetch("seasons.#{season_year}.two_game_playoff", expires_in: 1.days) do
+      season = Season.find_by(season_year: season_year)
+      season.nil? || season.two_game_playoff?
+    end
+  end
+
+  def both_weeks_completed?
+    season_year < Date.today.year || current_week > week
+  end
+
+  def current_week
+    offset = (Time.now.sunday? || Time.now.monday?) ? 36 : 35
+    Time.now.strftime('%U').to_i - offset
   end
 
   (1..17).each do |week_num|

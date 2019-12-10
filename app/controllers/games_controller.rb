@@ -13,7 +13,9 @@ class GamesController < ApplicationController
   end
 
   def weekly
+    @season = Season.find_by(season_year: @year)
     @week = @week.to_i
+    @week = @year.to_i >= 2019 && (@season&.two_game_playoff? || @season.nil?) && [14, 16].include?(@week) ? @week - 1 : @week
     if (games = Game.where(season_year: @year, week: @week)).present?
       @users = User.includes(user_joins).references(user_joins).where(id: games.map(&:user_id)).all
       @narrowest = Game.includes(game_joins).references(game_joins).where(week: @week, season_year: @year).all.sort_by { |a| a.margin.abs }.first
