@@ -50,7 +50,8 @@ namespace :newsletter do
     week = Time.now.strftime('%U').to_i - 35
     year = Date.today.year
     if Time.now.tuesday? && week.positive? && week <= 16
-      involved_users = Game.where(season_year: year, week: week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
+      relevant_week = [14, 16].include?(week) ? week - 1 : week
+      involved_users = Game.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 
       if week >= 13 && week <= 16
         UserNotificationsMailer.send_playoff_newsletter(involved_users, week, year).deliver
