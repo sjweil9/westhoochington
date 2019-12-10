@@ -2,13 +2,13 @@ namespace :stats do
   desc "This task is called by the Heroku scheduler add-on"
   task :load_weekly_data => :environment do
     # last scoring week still not complete, wait until Tuesday to load
-    #unless Time.now.sunday? || Time.now.monday?
+    unless Time.now.sunday? || Time.now.monday?
       current_year = Time.now.strftime('%Y')
       last_week = Time.now.strftime('%U').to_i - 35
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(last_week, current_year)
       puts "Completed weekly data load."
-    #end
+    end
   end
 
   desc "Load on demand from Yahoo archives"
