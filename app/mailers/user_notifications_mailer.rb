@@ -23,6 +23,10 @@ class UserNotificationsMailer < ApplicationMailer
     @championship_games = @games.select { |game| championship_bracket?(game) }
     @irrelevant_games = @games.select { |game| irrelevant?(game) }
     @sacko_games = @games.select { |game| sacko?(game) }
+    if @week >= 15
+      @championship_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 13 }.won? }
+      @third_place_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 13 }.lost? }
+    end
     @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
     @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
     @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
@@ -53,6 +57,7 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def irrelevant?(game)
+    return false if championship_bracket?(game)
     return false unless game.user.playoff_seed(@year) < game.opponent.playoff_seed(@year)
     return true if [5, 6].include?(game.user.playoff_seed(@year))
     return false unless @week >= 15

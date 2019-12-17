@@ -35,7 +35,9 @@ en:
     playoffs:
       winning:
         narrow:
-          edge_of_seat: "%{winner} is still holding on to the edge of his seat, with a narrow %{winning_score} to %{losing_score} lead over %{loser}."
+          edge_of_seat: "%{winner} is still holding on to the edge of their seat, with a narrow %{winning_score} to %{losing_score} lead over %{loser}."
+          puckered_taint: "%{winner} must have a mighty puckered taint right now, what with them sweating out a tight %{winning_score} to %{losing_score} lead over %{loser}."
+          mexicali_standon: "We got a real Mexicali stand-on going on between %{winner} and %{loser}, staring each other down over a narrow %{winning_score} to %{losing_score} margin."
         medium:
           holds_a_nice_lead: "%{winner} holds a nice lead over %{loser} to the tune of %{winning_score} to %{losing_score}."
           out_the_gates: "%{winner} got out the gates quickly, putting up a %{winning_score} to %{losing_score} lead against %{loser}."
@@ -48,14 +50,16 @@ en:
         narrow:
           mild_cucking: "%{winner} got away with a mild cucking against %{loser}, surviving with a %{winning_score}-%{losing_score} victory."
           nuns_vagina: "The margin between %{winner} and %{loser} was tighter than a nun's vagina this week, with %{winner} surviving by a %{winning_score} to %{losing_score} margin."
-          taint_tickler: "%{winner} got his taint tickled real good by %{loser} this week, but held on for the sweet %{winning_score}-%{losing_score} victory."
+          taint_tickler: "%{winner} got their taint tickled real good by %{loser} this week, but held on for the sweet %{winning_score}-%{losing_score} victory."
         medium:
           old_fashioned: "Just a good old-fashioned playoff victory by %{winner}, taking it %{winning_score}-%{losing_score} over %{loser}."
         big:
           smackdown: "%{winner} laid the smackdown on %{loser} to the tune of a nice %{winning_score} to %{losing_score} win."
+          tropical_earthquake: "%{loser} looks like they got hit by a tropical earthquake by %{winner}, staring down a %{winning_score} to %{losing_score} defeat."
       wisdom:
         #liquor_gif: "I wish that I could provide some meaningful guidance in these trying times, but <a href='https://media.giphy.com/media/LjQ9fHdgFTSY8/giphy.gif'>sometimes there just aren't words for the situation.</a>"
-        rocket_appliances: "Looking for some critical wisdom to guide your final lineup decisions? Well stop, because <a href='https://thechive.files.wordpress.com/2016/03/cea442d5784ae37fe9615b15aefd265fb4a7b9a376549dd5da9bcd4bdadaf5e0.jpg?quality=100&strip=info&w=600'>it's pretty simple</a>."
+        #rocket_appliances: "Looking for some critical wisdom to guide your final lineup decisions? Well stop, because <a href='https://thechive.files.wordpress.com/2016/03/cea442d5784ae37fe9615b15aefd265fb4a7b9a376549dd5da9bcd4bdadaf5e0.jpg?quality=100&strip=info&w=600'>it's pretty simple</a>."
+        six_paper_joint: "I'm right out of wisdom, folks. With only the final week ahead of us, wherever you stand, there is not much to do now except <a href='https://www.youtube.com/watch?v=krxVNUwfaQs'>smoke a six paper point</a>."
     high_score:
       crushed:
         record_books: "%{nickname} put up one for the record books this week with a %{score} point performance."

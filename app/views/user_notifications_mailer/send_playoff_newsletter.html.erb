@@ -6,16 +6,37 @@
 <body>
 <h1>Weekly Westhoochington - <%= @year %> Playoffs #<%= @week - 12 %></h1>
 <p>Let's check in on the playoff matchups:</p>
-<h2>Championship Rounds</h2>
-<% @championship_games.each do |game| %>
-  <h3><%= game.user.random_nickname %> (<%= game.user.playoff_seed(@year) %>) vs. <%= game.opponent.random_nickname %> (<%= game.opponent.playoff_seed(@year) %>)</h3>
-  <% if game.margin.abs > 30 %>
-    <%= I18n.t(@big_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
-  <% elsif game.margin.abs > 10 %>
-    <%= I18n.t(@medium_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
-  <% else %>
-    <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+<% if @week < 15 %>
+  <h2>Championship Rounds</h2>
+  <% @championship_games.each do |game| %>
+    <h3><%= game.user.random_nickname %> (<%= game.user.playoff_seed(@year) %>) vs. <%= game.opponent.random_nickname %> (<%= game.opponent.playoff_seed(@year) %>)</h3>
+    <% if game.margin.abs > 30 %>
+      <%= I18n.t(@big_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+    <% elsif game.margin.abs > 10 %>
+      <%= I18n.t(@medium_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+    <% else %>
+      <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
+    <% end %>
   <% end %>
+<% else %>
+  <h2>The Finale</h2>
+    <h3><%= @championship_game.user.random_nickname %> (<%= @championship_game.user.playoff_seed(@year) %>) vs. <%= @championship_game.opponent.random_nickname %> (<%= @championship_game.opponent.playoff_seed(@year) %>)</h3>
+    <% if @championship_game.margin.abs > 30 %>
+      <%= I18n.t(@big_win_messages.sample, winner: @championship_game.winner.random_nickname, loser: @championship_game.loser.random_nickname, winning_score: @championship_game.winning_score, losing_score: @championship_game.losing_score) %>
+    <% elsif @championship_game.margin.abs > 10 %>
+      <%= I18n.t(@medium_win_messages.sample, winner: @championship_game.winner.random_nickname, loser: @championship_game.loser.random_nickname, winning_score: @championship_game.winning_score, losing_score: @championship_game.losing_score) %>
+    <% else %>
+      <%= I18n.t(@narrow_win_messages.sample, winner: @championship_game.winner.random_nickname, loser: @championship_game.loser.random_nickname, winning_score: @championship_game.winning_score, losing_score: @championship_game.losing_score) %>
+    <% end %>
+  <h2>Ye Olde 3rd Place Game</h2>
+    <h3><%= @third_place_game.user.random_nickname %> (<%= @third_place_game.user.playoff_seed(@year) %>) vs. <%= @third_place_game.opponent.random_nickname %> (<%= @third_place_game.opponent.playoff_seed(@year) %>)</h3>
+    <% if @third_place_game.margin.abs > 30 %>
+      <%= I18n.t(@big_win_messages.sample, winner: @third_place_game.winner.random_nickname, loser: @third_place_game.loser.random_nickname, winning_score: @third_place_game.winning_score, losing_score: @third_place_game.losing_score) %>
+    <% elsif @third_place_game.margin.abs > 10 %>
+      <%= I18n.t(@medium_win_messages.sample, winner: @third_place_game.winner.random_nickname, loser: @third_place_game.loser.random_nickname, winning_score: @third_place_game.winning_score, losing_score: @third_place_game.losing_score) %>
+    <% else %>
+      <%= I18n.t(@narrow_win_messages.sample, winner: @third_place_game.winner.random_nickname, loser: @third_place_game.loser.random_nickname, winning_score: @third_place_game.winning_score, losing_score: @third_place_game.losing_score) %>
+    <% end %>
 <% end %>
 <h2>The Irrelevance Bowl</h2>
 <p>In the matchups between people who are now playing for absolutely nothing (except of course for pride and the immortal glory that comes from padding your <a href="http://www.westhoochington.com/hall-of-fame">historical stats</a>):</p>
@@ -41,18 +62,20 @@
     <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
   <% end %>
 <% end %>
-<h3>Movers and Shakers</h3>
-<% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
-  <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
-<% else %>
-  <% @trend_breakers[:tie].each do |game| %>
-    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.lifetime_record_against(game.opponent) %></p>
-  <% end %>
-  <% @trend_breakers[:lead].each do |game| %>
-    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
-  <% end %>
-  <% @trend_breakers[:trend].each do |game| %>
-    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
+<% if [14, 16].include?(@week) %>
+  <h3>Movers and Shakers</h3>
+  <% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
+    <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
+  <% else %>
+    <% @trend_breakers[:tie].each do |game| %>
+      <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.lifetime_record_against(game.opponent) %></p>
+    <% end %>
+    <% @trend_breakers[:lead].each do |game| %>
+      <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
+    <% end %>
+    <% @trend_breakers[:trend].each do |game| %>
+      <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
+    <% end %>
   <% end %>
 <% end %>
 <h3>Over/Unders</h3>
