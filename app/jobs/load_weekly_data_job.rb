@@ -185,6 +185,28 @@ class LoadWeeklyDataJob < ApplicationJob
     end
   end
 
+  def perform_season_data(year)
+    @year = year.to_s
+    url = base_historical_url + "&seasonId=#{year}"
+
+    response = RestClient.get(url, cookies: {SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2})
+    parsed_response = JSON.parse(response.body).first
+
+    user_results = parsed_response['teams']
+
+    user_results.each do |result|
+      season_data = {
+        user_id: user_id_for(result['id']),
+        regular_rank: result['playoffSeed'],
+        playoff_rank: result['rankCalculatedFinal'],
+        season_year: @year.to_i,
+      }
+
+      user_season = Season.find_by(season_year: @year.to_i, user_id: user_id_for(result['id'])) || Season.new
+      user_season.update(season_data)
+    end
+  end
+
   def perform_csv(yahoo: false)
     csv = Rails.root.join('lib', 'assets', yahoo ? 'yahoo.csv' : 'backup.csv')
     CSV.foreach(csv) do |row|

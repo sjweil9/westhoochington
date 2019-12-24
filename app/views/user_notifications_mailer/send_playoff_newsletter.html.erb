@@ -108,6 +108,10 @@
   <p>Nobody added any over-unders this week. Booooorrrriinnngggggg</p>
 <% end %>
 <h2>Words of Wisdom</h2>
+  <% if @week.to_i == 16 %>
+  No wisdom left to be had. It's all behind us, fuckers.
+  <% else %>
   <%= @words_of_wisdom.html_safe %>
+  <% end %>
 </body>
 </html>
