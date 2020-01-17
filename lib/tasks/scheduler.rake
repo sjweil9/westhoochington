@@ -39,9 +39,8 @@ namespace :stats do
     end
   end
 
-  task :load_current_season => :environment do
-    current_year = Time.now.year
-    LoadWeeklyDataJob.new.perform_season_data(current_year)
+  task :load_season_data, [:year] => :environment do |_t, args|
+    LoadWeeklyDataJob.new.perform_season_data(args[:year])
   end
 
   task :load_csv => :environment do

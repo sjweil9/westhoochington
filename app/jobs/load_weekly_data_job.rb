@@ -185,12 +185,15 @@ class LoadWeeklyDataJob < ApplicationJob
     end
   end
 
-  def perform_season_data(year)
+  def perform_season_data(year, url = nil, retries = 0)
+    return if retries > 1
+
     @year = year.to_s
-    url = base_historical_url + "&seasonId=#{year}"
+    url ||= base_historical_url + "&seasonId=#{year}"
 
     response = RestClient.get(url, cookies: {SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2})
-    parsed_response = JSON.parse(response.body).first
+    # when you retry with the override URL, its got the same data structure as the other URL, but it's no longer an array, because... reasons?
+    retries.positive? ? parsed_response = JSON.parse(response.body) : parsed_response = JSON.parse(response.body).first
 
     user_results = parsed_response['teams']
 
@@ -205,6 +208,10 @@ class LoadWeeklyDataJob < ApplicationJob
       user_season = Season.find_by(season_year: @year.to_i, user_id: user_id_for(result['id'])) || Season.new
       user_season.update(season_data)
     end
+  rescue RestClient::ExceptionWithResponse => e
+    # usually this is 404 if you are trying to run for the most recent season, so try and fallback to that one
+    override_url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?view=modular&view=mNav&view=mMatchupScore&view=mScoreboard&view=mStatus&view=mSettings&view=mTeam&view=mPendingTransactions"
+    perform_season_data(year, override_url, retries + 1)
   end
 
   def perform_csv(yahoo: false)
