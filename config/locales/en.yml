@@ -114,7 +114,7 @@ en:
     outprojector:
       high:
         no_fucks: "%{name} had no fucks to give about ESPN's projections, as they dropped %{points} points despite being only projected for %{projected}."
-        cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{name} for %{projected} points when they actually droppeds %{points}."
+        cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{name} for %{projected} points when they actually dropped %{points}."
       medium:
         monkeys_missed: "ESPN's fantasy projection dart-throwing monkeys missed the mark this week on %{name}, who beat out their %{projected} projection with a solid %{points} points."
         vegas_trip: "%{name} should plan a Vegas trip this week, since the odds clearly don't mean shit to a man who beat out their %{projected} projection with %{points} points."
