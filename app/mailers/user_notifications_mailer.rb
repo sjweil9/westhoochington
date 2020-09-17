@@ -27,10 +27,6 @@ class UserNotificationsMailer < ApplicationMailer
       @championship_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 13 }.won? }
       @third_place_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 13 }.lost? }
     end
-    @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
-    @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
-    @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
-    @trend_breakers = calculate_trend_breakers
     set_random_playoff_messages!
     mail(to: emails, subject: "Weekly Westhoochington - #{year} Playoffs - Week #{week - 12}")
   end
@@ -50,6 +46,10 @@ class UserNotificationsMailer < ApplicationMailer
     @games = Game.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all
     @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
+    @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
+    @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
+    @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
+    @trend_breakers = calculate_trend_breakers
   end
 
   def championship_bracket?(game)

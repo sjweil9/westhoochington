@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_16_025811) do
+ActiveRecord::Schema.define(version: 2020_09_17_035144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -146,6 +146,14 @@ ActiveRecord::Schema.define(version: 2019_08_16_025811) do
     t.index ["user_id"], name: "index_side_bets_on_user_id"
   end
 
+  create_table "user_stats", force: :cascade do |t|
+    t.bigint "user_id"
+    t.json "mir"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_stats_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -177,4 +185,5 @@ ActiveRecord::Schema.define(version: 2019_08_16_025811) do
   add_foreign_key "side_bet_acceptances", "side_bets"
   add_foreign_key "side_bet_acceptances", "users"
   add_foreign_key "side_bets", "users"
+  add_foreign_key "user_stats", "users"
 end

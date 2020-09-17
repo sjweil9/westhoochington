@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :side_bets
   has_many :side_bet_acceptances
   has_many :seasons
+  has_one :calculated_stats, class_name: 'UserStat'
 
   (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
@@ -22,7 +23,9 @@ class User < ApplicationRecord
   after_create :default_nicknames
 
   def random_nickname
-    @random_nickname ||= weighted_nicknames.sample&.name
+    Rails.cache.fetch("nickname_#{id}", expires_in: 30.seconds) do
+      weighted_nicknames.sample&.name
+    end
   end
 
   def weighted_nicknames

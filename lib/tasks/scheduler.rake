@@ -2,7 +2,7 @@ namespace :stats do
   desc "This task is called by the Heroku scheduler add-on"
   task :load_weekly_data => :environment do
     # last scoring week still not complete, wait until Tuesday to load
-    last_week = Time.now.strftime('%U').to_i - 35
+    last_week = Time.now.strftime('%U').to_i - 36
     if Time.now.tuesday? && last_week.positive? && last_week <= 16
       current_year = Time.now.strftime('%Y')
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
@@ -24,7 +24,7 @@ namespace :stats do
   desc "This task would be run on demand"
   task :load_backlog_data => :environment do
     current_year = Time.now.year
-    last_week = Time.now.strftime('%U').to_i - 35
+    last_week = Time.now.strftime('%U').to_i - 36
 
     # for current year, we just go up to the current week
     (1..last_week).to_a.each do |week|
@@ -46,12 +46,18 @@ namespace :stats do
   task :load_csv => :environment do
     LoadWeeklyDataJob.new.perform_csv
   end
+
+  task :calculate_mir => :environment do
+    User.all.each do |user|
+      CalculateMirJob.new.perform(user.id)
+    end
+  end
 end
 
 namespace :newsletter do
   desc "Called by Heroku scheduler to send newsletter"
   task :send => :environment do
-    week = Time.now.strftime('%U').to_i - 35
+    week = Time.now.strftime('%U').to_i - 36
     year = Date.today.year
     if Time.now.tuesday? && week.positive? && week <= 16
       relevant_week = [14, 16].include?(week) ? week - 1 : week
