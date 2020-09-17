@@ -146,6 +146,10 @@ class LoadWeeklyDataJob < ApplicationJob
 
       game.update(game_data)
     end
+
+    User.all.each do |user|
+      CalculateMirJob.new.perform(user.id)
+    end
   end
 
   def perform_historical(year)

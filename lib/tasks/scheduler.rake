@@ -46,6 +46,12 @@ namespace :stats do
   task :load_csv => :environment do
     LoadWeeklyDataJob.new.perform_csv
   end
+
+  task :calculate_mir => :environment do
+    User.all.each do |user|
+      CalculateMirJob.new.perform(user.id)
+    end
+  end
 end
 
 namespace :newsletter do

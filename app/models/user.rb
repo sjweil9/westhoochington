@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :side_bets
   has_many :side_bet_acceptances
   has_many :seasons
+  has_one :calculated_stats, class_name: 'UserStat'
 
   (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
