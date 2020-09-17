@@ -22,7 +22,9 @@ class User < ApplicationRecord
   after_create :default_nicknames
 
   def random_nickname
-    @random_nickname ||= weighted_nicknames.sample&.name
+    Rails.cache.fetch("nickname_#{id}", expires_in: 30.seconds) do
+      weighted_nicknames.sample&.name
+    end
   end
 
   def weighted_nicknames
