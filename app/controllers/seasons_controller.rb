@@ -6,6 +6,6 @@ class SeasonsController < ApplicationController
   private
 
   def user_joins
-    [:seasons, :calculated_stats, historical_games: :opponent, nicknames: :votes]
+    [:calculated_stats]
   end
 end

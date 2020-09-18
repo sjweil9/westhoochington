@@ -148,7 +148,7 @@ class LoadWeeklyDataJob < ApplicationJob
     end
 
     User.all.each do |user|
-      CalculateMirJob.new.perform(user.id)
+      CalculateStatsJob.new.perform(user.id)
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_17_035144) do
+ActiveRecord::Schema.define(version: 2020_09_18_234314) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -151,6 +151,18 @@ ActiveRecord::Schema.define(version: 2020_09_17_035144) do
     t.json "mir"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "championships"
+    t.json "regular_season_wins"
+    t.json "second_place_finishes"
+    t.json "playoff_appearances"
+    t.decimal "average_finish"
+    t.decimal "average_regular_season_finish"
+    t.json "playoff_rate"
+    t.decimal "average_points_espn"
+    t.decimal "average_points_yahoo"
+    t.decimal "average_margin"
+    t.json "sacko_seasons"
+    t.json "lifetime_record"
     t.index ["user_id"], name: "index_user_stats_on_user_id"
   end
 

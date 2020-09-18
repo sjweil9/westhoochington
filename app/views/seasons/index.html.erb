@@ -25,7 +25,7 @@
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.total_championship_wins == sorted[idx]&.total_championship_wins ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
                 <th><%= user.total_championship_wins %></th>
-                <th><%= user.championship_seasons.map(&:season_year).map(&:to_i).join(', ') %></th>
+                <th><%= user.calculated_stats.championships['seasons'] %></th>
               </tr>
             <% end %>
             </tbody>
@@ -50,7 +50,7 @@
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.total_second_place_seasons == sorted[idx]&.total_second_place_seasons ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
                 <th><%= user.total_second_place_seasons %></th>
-                <th><%= user.second_place_seasons.map(&:season_year).map(&:to_i).join(', ') %></th>
+                <th><%= user.calculated_stats.second_place_finishes['seasons'] %></th>
               </tr>
             <% end %>
             </tbody>
@@ -77,7 +77,7 @@
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.total_regular_season_wins == sorted[idx]&.total_regular_season_wins ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
                 <th><%= user.total_regular_season_wins %></th>
-                <th><%= user.regular_season_win_seasons.map(&:season_year).map(&:to_i).join(', ') %></th>
+                <th><%= user.calculated_stats.regular_season_wins['seasons'] %></th>
               </tr>
             <% end %>
             </tbody>
@@ -325,7 +325,7 @@
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.total_sacko_seasons == sorted[idx]&.total_sacko_seasons ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
                 <th><%= user.total_sacko_seasons %></th>
-                <th><%= user.sacko_seasons.map(&:season_year).join(', ') %></th>
+                <th><%= user.calculated_stats.sacko_seasons['seasons'] %></th>
               </tr>
             <% end %>
             </tbody>
@@ -345,26 +345,26 @@
         <div class="table-responsive">
           <table class="table table-striped">
             <thead>
-              <tr>
-                <th>Player</th>
-                <% @users.each do |user| %>
-                  <th>vs. <%= user.random_nickname %></th>
-                <% end %>
-              </tr>
+            <tr>
+              <th>Player</th>
+              <% @users.each do |user| %>
+                <th>vs. <%= user.random_nickname %></th>
+              <% end %>
+            </tr>
             </thead>
             <tbody>
-              <% @users.each do |user| %>
-                <tr>
-                  <td><%= user.random_nickname %></td>
-                  <% @users.each do |opponent| %>
-                    <% if user == opponent %>
-                      <td>N/A</td>
-                    <% else %>
-                      <td class="<%= user.lifetime_record_against_color(opponent) %>"><%= user.lifetime_record_against(opponent) %></td>
-                    <% end %>
+            <% @users.each do |user| %>
+              <tr>
+                <td><%= user.random_nickname %></td>
+                <% @users.each do |opponent| %>
+                  <% if user == opponent %>
+                    <td>N/A</td>
+                  <% else %>
+                    <td class="<%= user.calculated_stats.lifetime_record.dig(opponent.id.to_s, 'color') %>"><%= user.calculated_stats.lifetime_record.dig(opponent.id.to_s, 'record_string') %></td>
                   <% end %>
-                </tr>
-              <% end %>
+                <% end %>
+              </tr>
+            <% end %>
             </tbody>
           </table>
         </div>

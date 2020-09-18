@@ -52,19 +52,19 @@ class User < ApplicationRecord
   end
 
   def total_regular_season_wins
-    seasons.select(&:regular_season_win?).size
+    calculated_stats.regular_season_wins['count']
   end
 
   def total_championship_wins
-    seasons.select(&:championship?).size
+    calculated_stats.championships['wins']
   end
 
   def total_second_place_seasons
-    seasons.select(&:second_place?).size
+    calculated_stats.second_place_finishes['count']
   end
 
   def total_sacko_seasons
-    seasons.select(&:sacko?).size
+    calculated_stats.sacko_seasons['count']
   end
 
   def sacko_seasons
@@ -84,7 +84,7 @@ class User < ApplicationRecord
   end
 
   def total_playoff_appearances
-    playoff_appearance_seasons.size
+    calculated_stats.playoff_rate['playoffs']
   end
 
   def playoff_appearance_seasons
@@ -92,11 +92,11 @@ class User < ApplicationRecord
   end
 
   def total_seasons
-    seasons.size
+    calculated_stats.playoff_rate['total']
   end
 
   def playoff_rate
-    ((playoff_appearance_seasons.size.to_f / total_seasons.to_f) * 100.0).round(2)
+    calculated_stats.playoff_rate['rate']
   end
 
   def playoff_seed(year)
@@ -112,16 +112,21 @@ class User < ApplicationRecord
   end
 
   def average_regular_season_finish
-    season_count = seasons.size
-    (seasons.map(&:regular_rank).reduce(:+) / season_count.to_f).round(2)
+    calculated_stats.average_regular_season_finish
   end
 
   def average_final_finish
-    season_count = seasons.size
-    (seasons.map(&:playoff_rank).reduce(:+) / season_count.to_f).round(2)
+    calculated_stats.average_finish
   end
 
   def average_points_scored(platform = nil)
+    case platform
+    when 'espn' then calculated_stats.average_points_espn
+    when 'yahoo' then calculated_stats.average_points_yahoo
+    end
+  end
+
+  def calculate_average_points_scored(platform = nil)
     @average_points_scored ||= {}
     return @average_points_scored[platform] if @average_points_scored[platform]
 
@@ -141,39 +146,20 @@ class User < ApplicationRecord
   end
 
   def average_margin_of_victory
-    games_played = historical_games.size + (2 * seasons.select(&:two_game_playoff?).size)
-    (historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
+    calculated_stats.average_margin
   end
 
   def games_from_involved_seasons
     @games_from_involved_seasons ||= Game.where(season_year: seasons.map(&:season_year)).all
   end
 
-  def lifetime_record_against(opponent)
-    @lifetime_record ||= {}
-    return @lifetime_record[opponent.id] if @lifetime_record[opponent.id]
-
-    @lifetime_record[opponent.id] = calculate_lifetime_record_against(opponent)
-  end
-
-  def calculate_lifetime_record_against(opponent)
-    relevant_games = historical_games.select { |game| game.opponent_id == opponent.id }
+  def calculate_lifetime_record_against(opponent_id)
+    relevant_games = historical_games.select { |game| game.opponent_id == opponent_id }
     wins = relevant_games.select(&:won?)
     losses = relevant_games.select(&:lost?)
     ties = relevant_games.select { |game| !game.won? && !game.lost? }
 
     "#{wins.count} - #{losses.count} - #{ties.count}"
-  end
-
-  def lifetime_record_against_color(opponent)
-    win, loss, draw = lifetime_record_against(opponent).split(' - ').map(&:to_i)
-    if win > loss
-      'green-bg'
-    elsif loss > win
-      'red-bg'
-    else
-      ''
-    end
   end
 
   #
