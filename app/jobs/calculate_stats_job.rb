@@ -18,6 +18,50 @@ class CalculateStatsJob < ApplicationJob
     update_lifetime_record(user, calculated_stats)
   end
 
+  def perform_year(user_id, year)
+    user = User.find(user_id)
+    calculated_stats = user.send("calculated_stats_#{year}") || SeasonUserStat.create(user_id: user.id, season_year: year)
+    update_regular_season_totals(user, year, calculated_stats)
+    update_final_totals(user, year, calculated_stats)
+    update_year_mir(user, year, calculated_stats)
+    update_high_scores(user, year, calculated_stats)
+  end
+
+  def update_regular_season_totals(user, year, calculated_stats)
+    games = user.send("games_#{year}").reject(&:playoff?)
+    wins = games.select(&:won?).size
+    losses = games.select(&:lost?).size
+    points = games.map(&:active_total).reduce(:+).to_f.round(2)
+    calculated_stats.update(regular_season_wins: wins, regular_season_losses: losses, regular_season_total_points: points)
+  end
+
+  def update_final_totals(user, year, calculated_stats)
+    games = user.send("games_#{year}")
+    wins = games.select(&:won?).size
+    losses = games.select(&:lost?).size
+    points = games.map(&:active_total).reduce(:+).to_f.round(2)
+    calculated_stats.update(total_wins: wins, total_losses: losses, total_points: points)
+  end
+
+  def update_year_mir(user, year, calculated_stats)
+    record_string = user.matchup_independent_record(nil, year)
+    point_value = user.points_for_mir(record_string)
+    json_hash = {
+      points: point_value,
+      record_string: record_string,
+    }
+    calculated_stats.update(mir: json_hash)
+  end
+
+  def update_high_scores(user, year, calculated_stats)
+    games = Game.where(season_year: year).reject(&:playoff?)
+    high_scores = user.send("games_#{year}").select { |game| game.weekly_high_score?(games) }
+    weeks = high_scores.map do |game|
+      { week: game.week, opponent_id: game.opponent_id }
+    end
+    calculated_stats.update(weekly_high_scores: high_scores.size, high_score_weeks: weeks)
+  end
+
   def update_mir(user, calculated_stats)
     json_hash = [*user.seasons.map(&:season_year), 'alltime'].reduce({}) do |hash, year|
       games = if year == 'alltime'

@@ -149,6 +149,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
     User.all.each do |user|
       CalculateStatsJob.new.perform(user.id)
+      CalculateStatsJob.new.perform_year(user.id, @year.to_i)
     end
   end
 

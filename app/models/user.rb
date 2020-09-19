@@ -18,6 +18,7 @@ class User < ApplicationRecord
   (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
     has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id
+    has_one :"calculated_stats_#{year}", -> { where(season_year: year) }, class_name: 'SeasonUserStat'
   end
 
   after_create :default_nicknames
@@ -64,7 +65,7 @@ class User < ApplicationRecord
   end
 
   def total_sacko_seasons
-    calculated_stats.sacko_seasons['count']
+    seasons.select(&:sacko?).size
   end
 
   def sacko_seasons
@@ -119,13 +120,6 @@ class User < ApplicationRecord
     calculated_stats.average_finish
   end
 
-  def average_points_scored(platform = nil)
-    case platform
-    when 'espn' then calculated_stats.average_points_espn
-    when 'yahoo' then calculated_stats.average_points_yahoo
-    end
-  end
-
   def calculate_average_points_scored(platform = nil)
     @average_points_scored ||= {}
     return @average_points_scored[platform] if @average_points_scored[platform]
@@ -146,11 +140,19 @@ class User < ApplicationRecord
   end
 
   def average_margin_of_victory
-    calculated_stats.average_margin
+    games_played = historical_games.size + (2 * seasons.select(&:two_game_playoff?).size)
+    (historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
   end
 
   def games_from_involved_seasons
     @games_from_involved_seasons ||= Game.where(season_year: seasons.map(&:season_year)).all
+  end
+
+  def lifetime_record_against(opponent)
+    @lifetime_record ||= {}
+    return @lifetime_record[opponent.id] if @lifetime_record[opponent.id]
+
+    @lifetime_record[opponent.id] = calculate_lifetime_record_against(opponent)
   end
 
   def calculate_lifetime_record_against(opponent_id)
@@ -160,6 +162,17 @@ class User < ApplicationRecord
     ties = relevant_games.select { |game| !game.won? && !game.lost? }
 
     "#{wins.count} - #{losses.count} - #{ties.count}"
+  end
+
+  def lifetime_record_against_color(opponent)
+    win, loss, draw = lifetime_record_against(opponent).split(' - ').map(&:to_i)
+    if win > loss
+      'green-bg'
+    elsif loss > win
+      'red-bg'
+    else
+      ''
+    end
   end
 
   #
@@ -231,11 +244,11 @@ class User < ApplicationRecord
     end
 
     define_method("regular_wins_#{year}") do
-      send(:"games_#{year}").reject(&:playoff?).select(&:won?).size
+      send(:"calculated_stats_#{year}").regular_season_wins
     end
 
     define_method("regular_losses_#{year}") do
-      send(:"games_#{year}").reject(&:playoff?).select(&:lost?).size
+      send(:"calculated_stats_#{year}").regular_season_losses
     end
 
     define_method("playoff_wins_#{year}") do
@@ -247,11 +260,11 @@ class User < ApplicationRecord
     end
 
     define_method("wins_#{year}") do
-      send(:"games_#{year}").select(&:won?).size
+      send(:"calculated_stats_#{year}").total_wins
     end
 
     define_method("losses_#{year}") do
-      send(:"games_#{year}").select(&:lost?).size
+      send(:"calculated_stats_#{year}").total_losses
     end
 
     define_method("projected_wins_#{year}") do

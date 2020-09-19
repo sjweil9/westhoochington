@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_18_234314) do
+ActiveRecord::Schema.define(version: 2020_09_19_191326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -110,6 +110,29 @@ ActiveRecord::Schema.define(version: 2020_09_18_234314) do
     t.index ["user_id"], name: "index_podcasts_on_user_id"
   end
 
+  create_table "season_user_stats", force: :cascade do |t|
+    t.integer "season_year"
+    t.bigint "user_id"
+    t.integer "regular_season_place"
+    t.json "mir"
+    t.integer "weekly_high_scores"
+    t.decimal "average_margin"
+    t.integer "lucky_wins"
+    t.integer "unlucky_losses"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "regular_season_wins"
+    t.integer "regular_season_losses"
+    t.decimal "regular_season_total_points"
+    t.integer "total_wins"
+    t.integer "total_losses"
+    t.decimal "total_points"
+    t.decimal "average_projected_points"
+    t.decimal "average_points"
+    t.json "high_score_weeks"
+    t.index ["user_id"], name: "index_season_user_stats_on_user_id"
+  end
+
   create_table "seasons", force: :cascade do |t|
     t.bigint "user_id"
     t.decimal "playoff_rank"
@@ -193,6 +216,7 @@ ActiveRecord::Schema.define(version: 2020_09_18_234314) do
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
   add_foreign_key "podcasts", "users"
+  add_foreign_key "season_user_stats", "users"
   add_foreign_key "seasons", "users"
   add_foreign_key "side_bet_acceptances", "side_bets"
   add_foreign_key "side_bet_acceptances", "users"

@@ -50,6 +50,9 @@ namespace :stats do
   task :calculate_stats => :environment do
     User.all.each do |user|
       CalculateStatsJob.new.perform(user.id)
+      (2012..Time.now.year).each do |year|
+        CalculateStatsJob.new.perform_year(user.id, year)
+      end
     end
   end
 end

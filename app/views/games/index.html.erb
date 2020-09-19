@@ -192,7 +192,7 @@
                   <th scope="row"><%= (idx + 1).ordinalize %></th>
                   <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
                   <th><%= user.send("wins_#{@year}") %> - <%= user.send("losses_#{@year}") %></th>
-                  <td><%= user.send("yearly_active_total_#{@year}") %></td>
+                  <td><%= user.send("calculated_stats_#{@year}").total_points %></td>
                 </tr>
               <% end %>
               </tbody>
@@ -215,12 +215,12 @@
             </tr>
             </thead>
             <tbody>
-            <% @users.sort_by { |a| [-a.send("regular_wins_#{@year}"), -a.send("regular_yearly_active_total_#{@year}")] }.each_with_index do |user, idx| %>
+            <% @users.sort_by { |a| [-a.send("regular_wins_#{@year}"), -a.send("calculated_stats_#{@year}").regular_season_total_points] }.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
                 <th><%= user.send("regular_wins_#{@year}") %> - <%= user.send("regular_losses_#{@year}") %></th>
-                <td><%= user.send("regular_yearly_active_total_#{@year}") %></td>
+                <td><%= user.send("calculated_stats_#{@year}").regular_season_total_points %></td>
               </tr>
             <% end %>
             </tbody>
@@ -240,12 +240,12 @@
             </tr>
             </thead>
             <tbody>
-            <% @users.sort_by { |a| -a.points_for_mir(a.matchup_independent_record(@games)) }.each_with_index do |user, idx| %>
+            <% @users.sort_by { |a| -a.send("calculated_stats_#{@year}").mir['points'] }.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                <td><%= user.matchup_independent_record(@games) %></td>
-                <td><%= user.points_for_mir(user.matchup_independent_record(@games)) %>%</td>
+                <td><%= user.send("calculated_stats_#{@year}").mir['record_string'] %></td>
+                <td><%= user.send("calculated_stats_#{@year}").mir['points'] %>%</td>
               </tr>
             <% end %>
             </tbody>
@@ -267,14 +267,14 @@
             </tr>
             </thead>
             <tbody>
-            <% @users.sort_by { |a| -a.send("total_high_weekly_scores_#{@year}", @games.reject(&:playoff?)) }.each_with_index do |user, idx| %>
+            <% @users.sort_by { |a| -a.send("calculated_stats_#{@year}").weekly_high_scores }.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= (idx + 1).ordinalize %></th>
                 <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-                <th><%= user.send("total_high_weekly_scores_#{@year}") %></th>
+                <th><%= user.send("calculated_stats_#{@year}").weekly_high_scores %></th>
                 <td>
-                  <% user.send("games_#{@year}").reject(&:playoff?).select { |g| g.weekly_high_score?(@games.reject(&:playoff?)) }.sort_by { |a| a.week }.each_with_index do |game, idx| %>
-                    <a href="<%= stats_path(year: game.season_year, week: game.week) %>">Week <%= game.week %></a> vs <a href="<%= user_profile_path(game.opponent.id) %>"><%= game.opponent.random_nickname %></a><% if idx + 1 != user.send("total_high_weekly_scores_#{@year}") %>,<% end %>
+                  <% user.send("calculated_stats_#{@year}").high_score_weeks.each_with_index do |game, idx| %>
+                    <a href="<%= stats_path(year: @year, week: game['week']) %>">Week <%= game['week'] %></a> vs <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a><% if idx + 1 != user.send("calculated_stats_#{@year}").weekly_high_scores %>,<% end %>
                   <% end %>
                 </td>
               </tr>
