@@ -208,7 +208,7 @@ class CalculateStatsJob < ApplicationJob
       else
         record_string = user.calculate_lifetime_record_against(opponent.id)
         color = color_for_record_string(record_string)
-        memo.merge(user.id.to_s => {
+        memo.merge(opponent.id.to_s => {
           record_string: record_string,
           color: color
         })
