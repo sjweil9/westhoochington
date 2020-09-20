@@ -25,7 +25,14 @@ class CalculateStatsJob < ApplicationJob
     update_final_totals(user, year, calculated_stats)
     update_year_mir(user, year, calculated_stats)
     update_high_scores(user, year, calculated_stats)
+    update_scoring_averages(user, year, calculated_stats)
+    update_lucky_weeks(user, year, calculated_stats)
+    update_unlucky_weeks(user, year, calculated_stats)
   end
+
+  ###########################################################################################
+  #                                 SEASONAL STATS                                          #
+  ###########################################################################################
 
   def update_regular_season_totals(user, year, calculated_stats)
     games = user.send("games_#{year}").reject(&:playoff?)
@@ -40,7 +47,17 @@ class CalculateStatsJob < ApplicationJob
     wins = games.select(&:won?).size
     losses = games.select(&:lost?).size
     points = games.map(&:active_total).reduce(:+).to_f.round(2)
-    calculated_stats.update(total_wins: wins, total_losses: losses, total_points: points)
+    if year >= 2018
+      projected_wins = user.send("projected_wins_#{year}")
+      wins_above_projection = wins - projected_wins
+    end
+    calculated_stats.update(
+      total_wins: wins,
+      total_losses: losses,
+      total_points: points,
+      projected_wins: projected_wins,
+      wins_above_projection: wins_above_projection
+    )
   end
 
   def update_year_mir(user, year, calculated_stats)
@@ -61,6 +78,43 @@ class CalculateStatsJob < ApplicationJob
     end
     calculated_stats.update(weekly_high_scores: high_scores.size, high_score_weeks: weeks)
   end
+
+  def update_scoring_averages(user, year, calculated_stats)
+    average_scored = user.send("average_active_total_#{year}")
+    average_opponent_scored = user.send("average_opponent_active_total_#{year}")
+    average_margin = average_scored - average_opponent_scored
+    if year >= 2018
+      average_projected = user.send("average_projected_total_#{year}")
+      average_above_projection = average_scored - average_projected
+    end
+    calculated_stats.update(
+      average_points: average_scored,
+      average_projected_points: average_projected,
+      average_opponent_points: average_opponent_scored,
+      average_margin: average_margin.round(2),
+      average_above_projection: average_above_projection&.round(2)
+    )
+  end
+
+  def update_lucky_weeks(user, year, calculated_stats)
+    lucky_win_games = user.send("games_#{year}").select(&:lucky?)
+    lucky_win_weeks = lucky_win_games.map do |game|
+      { week: game.week, opponent_id: game.opponent.id }
+    end
+    calculated_stats.update(lucky_wins: lucky_win_games.size, lucky_win_weeks: lucky_win_weeks)
+  end
+
+  def update_unlucky_weeks(user, year, calculated_stats)
+    unlucky_loss_games = user.send("games_#{year}").select(&:unlucky?)
+    unlucky_loss_weeks = unlucky_loss_games.map do |game|
+      { week: game.week, opponent_id: game.opponent.id }
+    end
+    calculated_stats.update(unlucky_losses: unlucky_loss_games.size, unlucky_loss_weeks: unlucky_loss_weeks)
+  end
+
+  ###########################################################################################
+  #                                 ALL TIME STATS                                          #
+  ###########################################################################################
 
   def update_mir(user, calculated_stats)
     json_hash = [*user.seasons.map(&:season_year), 'alltime'].reduce({}) do |hash, year|

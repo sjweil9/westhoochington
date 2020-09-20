@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_19_191326) do
+ActiveRecord::Schema.define(version: 2020_09_20_160353) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,7 +116,6 @@ ActiveRecord::Schema.define(version: 2020_09_19_191326) do
     t.integer "regular_season_place"
     t.json "mir"
     t.integer "weekly_high_scores"
-    t.decimal "average_margin"
     t.integer "lucky_wins"
     t.integer "unlucky_losses"
     t.datetime "created_at", null: false
@@ -130,6 +129,13 @@ ActiveRecord::Schema.define(version: 2020_09_19_191326) do
     t.decimal "average_projected_points"
     t.decimal "average_points"
     t.json "high_score_weeks"
+    t.decimal "average_opponent_points"
+    t.decimal "average_margin"
+    t.decimal "average_above_projection"
+    t.json "lucky_win_weeks"
+    t.json "unlucky_loss_weeks"
+    t.integer "projected_wins"
+    t.integer "wins_above_projection"
     t.index ["user_id"], name: "index_season_user_stats_on_user_id"
   end
 
