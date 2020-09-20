@@ -214,11 +214,11 @@
             </tr>
             </thead>
             <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| -user.average_points_scored('espn') }; sorted.each_with_index do |user, idx| %>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.calculated_stats.average_points_espn }; sorted.each_with_index do |user, idx| %>
               <tr>
-                <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_points_scored('espn') == sorted[idx]&.average_points_scored('espn') ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.calculated_stats.average_points_espn == sorted[idx]&.calculated_stats.average_points_espn ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.average_points_scored('espn') %></th>
+                <th><%= user.calculated_stats.average_points_espn %></th>
               </tr>
             <% end %>
             </tbody>
@@ -237,11 +237,11 @@
             </tr>
             </thead>
             <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| -user.average_points_scored('yahoo') }; sorted.each_with_index do |user, idx| %>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.calculated_stats.average_points_yahoo }; sorted.each_with_index do |user, idx| %>
               <tr>
-                <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_points_scored('yahoo') == sorted[idx]&.average_points_scored('yahoo') ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.calculated_stats.average_points_yahoo == sorted[idx]&.calculated_stats.average_points_yahoo ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.average_points_scored('yahoo') %></th>
+                <th><%= user.calculated_stats.average_points_yahoo %></th>
               </tr>
             <% end %>
             </tbody>
