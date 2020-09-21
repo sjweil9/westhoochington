@@ -110,5 +110,43 @@
     <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
   <% end %>
 <% end %>
+<% if @record_setters.values.any?(&:present?) %>
+  <h3>Into the Record Books</h3>
+<p>The record books got a shake up this week.</p>
+<% if @record_setters[:high_scores].present? %>
+  <p>We had <%= @record_setters[:high_scores].size %> new <%= @record_setters[:high_scores].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time high scores:</p>
+<ul>
+  <% @record_setters[:high_scores].each do |game| %>
+    <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> moved into <%= game[:rank].ordinalize %> place with a stellar <%= game[:score].round(2) %> points against <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a></li>
+  <% end %>
+</ul>
+  <% end %>
+<% if @record_setters[:low_scores].present? %>
+    <p>We had <%= @record_setters[:low_scores].size %> shameful new <%= @record_setters[:low_scores].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time low scores:</p>
+    <ul>
+      <% @record_setters[:low_scores].each do |game| %>
+        <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> moved into "<%= game[:rank].ordinalize %> place" with a lackluster <%= game[:score].round(2) %> points against <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% if @record_setters[:large_margins].present? %>
+    <p>We had <%= @record_setters[:large_margins].size %> new <%= @record_setters[:large_margins].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time biggest T-Baggings:</p>
+    <ul>
+      <% @record_setters[:large_margins].each do |game| %>
+        <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> moved into <%= game[:rank].ordinalize %> place with a <%= game[:margin].round(2) %> point blowout against <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a>, putting up <%= game[:score] %> to <%= game[:opponent_score] %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% if @record_setters[:narrow_margins].present? %>
+    <p>We had <%= @record_setters[:narrow_margins].size %> new <%= @record_setters[:narrow_margins].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time narrowest cuckings:</p>
+    <ul>
+      <% @record_setters[:narrow_margins].each do |game| %>
+        <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> has the dubious honor of <%= game[:rank].ordinalize %> place all-time with a <%= game[:margin].round(2).abs %> defeat at the hands of <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a>, putting up <%= game[:score] %> to <%= game[:opponent_score] %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+
+
   </body>
 </html>
