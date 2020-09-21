@@ -27,6 +27,9 @@ Rails.application.routes.draw do
   get '/games', to: 'games#index', as: 'stats'
   get '/hall-of-fame', to: 'seasons#index', as: 'hall_of_fame'
 
+  get '/newsletter-messages', to: 'newsletter_messages#new', as: 'new_newsletter_message'
+  post '/newsletter-messages', to: 'newsletter_messages#create', as: 'create_newsletter_message'
+
   get '/podcasts', to: 'podcasts#index', as: 'podcasts'
   post '/podcasts', to: 'podcasts#create', as: 'upload_podcast'
 

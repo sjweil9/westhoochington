@@ -1,0 +1,2 @@
+module NewsletterMessagesHelper
+end

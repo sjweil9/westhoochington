@@ -13,7 +13,7 @@
           <a class="<%= current_page?(hall_of_fame_path) ? 'active' : 'nav-item' %> nav-link" href="<%= hall_of_fame_path %>">HOF</a>
         </li>
         <li class="nav-item">
-          <a class="<%= current_page?(over_unders_path) ? 'active' : 'nav-item' %> nav-link" href="<%= over_unders_path %>">Over/Under Lines</a>
+          <a class="<%= current_page?(over_unders_path) ? 'active' : 'nav-item' %> nav-link" href="<%= over_unders_path %>">Over/Unders</a>
         </li>
         <li class="nav-item">
           <a class="<%= current_page?(side_hustles_path) ? 'active' : 'nav-item' %> nav-link" href="<%= side_hustles_path %>">Side Hustles</a>
@@ -26,6 +26,9 @@
         </li>
         <li class="nav-item">
           <a class="<%= current_page?(user_profile_path(current_user[:id])) ? 'active' : 'nav-item' %> nav-link" href="<%= user_profile_path(current_user[:id]) %>">View Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(new_newsletter_message_path) ? 'active' : 'nav-item' %> nav-link" href="<%= new_newsletter_message_path %>">WWEB</a>
         </li>
         <li class="nav-item">
           <a class="<%= current_page?(destroy_user_session_path) ? 'active' : 'nav-item' %> nav-link" href="<%= destroy_user_session_path %>" data-method="delete">Log Out Like a Real Bitch</a>

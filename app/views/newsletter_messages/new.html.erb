@@ -1,0 +1,64 @@
+<div class="container-fluid">
+    <h1>Weekly Westhoochington Editorial Board</h1>
+    <h5>
+        To contribute to the newsletter, you need to select a category, and then provide a template string.
+        A template string must contain certain anchors, marked like %{winner}.
+        For example, the category "Narrowest Cucking of the Week", when the margin is "very narrow" (margin < 5 points) contains the string:
+        "Quite the nail-biter this week, with %{winner} scraping by %{loser} by only %{margin} points."
+        When the newsletter is generated, these anchors will get replaced by random nicknames or point values as appropriate.
+        Toggle the section below to see the available categories and required anchor variables for each.
+        Propose whatever you want; maximum trolling and mockery is encouraged.
+        Selections will be weighted to favor contributions which have been used less times.
+    </h5>
+    <div class="row margin-below">
+        <h3 class="col border-bottom">
+            <img class="expand" data-toggle="collapse" data-target="#categories" aria-expanded="true" aria-controls="categories" src="<%= image_path('expand.png') %>" />Newsletter Categories
+        </h3>
+    </div>
+    <div class="collapse" id="categories">
+      <h4><b>High Score</b></h4>
+        <h5>Variables: %{nickname}, %{score}</h5>
+        <h5>Levels: Crushed (> 180), Very High (> 150), High (> 130), Medium (120 - 130), Low (< 120)</h5>
+        <h4><b>Narrowest Cucking</b></h4>
+        <h5>Variables: %{winner}, %{loser}, %{margin}</h5>
+        <h5>Levels: Very Narrow (< 5), Medium (< 10), Not Narrow (> 10)</h5>
+        <h4><b>Biggest T-Bagging</b></h4>
+        <h5>Variables: %{winner}, %{loser}, %{margin}</h5>
+        <h5>Levels: Very Large (> 50), Large (> 30), Medium (> 10), Small (< 10)</h5>
+        <h4><b>Overperformer</b></h4>
+        <h5>Variables: %{name}, %{points}, %{average}</h5>
+        <h5>Levels: Large (> 30), Medium (> 10), Low (< 10)</h5>
+        <h4><b>Projections, Shmrojections</b></h4>
+        <h5>Variables: %{name}, %{points}, %{projected}</h5>
+        <h5>Levels: Large (> 30), Medium (> 10), Low (< 10)</h5>
+    </div>
+    <h1 class="margin-above">Add Newsletter Message</h1>
+    <form action="<%= create_newsletter_message_path %>" method="post">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select class="custom-select mr-sm-2" id="category" name="category">
+            <% @categories.each do |category| %>
+              <option value="<%= category[:key] %>"><%= category[:label] %></option>
+            <% end %>
+            </select>
+            <%= render "shared/errors", type: "category" %>
+        </div>
+        <div class="form-group">
+            <label for="amount">Level</label>
+            <input type="number" class="form-control" id="amount" name="side_bet[amount]" step="0.1">
+            <%= render "shared/errors", type: "amount" %>
+        </div>
+        <div class="form-group">
+            <label for="max_takers">Max Takers (Leave Blank if You Aren't a Pussy)</label>
+            <input type="number" class="form-control" id="max_takers" name="side_bet[max_takers]" step="1">
+            <%= render "shared/errors", type: "max_takers" %>
+        </div>
+        <div class="form-group">
+            <label for="closing_date">Closing Date</label>
+            <input type="date" class="form-control" id="closing_date" name="side_bet[closing_date]">
+            <%= render "shared/errors", type: "closing_date" %>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+</div>

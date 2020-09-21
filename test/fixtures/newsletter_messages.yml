@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  template_string: MyString
+  category: MyString
+  html_content: 
+  used: 1
+  weight: MyString
+
+two:
+  user: two
+  template_string: MyString
+  category: MyString
+  html_content: 
+  used: 1
+  weight: MyString

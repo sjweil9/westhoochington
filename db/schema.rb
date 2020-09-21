@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_21_032854) do
+ActiveRecord::Schema.define(version: 2020_09_21_040259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,6 +69,18 @@ ActiveRecord::Schema.define(version: 2020_09_21_032854) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "newsletter_messages", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "template_string"
+    t.string "category"
+    t.json "html_content"
+    t.integer "used"
+    t.string "weight"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_newsletter_messages_on_user_id"
   end
 
   create_table "nickname_votes", force: :cascade do |t|
@@ -226,6 +238,7 @@ ActiveRecord::Schema.define(version: 2020_09_21_032854) do
   add_foreign_key "lines", "over_unders"
   add_foreign_key "lines", "users"
   add_foreign_key "messages", "users"
+  add_foreign_key "newsletter_messages", "users"
   add_foreign_key "nickname_votes", "nicknames"
   add_foreign_key "nickname_votes", "users"
   add_foreign_key "nicknames", "users"
