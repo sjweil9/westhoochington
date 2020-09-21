@@ -151,6 +151,8 @@ class LoadWeeklyDataJob < ApplicationJob
       CalculateStatsJob.new.perform(user.id)
       CalculateStatsJob.new.perform_year(user.id, @year.to_i)
     end
+
+    CalculateStatsJob.new.perform_game_level
   end
 
   def perform_historical(year)

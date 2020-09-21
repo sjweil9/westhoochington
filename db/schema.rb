@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_20_160353) do
+ActiveRecord::Schema.define(version: 2020_09_21_032854) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,17 @@ ActiveRecord::Schema.define(version: 2020_09_20_160353) do
     t.datetime "updated_at", null: false
     t.index ["message_id"], name: "index_comments_on_message_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "game_level_stats", force: :cascade do |t|
+    t.json "highest_score"
+    t.json "lowest_score"
+    t.json "largest_margin"
+    t.json "narrowest_margin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "highest_score_espn"
+    t.json "highest_score_yahoo"
   end
 
   create_table "games", force: :cascade do |t|

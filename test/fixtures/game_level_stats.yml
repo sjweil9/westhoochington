@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  highest_score: 
+  lowest_score: 
+  largest_margin: 
+  narrowest_margin: 
+
+two:
+  highest_score: 
+  lowest_score: 
+  largest_margin: 
+  narrowest_margin: 

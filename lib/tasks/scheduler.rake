@@ -54,6 +54,8 @@ namespace :stats do
         CalculateStatsJob.new.perform_year(user.id, year)
       end
     end
+
+    CalculateStatsJob.new.perform_game_level
   end
 end
 

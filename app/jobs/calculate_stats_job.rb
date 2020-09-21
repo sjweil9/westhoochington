@@ -30,6 +30,15 @@ class CalculateStatsJob < ApplicationJob
     update_unlucky_weeks(user, year, calculated_stats)
   end
 
+  def perform_game_level
+    update_highest_score
+    update_highest_score_espn
+    update_highest_score_yahoo
+    update_lowest_score
+    update_largest_margin
+    update_narrowest_margin
+  end
+
   ###########################################################################################
   #                                 SEASONAL STATS                                          #
   ###########################################################################################
@@ -225,6 +234,80 @@ class CalculateStatsJob < ApplicationJob
       'red-bg'
     else
       ''
+    end
+  end
+
+  ###########################################################################################
+  #                                 GAME LEVEL STATS                                        #
+  ###########################################################################################
+
+  def update_highest_score
+    highest_scores = Game.order(active_total: :desc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
+    json = highest_scores.map do |game|
+      { year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total }
+    end
+    GameLevelStat.first_or_create.update(highest_score: json)
+  end
+
+  def update_highest_score_espn
+    highest_scores = Game.where('season_year >= ?', 2015).order(active_total: :desc).all.reject(&:playoff?).first(10)
+    json = highest_scores.map do |game|
+      { year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total }
+    end
+    GameLevelStat.first_or_create.update(highest_score_espn: json)
+  end
+
+  def update_highest_score_yahoo
+    highest_scores = Game.where('season_year < ?', 2015).order(active_total: :desc).first(10)
+    json = highest_scores.map do |game|
+      { year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total }
+    end
+    GameLevelStat.first_or_create.update(highest_score_yahoo: json)
+  end
+
+  def update_lowest_score
+    lowest_scores = Game.order(active_total: :asc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
+    json = lowest_scores.map do |game|
+      { year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total }
+    end
+    GameLevelStat.first_or_create.update(lowest_score: json)
+  end
+
+  def update_largest_margin
+    largest_margins = Game.order(Arel.sql('active_total - opponent_active_total') => :desc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
+    json = largest_margins.map do |game|
+      {
+        year: game.season_year,
+        week: game.week,
+        player_id: game.user_id,
+        opponent_id: game.opponent_id,
+        score: game.active_total,
+        opponent_score: game.opponent_active_total,
+        margin: game.active_total - game.opponent_active_total
+      }
+    end
+    GameLevelStat.first_or_create.update(largest_margin: json)
+  end
+
+  def update_narrowest_margin
+    narrowest_margins = Game.order(Arel.sql('active_total - opponent_active_total') => :asc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
+    json = narrowest_margins.map do |game|
+      {
+        year: game.season_year,
+        week: game.week,
+        player_id: game.user_id,
+        opponent_id: game.opponent_id,
+        score: game.active_total,
+        opponent_score: game.opponent_active_total,
+        margin: game.active_total - game.opponent_active_total
+      }
+    end
+    GameLevelStat.first_or_create.update(narrowest_margin: json)
+  end
+
+  def two_game_playoff_years
+    @two_game_playoff_years ||= Season.all.reduce({}) do |memo, season|
+      memo.merge(season.season_year.to_s => season.two_game_playoff?)
     end
   end
 end
