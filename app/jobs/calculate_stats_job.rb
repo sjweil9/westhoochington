@@ -290,7 +290,7 @@ class CalculateStatsJob < ApplicationJob
   end
 
   def update_narrowest_margin
-    narrowest_margins = Game.order(Arel.sql('active_total - opponent_active_total') => :asc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
+    narrowest_margins = Game.where(Arel.sql('active_total < opponent_active_total')).order(Arel.sql('ABS(active_total - opponent_active_total)') => :asc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
     json = narrowest_margins.map do |game|
       {
         year: game.season_year,

@@ -417,6 +417,66 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xs-12 col-lg-6">
+        <h3>Biggest T-Baggings All-Time</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Score</th>
+              <th scope="col">Opponent Score</th>
+              <th scope="col">Margin</th>
+              <th scope="col">Week</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @gls.largest_margin.each_with_index do |game, idx| %>
+              <tr>
+                <th scope="row"><%= (idx += 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(game['player_id']) %>"><%= Rails.cache.fetch("nickname_#{game['player_id']}") %></a></th>
+                <th><%= game['score'].round(2) %></th>
+                <th><%= game['opponent_score'].round(2) %></th>
+                <th scope="row"><%= game['margin'].round(2) %></th>
+                <th><a href="<%= stats_path(year: game['year'], week: game['week']) %>"><%= game['year'] %> - Week <%= game['week'] %></a> vs <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6">
+        <h3>Narrowest Cuckings All-Time</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Score</th>
+              <th scope="col">Opponent Score</th>
+              <th scope="col">Margin</th>
+              <th scope="col">Week</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @gls.narrowest_margin.each_with_index do |game, idx| %>
+              <tr>
+                <th scope="row"><%= (idx += 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(game['player_id']) %>"><%= Rails.cache.fetch("nickname_#{game['player_id']}") %></a></th>
+                <th><%= game['score'].round(2) %></th>
+                <th><%= game['opponent_score'].round(2) %></th>
+                <th scope="row"><%= game['margin'].round(2) %></th>
+                <th><a href="<%= stats_path(year: game['year'], week: game['week']) %>"><%= game['year'] %> - Week <%= game['week'] %></a> cucked by <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="row margin-below">
     <h1 class="col border-bottom">
