@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  season_year: 1
+  user: one
+  bet_type: MyString
+  status: MyString
+  bet_terms: 
+  amount: 
+  odds: MyString
+  line: 
+  comparison_type: MyString
+
+two:
+  season_year: 1
+  user: two
+  bet_type: MyString
+  status: MyString
+  bet_terms: 
+  amount: 
+  odds: MyString
+  line: 
+  comparison_type: MyString

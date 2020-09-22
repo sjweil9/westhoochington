@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_21_230907) do
+ActiveRecord::Schema.define(version: 2020_09_22_045521) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -158,6 +158,21 @@ ActiveRecord::Schema.define(version: 2020_09_21_230907) do
     t.index ["user_id"], name: "index_podcasts_on_user_id"
   end
 
+  create_table "season_side_bets", force: :cascade do |t|
+    t.integer "season_year"
+    t.bigint "user_id"
+    t.string "bet_type"
+    t.string "status"
+    t.json "bet_terms"
+    t.decimal "amount"
+    t.string "odds"
+    t.decimal "line"
+    t.string "comparison_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_season_side_bets_on_user_id"
+  end
+
   create_table "season_user_stats", force: :cascade do |t|
     t.integer "season_year"
     t.bigint "user_id"
@@ -199,11 +214,11 @@ ActiveRecord::Schema.define(version: 2020_09_21_230907) do
 
   create_table "side_bet_acceptances", force: :cascade do |t|
     t.bigint "side_bet_id"
+    t.string "type"
     t.bigint "user_id"
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "status"
-    t.boolean "paid"
     t.index ["side_bet_id"], name: "index_side_bet_acceptances_on_side_bet_id"
     t.index ["user_id"], name: "index_side_bet_acceptances_on_user_id"
   end
@@ -253,6 +268,7 @@ ActiveRecord::Schema.define(version: 2020_09_21_230907) do
     t.datetime "updated_at", null: false
     t.boolean "newsletter"
     t.boolean "podcast_flag"
+    t.integer "espn_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -275,6 +291,7 @@ ActiveRecord::Schema.define(version: 2020_09_21_230907) do
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
   add_foreign_key "podcasts", "users"
+  add_foreign_key "season_side_bets", "users"
   add_foreign_key "season_user_stats", "users"
   add_foreign_key "seasons", "users"
   add_foreign_key "side_bet_acceptances", "side_bets"

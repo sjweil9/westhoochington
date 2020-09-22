@@ -2,8 +2,12 @@
 
 one:
   side_bet: one
+  type: 
   user: one
+  status: MyString
 
 two:
   side_bet: two
+  type: 
   user: two
+  status: MyString

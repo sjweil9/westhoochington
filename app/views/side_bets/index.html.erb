@@ -8,5 +8,32 @@
   </div>
 
   <h3>Current Games</h3>
-
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">Player 1</th>
+        <th scope="col">P1 Projected</th>
+        <th scope="col">Player 2</th>
+        <th scope="col">P2 Projected</th>
+        <th scope="col">Existing Bets</th>
+        <th scope="col">Add Bet</th>
+        <th scope="col">View Matchup</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @current_games.each do |game| %>
+        <tr>
+          <th scope="row"><a href="<%= user_profile_path(game.user_id) %>"><%= game.user.random_nickname %></a></th>
+          <td><%= game.projected_total %></a></td>
+          <th scope="row"><a href="<%= user_profile_path(game.opponent_id) %>"><%= game.opponent.random_nickname %></a></th>
+          <td><%= game.opponent_projected_total %></td>
+          <th></th>
+          <td></td>
+          <td><a href="https://fantasy.espn.com/football/fantasycast?leagueId=209719&matchupPeriodId=<%= @current_week %>&seasonId=<%= @current_year %>&teamId=<%= game.user.espn_id %>">View on ESPN</a></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
