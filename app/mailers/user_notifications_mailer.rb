@@ -86,7 +86,7 @@ class UserNotificationsMailer < ApplicationMailer
 
   def calculate_trend_breakers
     @games.reduce(tie: [], lead: [], trend: []) do |memo, game|
-      record = game.user.lifetime_record_against(game.opponent)
+      record = game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string')
       if established_tie?(record, game)
         memo[:tie] << game
       elsif took_lead?(record, game)

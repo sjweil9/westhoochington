@@ -101,13 +101,13 @@
 <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
 <% else %>
   <% @trend_breakers[:tie].each do |game| %>
-    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.lifetime_record_against(game.opponent) %></p>
+    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string') %></p>
   <% end %>
   <% @trend_breakers[:lead].each do |game| %>
-    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
+    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string') %></p>
   <% end %>
   <% @trend_breakers[:trend].each do |game| %>
-    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
+    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string') %> lifetime record in the matchup.</p>
   <% end %>
 <% end %>
 <% if @record_setters.values.any?(&:present?) %>
