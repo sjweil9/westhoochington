@@ -11,6 +11,13 @@ namespace :stats do
     end
   end
 
+  desc "This is also called by scheduler to load the next week of games"
+  task :load_next_week_data => :environment do
+    current_week = Time.now.strftime('%U').to_i - 35
+    current_year = Time.now.strftime('%Y')
+    LoadWeeklyDataJob.perform_now(current_week, current_year)
+  end
+
   desc "Load on demand from Yahoo archives"
   task :load_yahoo_data => :environment do
     LoadWeeklyDataJob.new.perform_csv(yahoo: true)

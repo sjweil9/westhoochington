@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_21_032854) do
+ActiveRecord::Schema.define(version: 2020_09_21_230907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,31 @@ ActiveRecord::Schema.define(version: 2020_09_21_032854) do
     t.datetime "updated_at", null: false
     t.json "highest_score_espn"
     t.json "highest_score_yahoo"
+  end
+
+  create_table "game_side_bet_acceptances", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "game_side_bet_id"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_side_bet_id"], name: "index_game_side_bet_acceptances_on_game_side_bet_id"
+    t.index ["user_id"], name: "index_game_side_bet_acceptances_on_user_id"
+  end
+
+  create_table "game_side_bets", force: :cascade do |t|
+    t.bigint "game_id"
+    t.bigint "user_id"
+    t.integer "predicted_winner_id"
+    t.string "status"
+    t.integer "actual_winner_id"
+    t.decimal "amount"
+    t.string "odds"
+    t.json "possible_acceptances"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_game_side_bets_on_game_id"
+    t.index ["user_id"], name: "index_game_side_bets_on_user_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -69,6 +94,18 @@ ActiveRecord::Schema.define(version: 2020_09_21_032854) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "newsletter_messages", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "template_string"
+    t.string "category"
+    t.json "html_content"
+    t.integer "used"
+    t.string "weight"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_newsletter_messages_on_user_id"
   end
 
   create_table "nickname_votes", force: :cascade do |t|
@@ -222,10 +259,15 @@ ActiveRecord::Schema.define(version: 2020_09_21_032854) do
 
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
+  add_foreign_key "game_side_bet_acceptances", "game_side_bets"
+  add_foreign_key "game_side_bet_acceptances", "users"
+  add_foreign_key "game_side_bets", "games"
+  add_foreign_key "game_side_bets", "users"
   add_foreign_key "games", "users"
   add_foreign_key "lines", "over_unders"
   add_foreign_key "lines", "users"
   add_foreign_key "messages", "users"
+  add_foreign_key "newsletter_messages", "users"
   add_foreign_key "nickname_votes", "nicknames"
   add_foreign_key "nickname_votes", "users"
   add_foreign_key "nicknames", "users"

@@ -2,6 +2,8 @@ class Game < ApplicationRecord
   belongs_to :user
   belongs_to :opponent, class_name: 'User'
 
+  default_scope { where("season_year < date_part('year', CURRENT_TIMESTAMP)").or(where("week < date_part('week', CURRENT_TIMESTAMP) - 36")) }
+
   def winner
     won? ? user : opponent
   end

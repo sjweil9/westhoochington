@@ -101,6 +101,7 @@ class LoadWeeklyDataJob < ApplicationJob
     parsed_response = JSON.parse(response.body)
     matchup_period = matchup_period_for_week(week.to_i)
     data_for_week = parsed_response.dig('schedule').select { |game| game['matchupPeriodId'].to_i == matchup_period }
+    binding.pry
 
     teams.each do |team|
       game_data = data_for_week.detect { |game| game.dig('away', 'teamId') == team || game.dig('home', 'teamId') == team }
