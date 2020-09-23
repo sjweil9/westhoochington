@@ -27,6 +27,16 @@ class SideBetsController < ApplicationController
     redirect_to side_hustles_path
   end
 
+  def accept_game_bet
+    acceptance = SideBetAcceptance.new(side_bet_id: params[:side_bet_id], bet_type: 'game', user_id: current_user[:id])
+    unless acceptance.save
+      binding.pry
+      process_errors(acceptance)
+      flash[:sba_error] = "Failed to accept side bet; please try again. Or complain to the asshole that runs this thing."
+    end
+    redirect_to side_hustles_path
+  end
+
   private
 
   def new_game_side_bet_params

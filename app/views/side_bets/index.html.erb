@@ -8,6 +8,11 @@
   </div>
 
   <h3>Current Games</h3>
+  <% if flash[:sba_error] %>
+    <div class="alert alert-danger" role="alert">
+      <%= flash[:sba_error] %>
+    </div>
+  <% end %>
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
@@ -34,7 +39,8 @@
                 <%= Rails.cache.fetch("nickname_#{bet.user_id}") %>: <%= number_to_currency(bet.amount) %> on <%= Rails.cache.fetch("nickname_#{bet.predicted_winner_id}") %>
                 <% if bet.line && !bet.line.zero? %>(<%= bet.line %>)<% end %>
                 <% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></li>
-                <% if bet.user_id != current_user[:id] %>(<a href="#">Accept Bet</a>)<% end %>
+                <% if bet.user_id != current_user[:id] && bet.side_bet_acceptances.none? { |sba| sba.user_id == current_user[:id] } %>(<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.winner_payout) %> win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)<% end %>
+                <a href="#" class="<%= bet.side_bet_acceptances.size.positive? ? 'green' : 'red' %>" data-toggle="tooltip" data-placement="right" title="<%= bet.side_bet_acceptances.map { |sba| Rails.cache.fetch("nickname_#{sba.user_id}") }.join(', ').presence || 'No Takers Yet' %>">[<%= bet.side_bet_acceptances.size %> <%= bet.side_bet_acceptances.size == 1 ? 'Taker' : 'Takers' %>]</a>
             <% end %>
           </ul></th>
           <td>

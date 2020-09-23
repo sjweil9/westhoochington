@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   get '/side_bets', to: 'side_bets#index', as: 'side_hustles'
   post '/game_side_bets', to: 'side_bets#create_game_bet', as: 'propose_game_bet'
-  #post '/side_bets/:side_bet_id/acceptances', to: 'side_bets#accept', as: 'accept_side_bet'
+  post '/game_side_bets/:side_bet_id/acceptances', to: 'side_bets#accept_game_bet', as: 'accept_game_bet'
   #patch '/side_bets/:side_bet_id/status/:status', to: 'side_bets#update', as: 'complete_side_bet'
   #post '/side_bets/acceptances/:acceptance_id/mark_as_paid', to: 'side_bets#mark_as_paid', as: 'mark_as_paid'
   get '/side_bets/pending', to: 'side_bets#pending', as: 'pending_bets'

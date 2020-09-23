@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_22_205850) do
+ActiveRecord::Schema.define(version: 2020_09_23_050813) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -215,13 +215,13 @@ ActiveRecord::Schema.define(version: 2020_09_22_205850) do
   end
 
   create_table "side_bet_acceptances", force: :cascade do |t|
-    t.bigint "side_bet_id"
     t.string "type"
     t.bigint "user_id"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["side_bet_id"], name: "index_side_bet_acceptances_on_side_bet_id"
+    t.string "bet_type"
+    t.integer "side_bet_id"
     t.index ["user_id"], name: "index_side_bet_acceptances_on_user_id"
   end
 
@@ -296,7 +296,6 @@ ActiveRecord::Schema.define(version: 2020_09_22_205850) do
   add_foreign_key "season_side_bets", "users"
   add_foreign_key "season_user_stats", "users"
   add_foreign_key "seasons", "users"
-  add_foreign_key "side_bet_acceptances", "side_bets"
   add_foreign_key "side_bet_acceptances", "users"
   add_foreign_key "side_bets", "users"
   add_foreign_key "user_stats", "users"

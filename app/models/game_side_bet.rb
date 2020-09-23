@@ -1,6 +1,6 @@
 class GameSideBet < ApplicationRecord
   belongs_to :user
-  has_many :side_bet_acceptances, -> { where(type: 'game') }, foreign_key: :side_bet_id
+  has_many :side_bet_acceptances, -> { where(bet_type: 'game') }, foreign_key: :side_bet_id
 
   def game
     @game ||= Game.unscoped.find(game_id)
@@ -12,7 +12,48 @@ class GameSideBet < ApplicationRecord
   validates :amount, numericality: true
   validates :line, numericality: true
 
+  def winner_payout
+    return amount unless odds.present?
+
+    amount * odds.split(':').last.to_i
+  end
+
+  def acceptor_payout
+    return amount unless odds.present?
+
+    amount * odds.split(':').first.to_i
+  end
+
+  def acceptor_condition_string
+    accepting_winner_id = [game.user_id, game.opponent_id].reject { |id| id == predicted_winner_id }.first
+    "#{Rails.cache.fetch("nickname_#{accepting_winner_id}")} #{acceptor_line_description}"
+  end
+
+  def proposer_condition_string
+    "#{Rails.cache.fetch("nickname_#{predicted_winner_id}")} #{proposer_line_description}"
+  end
+
   private
+
+  def acceptor_line_description
+    return 'wins' unless line.present? && !line.zero?
+
+    if line.positive?
+      "wins by more than #{line} points"
+    else
+      "wins, ties, or loses by no more than #{line} points"
+    end
+  end
+
+  def proposer_line_description
+    return 'wins' unless line.present? && !line.zero?
+
+    if line.positive?
+      "wins, ties, or loses by no more than #{line} points"
+    else
+      "wins by more than #{line} points"
+    end
+  end
 
   BET_STATUSES = %w[awaiting_bets awaiting_resolution awaiting_payment awaiting_confirmation]
 
