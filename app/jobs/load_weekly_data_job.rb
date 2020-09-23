@@ -89,7 +89,7 @@ class LoadWeeklyDataJob < ApplicationJob
     }
   }.with_indifferent_access
 
-  def perform(week, year)
+  def perform(week, year, skip_calculated_stats: false)
     @year = year.to_s
     teams = EMAIL_MAPPING[@year].keys.map(&:to_s).map(&:to_i)
 
@@ -122,9 +122,10 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_active_total: other_team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal'),
         opponent_bench_total: bench_total(other_team_players),
         opponent_projected_total: projected_total(other_team_players),
+        started: lineup_locked?([*team_players, *other_team_players])
       }
 
-      game = Game.find_by(
+      game = Game.unscoped.find_by(
         week: [14, 16].include?(week) ? week - 1 : week,
         season_year: @year.to_i,
         user_id: user_id_for(team),
@@ -146,6 +147,8 @@ class LoadWeeklyDataJob < ApplicationJob
 
       game.update(game_data)
     end
+
+    return if skip_calculated_stats
 
     User.all.each do |user|
       CalculateStatsJob.new.perform(user.id)
@@ -335,6 +338,12 @@ class LoadWeeklyDataJob < ApplicationJob
       else
         total + 0
       end
+    end
+  end
+
+  def lineup_locked?(players)
+    players.any? do |player|
+      ACTIVE_PLAYER_SLOTS.include?(player['lineupSlotId']) && player.dig('playerPoolEntry', 'lineupLocked')
     end
   end
 

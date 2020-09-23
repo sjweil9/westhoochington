@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_22_045521) do
+ActiveRecord::Schema.define(version: 2020_09_22_205850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_045521) do
     t.json "possible_acceptances"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "line"
     t.index ["game_id"], name: "index_game_side_bets_on_game_id"
     t.index ["user_id"], name: "index_game_side_bets_on_user_id"
   end
@@ -74,6 +75,7 @@ ActiveRecord::Schema.define(version: 2020_09_22_045521) do
     t.float "opponent_active_total"
     t.float "opponent_projected_total"
     t.float "opponent_bench_total"
+    t.boolean "started"
     t.index ["user_id"], name: "index_games_on_user_id"
   end
 

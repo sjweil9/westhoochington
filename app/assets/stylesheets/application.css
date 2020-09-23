@@ -33,6 +33,10 @@
     background-color: indianred;
 }
 
+.odds-number {
+    width: 50px;
+}
+
 small.green {
     color: green;
 }

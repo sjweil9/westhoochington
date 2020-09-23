@@ -1,6 +1,7 @@
 class Game < ApplicationRecord
   belongs_to :user
   belongs_to :opponent, class_name: 'User'
+  has_many :game_side_bets
 
   default_scope { where("season_year < date_part('year', CURRENT_TIMESTAMP)").or(where("week < date_part('week', CURRENT_TIMESTAMP) - 36")) }
 
