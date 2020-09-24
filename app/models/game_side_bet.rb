@@ -39,6 +39,18 @@ class GameSideBet < ApplicationRecord
     str
   end
 
+  def valid_acceptor_ids
+    if possible_acceptances&.dig('any')
+      User.pluck(:id).reject
+    else
+      possible_acceptances&.dig('users').presence || []
+    end
+  end
+
+  def maximum_acceptors
+    possible_acceptances&.dig('max')
+  end
+
   def update_winner
     winner_id = if line.present? && !line.zero?
                   predictor_score_base = game.user_id == predicted_winner_id ? game.active_total : game.opponent_active_total

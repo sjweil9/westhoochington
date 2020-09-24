@@ -44,7 +44,6 @@ class SideBetsController < ApplicationController
   def accept_game_bet
     acceptance = SideBetAcceptance.new(side_bet_id: params[:side_bet_id], bet_type: 'game', user_id: current_user[:id])
     unless acceptance.save
-      binding.pry
       process_errors(acceptance)
       flash[:sba_error] = "Failed to accept side bet; please try again. Or complain to the asshole that runs this thing."
     end
@@ -55,7 +54,7 @@ class SideBetsController < ApplicationController
 
   def new_game_side_bet_params
     params
-      .permit(:game_id, :predicted_winner_id, :odds_for, :odds_against, :line, :acceptances_limit, :acceptances_players, :amount)
+      .permit(:game_id, :predicted_winner_id, :odds_for, :odds_against, :line, :acceptances_limit, :amount, acceptances_players: [])
       .merge(user_id: current_user[:id])
   end
 
