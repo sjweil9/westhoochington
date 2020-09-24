@@ -3,13 +3,27 @@ class SideBetsController < ApplicationController
     offset = Time.now.monday? ? 36 : 35
     @current_week = Time.now.strftime('%U').to_i - offset
     @current_year = Date.today.year
-    @current_games = Game.unscoped.where(season_year: Date.today.year, week: @current_week).includes(game_side_bets: :side_bet_acceptances).references(game_side_bets: :side_bet_acceptances).all.reject { |game| game.opponent_id > game.user_id }
+    @current_games =
+      Game
+        .unscoped
+        .where(season_year: Date.today.year, week: @current_week)
+        .includes(game_side_bets: :side_bet_acceptances)
+        .references(game_side_bets: :side_bet_acceptances)
+        .all
+        .reject { |game| game.opponent_id > game.user_id }
     @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten
     @active_players.each(&:random_nickname) # make sure cache is primed always
   end
 
   def pending
-
+    @pending_game_bets = GameSideBet
+                      .where(status: %w[awaiting_payment awaiting_confirmation])
+                      .includes(:side_bet_acceptances)
+                      .references(:side_bet_acceptances)
+                      .all
+                      .map(&:side_bet_acceptances)
+                      .flatten
+    User.all.each(&:random_nickname) # make sure cache is primed always
   end
 
   def resolved

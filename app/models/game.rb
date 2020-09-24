@@ -5,8 +5,26 @@ class Game < ApplicationRecord
 
   default_scope { where("season_year < date_part('year', CURRENT_TIMESTAMP)").or(where("week < date_part('week', CURRENT_TIMESTAMP) - 36")) }
 
+  after_update :set_bet_statuses
+
+  def set_bet_statuses
+    if saved_change_to_started? && self.started
+      # update all associated bets to "awaiting_resolution"
+      game_side_bets.where(status: 'awaiting_bets').update_all(status: 'awaiting_resolution')
+    end
+
+    if saved_change_to_finished? && self.finished
+      # update all associated bets to "awaiting_payment" and update winner ID
+      game_side_bets.where(status: 'awaiting_resolution').each(&:update_winner)
+    end
+  end
+
   def winner
     won? ? user : opponent
+  end
+
+  def winner_id
+    won? ? user_id : opponent_id
   end
 
   def loser
