@@ -69,6 +69,20 @@ class GameSideBet < ApplicationRecord
     predicted_winner_id != actual_winner_id && actual_winner_id.present?
   end
 
+  def cant_accept_reason(current_user_id)
+    if game.started?
+      "Game has already started."
+    elsif user_id == current_user_id
+      "This is your own bet."
+    elsif maximum_acceptors.present? && side_bet_acceptances.size >= maximum_acceptors
+      "Already reached the maximum of #{maximum_acceptors} acceptors."
+    elsif side_bet_acceptances.any? { |sba| sba.user_id == current_user_id }
+      "You have already accepted this bet"
+    elsif possible_acceptances&.dig('users').present? && possible_acceptances&.dig('users').exclude?(current_user_id)
+      "You are not in the list of players for whom this bet was proposed."
+    end
+  end
+
   private
 
   def acceptor_line_description

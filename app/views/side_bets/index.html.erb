@@ -39,7 +39,11 @@
                 <%= Rails.cache.fetch("nickname_#{bet.user_id}") %>: <%= number_to_currency(bet.amount) %> on <%= Rails.cache.fetch("nickname_#{bet.predicted_winner_id}") %>
                 <% if bet.line && !bet.line.zero? %>(<%= bet.line %>)<% end %>
                 <% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></li>
-                <% if !game.started && bet.user_id != current_user[:id] && (bet.maximum_acceptors.blank? || bet.side_bet_acceptances.size < bet.maximum_acceptors) && bet.side_bet_acceptances.none? { |sba| sba.user_id == current_user[:id] } && bet.valid_acceptor_ids.include?(current_user[:id]) %>(<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)<% end %>
+                <% if !game.started && bet.user_id != current_user[:id] && (bet.maximum_acceptors.blank? || bet.side_bet_acceptances.size < bet.maximum_acceptors) && bet.side_bet_acceptances.none? { |sba| sba.user_id == current_user[:id] } && bet.valid_acceptor_ids.include?(current_user[:id]) %>
+                (<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)
+                <% else %>
+                <span data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">(Accept Bet)</span>
+                <% end %>
                 <a href="#" class="<%= bet.side_bet_acceptances.size.positive? ? 'green' : 'red' %>" data-toggle="tooltip" data-placement="right" title="<%= bet.side_bet_acceptances.map { |sba| Rails.cache.fetch("nickname_#{sba.user_id}") }.join(', ').presence || 'No Takers Yet' %>">[<%= bet.side_bet_acceptances.size %> <%= bet.side_bet_acceptances.size == 1 ? 'Taker' : 'Takers' %>]</a>
             <% end %>
           </ul></th>
