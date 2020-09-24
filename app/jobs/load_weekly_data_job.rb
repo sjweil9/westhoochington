@@ -122,7 +122,8 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_active_total: other_team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal'),
         opponent_bench_total: bench_total(other_team_players),
         opponent_projected_total: projected_total(other_team_players),
-        started: lineup_locked?([*team_players, *other_team_players])
+        started: lineup_locked?([*team_players, *other_team_players]),
+        finished: game_data['winner'] != 'UNDECIDED',
       }
 
       game = Game.unscoped.find_by(

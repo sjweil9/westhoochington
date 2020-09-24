@@ -1,0 +1,2 @@
+class BetNotificationsMailer < ApplicationMailer
+end

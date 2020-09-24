@@ -13,7 +13,7 @@ namespace :stats do
 
   desc "This is also called by scheduler to load the next week of games"
   task :load_next_week_data => :environment do
-    unless Time.now.monday?
+    unless Time.now.monday? || Time.now.hour < 8
       current_week = Time.now.strftime('%U').to_i - 35
       current_year = Time.now.strftime('%Y')
       LoadWeeklyDataJob.perform_now(current_week, current_year, skip_calculated_stats: true)
@@ -83,5 +83,12 @@ namespace :newsletter do
         UserNotificationsMailer.send_newsletter(involved_users, week, year).deliver
       end
     end
+  end
+end
+
+namespace :bets do
+  desc "Called by Heroku scheduler to update on any new action for the day"
+  task :send_updates => :environment do
+    BetNotificationsMailer.send_daily_update
   end
 end
