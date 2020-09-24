@@ -47,7 +47,15 @@
                 <a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.acceptor_payout) %>
               <% end %>
             </th>
-            <td><%= sba.status.titleize %></td>
+            <td>
+              <% if sba.awaiting_payment? && sba.loser_id == current_user[:id] %>
+                <a href="" class="btn btn-success">Mark Payment Sent</a>
+              <% elsif (sba.awaiting_payment? || sba.awaiting_confirmation?) && sba.winner_id == current_user[:id] %>
+                <a href="" class="btn btn-success">Confirm Payment Received</a>
+              <% else %>
+                <%= sba.status.titleize %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>
