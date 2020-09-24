@@ -24,6 +24,13 @@ class SideBetAcceptance < ApplicationRecord
     side_bet.predictor_won? ? side_bet.user_id : user_id
   end
 
+  def confirm_payment!
+    update(status: 'completed')
+    return unless side_bet.side_bet_acceptances.all?(&:completed?)
+
+    side_bet.update(status: 'completed')
+  end
+
   private
 
   def set_defaults

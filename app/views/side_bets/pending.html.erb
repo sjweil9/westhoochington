@@ -51,7 +51,7 @@
               <% if sba.awaiting_payment? && sba.loser_id == current_user[:id] %>
                 <a href="" class="btn btn-success">Mark Payment Sent</a>
               <% elsif (sba.awaiting_payment? || sba.awaiting_confirmation?) && sba.winner_id == current_user[:id] %>
-                <a href="" class="btn btn-success">Confirm Payment Received</a>
+                <a href="<%= confirm_payment_received_path(sba.id) %>" class="btn btn-success" data-method="post">Confirm Payment Received</a>
               <% else %>
                 <%= sba.status.titleize %>
               <% end %>

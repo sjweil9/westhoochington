@@ -1,4 +1,6 @@
 class SideBetsController < ApplicationController
+  before_action :prime_nickname_cache, only: %i[index pending resolved]
+
   def index
     offset = Time.now.monday? ? 36 : 35
     @current_week = Time.now.strftime('%U').to_i - offset
@@ -12,7 +14,6 @@ class SideBetsController < ApplicationController
         .all
         .reject { |game| game.opponent_id > game.user_id }
     @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten
-    @active_players.each(&:random_nickname) # make sure cache is primed always
   end
 
   def pending
@@ -23,11 +24,21 @@ class SideBetsController < ApplicationController
                       .all
                       .map(&:side_bet_acceptances)
                       .flatten
-    User.all.each(&:random_nickname) # make sure cache is primed always
   end
 
   def resolved
-
+    @year = params[:year] || Date.today.year
+    @week = params[:week] || 'ALL'
+    filter_year = @year == 'ALL' ? nil : @year
+    filter_week = @week == 'ALL' ? nil : @week
+    games = Game.unscoped.where({ season_year: filter_year, week: filter_week }.compact).all
+    @resolved_game_bets = GameSideBet
+                            .where(status: 'completed', game_id: games.map(&:id))
+                            .includes(:side_bet_acceptances)
+                            .references(:side_bet_acceptances)
+                            .all
+                            .map(&:side_bet_acceptances)
+                            .flatten
   end
 
   def create_game_bet
@@ -50,6 +61,16 @@ class SideBetsController < ApplicationController
     redirect_to side_hustles_path
   end
 
+  def confirm_payment_received
+    acceptance = SideBetAcceptance.find(params[:acceptance_id])
+    if acceptance.winner_id == current_user[:id]
+      acceptance.confirm_payment!
+    else
+      flash[:payment_error] = "You cannot mark this payment received as you are not the winner of this bet."
+    end
+    redirect_to pending_bets_path
+  end
+
   private
 
   def new_game_side_bet_params
@@ -64,5 +85,9 @@ class SideBetsController < ApplicationController
     json = { any: limit.blank? && players.blank?, max: limit.present? ? limit.to_i : false, users: players&.map(&:to_i) }
     odds = [params.delete(:odds_for), params.delete(:odds_against)].join(':')
     params.merge(possible_acceptances: json, odds: odds)
+  end
+
+  def prime_nickname_cache
+    User.all.each(&:random_nickname) # make sure cache is primed always
   end
 end
