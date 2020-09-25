@@ -34,7 +34,7 @@ class GameSideBet < ApplicationRecord
 
   def terms_description
     str = Rails.cache.fetch("nickname_#{predicted_winner_id}")
-    str += " (#{line})" if line.present? && !line.zero?
+    str += " (#{line.positive? ? '+' + line.to_s : line})" if line.present? && !line.zero?
     str += " over #{Rails.cache.fetch("nickname_#{accepting_winner_id}")}"
     str
   end

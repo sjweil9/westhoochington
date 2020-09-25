@@ -37,10 +37,10 @@
             <% game.game_side_bets.each do |bet| %>
               <li>
                 <%= Rails.cache.fetch("nickname_#{bet.user_id}") %>: <%= number_to_currency(bet.amount) %> on <%= Rails.cache.fetch("nickname_#{bet.predicted_winner_id}") %>
-                <% if bet.line && !bet.line.zero? %>(<%= bet.line %>)<% end %>
+                <% if bet.line && !bet.line.zero? %>(<%= bet.line.positive? ? '+' : '' %><%= bet.line %>)<% end %>
                 <% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></li>
                 <% if !game.started && bet.user_id != current_user[:id] && (bet.maximum_acceptors.blank? || bet.side_bet_acceptances.size < bet.maximum_acceptors) && bet.side_bet_acceptances.none? { |sba| sba.user_id == current_user[:id] } && bet.valid_acceptor_ids.include?(current_user[:id]) %>
-                (<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)
+                (<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> to win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)
                 <% else %>
                 <span data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">(Accept Bet)</span>
                 <% end %>
@@ -77,7 +77,7 @@
                         </div>
                         <div class="form-group">
                           <label for="bet-amount">Bet Amount ($):</label>
-                          <input type="number" step="1" id="bet-amount" name="amount">
+                          <input type="number" step="0.1" id="bet-amount" name="amount">
                           <%= render "shared/errors", type: "amount" %>
                         </div>
                         <div class="form-group">
@@ -89,7 +89,7 @@
                         <div class="form-group">
                           <label for="line-select">Line:</label>
                           <input type="number" value="0" step="0.1" id="line" name="line">
-                          <img class="questionmark" data-toggle="tooltip" title="eg -2.5 means you bet that winner covers by at least 2.5 points" src="<%= image_path('tooltip.png') %>" />
+                          <img class="questionmark" data-toggle="tooltip" title="eg 2.5 means you bet your selected player wins, ties, or loses by no more than 2.5 points. -1.5 means you bet your selected player wins by at least 1.5 points" src="<%= image_path('tooltip.png') %>" />
                           <%= render "shared/errors", type: "line" %>
                         </div>
                         <div class="form-group">
