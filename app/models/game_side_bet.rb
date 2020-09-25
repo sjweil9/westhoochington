@@ -47,7 +47,7 @@ class GameSideBet < ApplicationRecord
     possible_acceptances&.dig('max')
   end
 
-  def update_winner
+  def game_finished!
     winner_id = if line.present? && !line.zero?
                   predictor_score_base = game.user_id == predicted_winner_id ? game.active_total : game.opponent_active_total
                   acceptor_score_base = game.user_id == predicted_winner_id ? game.opponent_active_total : game.active_total
