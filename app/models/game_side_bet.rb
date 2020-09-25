@@ -55,7 +55,6 @@ class GameSideBet < ApplicationRecord
                 end
     update(status: 'awaiting_payment', actual_winner_id: winner_id)
     side_bet_acceptances.update_all(status: 'awaiting_payment')
-    side_bet_acceptances.each(&:notify_results)
   end
 
   def game_started!

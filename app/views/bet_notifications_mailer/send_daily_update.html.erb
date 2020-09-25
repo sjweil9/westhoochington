@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body>
+  <h1>Side Hustle Update</h1>
+  <h3>New Bets Proposed</h3>
+  <ul>
+  <% @new_bets_proposed.each do |bet| %>
+      <li>
+        <%= bet.user.random_nickname %> is betting <%= number_to_currency(bet.amount) %> on <a href="https://fantasy.espn.com/football/fantasycast?leagueId=209719&matchupPeriodId=<%= @week %>&seasonId=<%= @year %>&teamId=<%= bet.game.user.espn_id %>"><%= bet.terms_description %></a><% if bet.odds.present? && bet.odds != '1:1' %>, offering <%= bet.odds %> odds.<% else %>.<% end %>
+        <a href="#" class="<%= bet.side_bet_acceptances.size.positive? ? 'green' : 'red' %>" data-toggle="tooltip" data-placement="right" title="<%= bet.side_bet_acceptances.map { |sba| Rails.cache.fetch("nickname_#{sba.user_id}") }.join(', ').presence || 'No Takers Yet' %>">[<%= bet.side_bet_acceptances.size %> <%= bet.side_bet_acceptances.size == 1 ? 'Taker' : 'Takers' %>]</a>
+      </li>
+  <% end %>
+  </ul>
+  <p><a href="http://www.westhoochington.com/side_bets">Go get a piece of this action!</a></p>
+  <h3>New Takers</h3>
+  <ul>
+    <% @new_bets_accepted.each do |sba| %>
+      <li>
+        <%= sba.user.random_nickname %> took the action on "<%= sba.side_bet.terms_description %>", proposed by <%= sba.side_bet.user.random_nickname %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %>, getting <%= sba.side_bet.odds %> odds<% end %>.
+      </li>
+    <% end %>
+  </ul>
+</body>

@@ -89,6 +89,6 @@ end
 namespace :bets do
   desc "Called by Heroku scheduler to update on any new action for the day"
   task :send_updates => :environment do
-    BetNotificationsMailer.send_daily_update
+    BetNotificationsMailer.send_daily_update&.deliver
   end
 end
