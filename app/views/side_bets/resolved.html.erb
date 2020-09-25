@@ -37,7 +37,7 @@
       </div>
     </div>
   </form>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center margin-below">
     <h3>Resolved Game Bets for <%= @year == 'ALL' ? 'All Years' : @year %> - <%= @week == 'ALL' ? 'All Weeks' : "Week #{@week}" %></h3>
     <div class="table-responsive">
       <table class="table table-striped">
@@ -80,6 +80,32 @@
             <td>
               <%= sba.status.titleize %>
             </td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <h3>Resolved Season Bets for <%= @year == 'ALL' ? 'All Years' : @year %></h3>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">Season Year</th>
+          <th scope="col">Bet Type</th>
+          <th scope="col">Terms</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Proposer</th>
+          <th scope="col">Takers</th>
+          <th scope="col">Final Results</th>
+          <th scope="col">Bet Outcome</th>
+          <th scope="col">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @resolved_season_bets.each do |sba| %>
+          <tr>
           </tr>
         <% end %>
         </tbody>

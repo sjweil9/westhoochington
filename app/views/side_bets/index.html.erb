@@ -39,7 +39,7 @@
                 <%= Rails.cache.fetch("nickname_#{bet.user_id}") %>: <%= number_to_currency(bet.amount) %> on <%= Rails.cache.fetch("nickname_#{bet.predicted_winner_id}") %>
                 <% if bet.line && !bet.line.zero? %>(<%= bet.line.positive? ? '+' : '' %><%= bet.line %>)<% end %>
                 <% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></li>
-                <% if !game.started && bet.user_id != current_user[:id] && (bet.maximum_acceptors.blank? || bet.side_bet_acceptances.size < bet.maximum_acceptors) && bet.side_bet_acceptances.none? { |sba| sba.user_id == current_user[:id] } && bet.valid_acceptor_ids.include?(current_user[:id]) %>
+                <% if !game.started && bet.valid_for_user_acceptance?(current_user[:id]) %>
                 (<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> to win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)
                 <% else %>
                 <span data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">(Accept Bet)</span>
@@ -139,7 +139,23 @@
       <tbody>
       <% @open_season_bets.each do |bet| %>
         <tr>
-
+          <td><%= @season_bet_types[bet.bet_type.to_sym] %></td>
+          <td><%= bet.terms_description %></td>
+          <td><%= number_to_currency(bet.amount) %><% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></td>
+          <th scope="row"><%= bet.user.random_nickname %></th>
+          <th scope="row"><%= bet.side_bet_acceptances.map { |sba| sba.user.random_nickname }.join(', ') %></th>
+          <td>
+            <% if Time.now.in_time_zone('America/Chicago') > bet.closing_date.in_time_zone('America/Chicago').end_of_day %>
+              <span class="badge badge-danger">Closed <%= bet.closing_date %></span>
+            <% else %>
+              <span class="badge badge-success">Closes on <%= bet.closing_date.to_date %></span>
+              <% if bet.valid_for_user_acceptance?(current_user[:id]) %>
+                <a href="" data-method="post" class="btn btn-success">Accept Bet</a>
+              <% else %>
+                <span class="badge badge-danger" data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">Ineligible to Accept Bet</span>
+              <% end %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
       </tbody>
@@ -160,6 +176,7 @@
         <div class="modal-body">
           <form action="<%= propose_season_bet_path %>" method="post">
             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <input type="hidden" name="season_year" value="<%= Date.today.year %>">
             <div class="form-group">
               <label for="winner-select">Bet Type:</label>
               <select class="custom-select mr-sm-2" id="bet-type-select" name="bet_type">
@@ -224,7 +241,7 @@
             </div>
             <div class="form-group">
               <label for="limit-player-acceptances">Close Betting After <img class="questionmark" data-toggle="tooltip" title="The selected date will be the last valid date for other players to accept this bet." src="<%= image_path('tooltip.png') %>" /></label>
-              <input type="date" name="closing_date">
+              <input type="date" name="closing_date" value="<%= Date.today + 3.days %>">
               <%= render "shared/errors", type: "closing_date" %>
             </div>
             <button class="btn btn-primary" type="submit">Confirm</button>

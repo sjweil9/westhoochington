@@ -91,4 +91,15 @@ namespace :bets do
   task :send_updates => :environment do
     BetNotificationsMailer.send_daily_update&.deliver
   end
+
+  desc "Updates status on seasonal bets that are past their closed date"
+  task :update_seasonal_bets => :environment do
+    closed_bets = SeasonSideBet.where('closing_date < ?', Time.now.in_time_zone('America/Chicago').utc).where(status: 'awaiting_bets')
+    closed_bets.update_all(status: 'awaiting_resolution')
+  end
+
+  desc "Checks season bets for resolution"
+  task :check_season_bet_resolution => :environment do
+    CheckSeasonBetResolutionJob.new.perform
+  end
 end

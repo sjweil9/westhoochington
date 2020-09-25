@@ -26,6 +26,13 @@ class SideBetsController < ApplicationController
                       .all
                       .map(&:side_bet_acceptances)
                       .flatten
+    @pending_season_bets = SeasonSideBet
+                             .where(status: %w[awaiting_payment awaiting_confirmation])
+                             .includes(:side_bet_acceptances)
+                             .references(:side_bet_acceptances)
+                             .all
+                             .map(&:side_bet_acceptances)
+                             .flatten
   end
 
   def resolved
@@ -41,6 +48,13 @@ class SideBetsController < ApplicationController
                             .all
                             .map(&:side_bet_acceptances)
                             .flatten
+    @resolved_season_bets = SeasonSideBet
+                              .where({ status: 'completed', season_year: filter_year }.compact)
+                              .includes(:side_bet_acceptances)
+                              .references(:side_bet_acceptances)
+                              .all
+                              .map(&:side_bet_acceptances)
+                              .flatten
   end
 
   def create_game_bet
@@ -102,7 +116,7 @@ class SideBetsController < ApplicationController
 
   def new_season_side_bet_params
     params
-      .permit(:bet_type, :winner, :loser, :closing_date, *SHARED_BET_PARAMS)
+      .permit(:bet_type, :winner, :loser, :closing_date, :season_year, *SHARED_BET_PARAMS)
       .merge(user_id: current_user[:id])
   end
 
@@ -113,7 +127,13 @@ class SideBetsController < ApplicationController
       winner_id: params[:winner] != 'field' ? params[:winner].to_i : nil,
       loser_id: params[:loser] != 'field' ? params[:loser].to_i : nil,
     }.compact
-    params.except(:winner, :loser).merge(comparison_type: comparison_type, bet_terms: terms)
+    params
+      .except(:winner, :loser)
+      .merge(
+        comparison_type: comparison_type,
+        bet_terms: terms,
+        closing_date: Date.parse(params[:closing_date]).in_time_zone('America/Chicago').end_of_day
+      )
   end
 
   def prime_nickname_cache

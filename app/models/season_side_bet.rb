@@ -27,6 +27,28 @@ class SeasonSideBet < ApplicationRecord
     comparison_type == '1V1'
   end
 
+  def terms_description
+    if player_vs_player?
+      "#{winner_nickname}#{line_description} over #{loser_nickname}"
+    else
+      bet_terms['winner_id'] ? "#{winner_nickname}#{line_description} over The Field" : "The Field#{line_description} over #{loser_nickname}"
+    end
+  end
+
+  def line_description
+    return unless line.present?
+
+    line.positive? ? " (+#{line})" : " (#{line})"
+  end
+
+  def winner_nickname
+    Rails.cache.fetch("nickname_#{bet_terms['winner_id']}")
+  end
+
+  def loser_nickname
+    Rails.cache.fetch("nickname_#{bet_terms['loser_id']}")
+  end
+
   private
 
   VALID_COMPARISON_TYPES = %w[1VF 1V1]

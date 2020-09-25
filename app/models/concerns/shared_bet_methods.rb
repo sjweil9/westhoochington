@@ -33,4 +33,25 @@ module SharedBetMethods
       (possible_acceptances['users'].nil? || possible_acceptances['users'].is_a?(Array)) &&
       (!possible_acceptances['max'] || possible_acceptances['max'].is_a?(Integer))
   end
+
+  def valid_for_user_acceptance?(current_user_id)
+    user_id != current_user_id &&
+      (maximum_acceptors.blank? || side_bet_acceptances.size < maximum_acceptors) &&
+      side_bet_acceptances.none? { |sba| sba.user_id == current_user_id } &&
+      valid_acceptor_ids.include?(current_user_id)
+  end
+
+  def cant_accept_reason(current_user_id)
+    if self.is_a?(GameSideBet) && game.started?
+      "Game has already started."
+    elsif user_id == current_user_id
+      "This is your own bet."
+    elsif maximum_acceptors.present? && side_bet_acceptances.size >= maximum_acceptors
+      "Already reached the maximum of #{maximum_acceptors} acceptors."
+    elsif side_bet_acceptances.any? { |sba| sba.user_id == current_user_id }
+      "You have already accepted this bet"
+    elsif possible_acceptances&.dig('users').present? && possible_acceptances&.dig('users').exclude?(current_user_id)
+      "You are not in the list of players for whom this bet was proposed."
+    end
+  end
 end

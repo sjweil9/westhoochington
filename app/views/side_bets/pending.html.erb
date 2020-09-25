@@ -7,24 +7,25 @@
     </div>
   </div>
 
-  <h3>Pending Game Bets</h3>
+  <div class="row justify-content-center margin-below">
+    <h3>Pending Game Bets</h3>
 
-  <div class="table-responsive">
-    <table class="table table-striped">
-      <thead>
-      <tr>
-        <th scope="col">Week</th>
-        <th scope="col">Terms</th>
-        <th scope="col">Amount</th>
-        <th scope="col">Proposer</th>
-        <th scope="col">Acceptor</th>
-        <th scope="col">Game Projection</th>
-        <th scope="col">Game Result</th>
-        <th scope="col">Bet Outcome</th>
-        <th scope="col">Status</th>
-      </tr>
-      </thead>
-      <tbody>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">Week</th>
+          <th scope="col">Terms</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Proposer</th>
+          <th scope="col">Acceptor</th>
+          <th scope="col">Game Projection</th>
+          <th scope="col">Game Result</th>
+          <th scope="col">Bet Outcome</th>
+          <th scope="col">Status</th>
+        </tr>
+        </thead>
+        <tbody>
         <% @pending_game_bets.each do |sba| %>
           <tr>
             <td><%= sba.side_bet.game.week %><% if sba.side_bet.game.season_year != Date.today.year %> (<%= sba.side_bet.game.season_year %>)<% end %></td>
@@ -58,7 +59,37 @@
             </td>
           </tr>
         <% end %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <h3>Pending Season Bets</h3>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th scope="col">Season Year</th>
+          <th scope="col">Bet Type</th>
+          <th scope="col">Terms</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Proposer</th>
+          <th scope="col">Takers</th>
+          <th scope="col">Final Results</th>
+          <th scope="col">Bet Outcome</th>
+          <th scope="col">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @pending_season_bets.each do |sba| %>
+          <tr>
+
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
