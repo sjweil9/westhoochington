@@ -40,11 +40,7 @@ class GameSideBet < ApplicationRecord
   end
 
   def valid_acceptor_ids
-    if possible_acceptances&.dig('any')
-      User.pluck(:id).reject
-    else
-      possible_acceptances&.dig('users').presence || []
-    end
+    possible_acceptances&.dig('users').presence || User.pluck(:id)
   end
 
   def maximum_acceptors

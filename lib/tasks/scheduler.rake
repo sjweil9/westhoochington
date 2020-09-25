@@ -13,7 +13,7 @@ namespace :stats do
 
   desc "This is also called by scheduler to load the next week of games"
   task :load_next_week_data => :environment do
-    unless Time.now.monday? || Time.now.hour < 8
+    unless Time.now.monday? || Time.now.in_time_zone('America/Chicago').hour < 8
       current_week = Time.now.strftime('%U').to_i - 35
       current_year = Time.now.strftime('%Y')
       LoadWeeklyDataJob.perform_now(current_week, current_year, skip_calculated_stats: true)
