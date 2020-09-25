@@ -31,6 +31,10 @@ class SideBetAcceptance < ApplicationRecord
     side_bet.update(status: 'completed')
   end
 
+  def notify_results
+    BetNotificationsMailer.send_bet_results(id)
+  end
+
   private
 
   def set_defaults

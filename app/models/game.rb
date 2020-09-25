@@ -10,7 +10,7 @@ class Game < ApplicationRecord
   def set_bet_statuses
     if saved_change_to_started? && self.started
       # update all associated bets to "awaiting_resolution"
-      game_side_bets.where(status: 'awaiting_bets').update_all(status: 'awaiting_resolution')
+      game_side_bets.where(status: 'awaiting_bets').each(&:game_started!)
     end
 
     if saved_change_to_finished? && self.finished
