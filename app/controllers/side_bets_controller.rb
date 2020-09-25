@@ -49,12 +49,21 @@ class SideBetsController < ApplicationController
   end
 
   def create_game_bet
-    create_params = new_game_side_bet_params
-    create_params = handle_custom_params(create_params)
+    create_params = handle_custom_params(new_game_side_bet_params)
     side_bet = GameSideBet.new(create_params)
     unless side_bet.save
       process_errors(side_bet)
       flash[:create_bet_error] = true
+    end
+    redirect_to side_hustles_path
+  end
+
+  def create_season_bet
+    create_params = handle_custom_season_params(new_season_side_bet_params)
+    side_bet = SeasonSideBet.new(create_params)
+    unless side_bet.save
+      process_errors(side_bet)
+      flash[:create_season_bet_error] = true
     end
     redirect_to side_hustles_path
   end
@@ -80,9 +89,11 @@ class SideBetsController < ApplicationController
 
   private
 
+  SHARED_BET_PARAMS = [:odds_for, :odds_against, :line, :acceptances_limit, :amount, acceptances_players: []]
+
   def new_game_side_bet_params
     params
-      .permit(:game_id, :predicted_winner_id, :odds_for, :odds_against, :line, :acceptances_limit, :amount, acceptances_players: [])
+      .permit(:game_id, :predicted_winner_id, *SHARED_BET_PARAMS)
       .merge(user_id: current_user[:id])
   end
 
@@ -92,6 +103,17 @@ class SideBetsController < ApplicationController
     json = { any: limit.blank? && players.blank?, max: limit.present? ? limit.to_i : false, users: players&.map(&:to_i) }
     odds = [params.delete(:odds_for), params.delete(:odds_against)].join(':')
     params.merge(possible_acceptances: json, odds: odds)
+  end
+
+  def new_season_side_bet_params
+    params
+      .permit(:bet_type, :winner, :loser, *SHARED_BET_PARAMS)
+      .merge(user_id: current_user[:id])
+  end
+
+  def handle_custom_season_params(params)
+    params = handle_custom_params(params)
+    comparison_type
   end
 
   def prime_nickname_cache
