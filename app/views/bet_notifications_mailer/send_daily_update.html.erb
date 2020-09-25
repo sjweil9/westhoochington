@@ -19,7 +19,7 @@
   <ul>
     <% @new_bets_accepted.each do |sba| %>
       <li>
-        <%= sba.user.random_nickname %> took the action on "<%= sba.side_bet.terms_description %>", proposed by <%= sba.side_bet.user.random_nickname %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %>, getting <%= sba.side_bet.odds %> odds<% end %>.
+        <%= sba.user.random_nickname %> took the action against "<%= sba.side_bet.terms_description %>", proposed by <%= sba.side_bet.user.random_nickname %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %>, getting <%= sba.side_bet.odds %> odds<% end %>.
       </li>
     <% end %>
   </ul>
