@@ -187,6 +187,8 @@
               </select>
               <%= render "shared/errors", type: "loser" %>
             </div>
+            <%= render "shared/errors", type: "bet_terms" %>
+            <%= render "shared/errors", type: "comparison_type" %>
             <div class="form-group">
               <label for="bet-amount">Bet Amount ($):</label>
               <input type="number" step="0.1" id="bet-amount" name="amount">

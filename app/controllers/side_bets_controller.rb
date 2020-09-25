@@ -15,12 +15,7 @@ class SideBetsController < ApplicationController
         .reject { |game| game.opponent_id > game.user_id }
     @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten
     @open_season_bets = SeasonSideBet.where(status: 'awaiting_bets').includes(:side_bet_acceptances).references(:side_bet_acceptances).all
-    @season_bet_types = {
-      final_standings: 'Final Finish',
-      total_points: 'Final Points',
-      regular_season_finish: 'Regular Season Finish',
-      regular_season_points: 'Regular Season Points'
-    }
+    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
 
   def pending
@@ -113,7 +108,12 @@ class SideBetsController < ApplicationController
 
   def handle_custom_season_params(params)
     params = handle_custom_params(params)
-    comparison_type
+    comparison_type = [params[:winner], params[:loser]].include?('field') ? '1VF': '1V1'
+    terms = {
+      winner_id: params[:winner] != 'field' ? params[:winner].to_i : nil,
+      loser_id: params[:loser] != 'field' ? params[:loser].to_i : nil,
+    }.compact
+    params.except(:winner, :loser).merge(comparison_type: comparison_type, bet_terms: terms)
   end
 
   def prime_nickname_cache
