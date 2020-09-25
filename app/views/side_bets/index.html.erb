@@ -222,6 +222,11 @@
               </p>
               <%= render "shared/errors", type: "possible_acceptances" %>
             </div>
+            <div class="form-group">
+              <label for="limit-player-acceptances">Close Betting After <img class="questionmark" data-toggle="tooltip" title="The selected date will be the last valid date for other players to accept this bet." src="<%= image_path('tooltip.png') %>" /></label>
+              <input type="date" name="closing_date">
+              <%= render "shared/errors", type: "closing_date" %>
+            </div>
             <button class="btn btn-primary" type="submit">Confirm</button>
           </form>
         </div>

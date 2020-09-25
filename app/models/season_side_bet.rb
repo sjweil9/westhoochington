@@ -8,6 +8,7 @@ class SeasonSideBet < ApplicationRecord
 
   validate :valid_winner, :valid_loser, :valid_status, :valid_odds, :valid_acceptances, :valid_bet_type,
            :valid_comparison_type, :valid_bet_terms
+  validate :valid_closing_date, on: :create
   validates :amount, numericality: true
   validates :line, numericality: true
 
@@ -64,5 +65,11 @@ class SeasonSideBet < ApplicationRecord
     return if !bet_terms&.dig('loser_id') || User.pluck(:id).include?(bet_terms['loser_id'])
 
     errors.add(:loser, "is invalid: must be a valid registered player.")
+  end
+
+  def valid_closing_date
+    return if closing_date && closing_date.in_time_zone('America/Chicago') > Time.now.in_time_zone('America/Chicago')
+
+    errors.add(:closing_date, "is invalid: must be a future date.")
   end
 end

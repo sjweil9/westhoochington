@@ -102,7 +102,7 @@ class SideBetsController < ApplicationController
 
   def new_season_side_bet_params
     params
-      .permit(:bet_type, :winner, :loser, *SHARED_BET_PARAMS)
+      .permit(:bet_type, :winner, :loser, :closing_date, *SHARED_BET_PARAMS)
       .merge(user_id: current_user[:id])
   end
 
