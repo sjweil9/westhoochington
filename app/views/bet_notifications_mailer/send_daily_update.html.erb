@@ -11,6 +11,7 @@
       <li>
         <%= bet.user.random_nickname %> is betting <%= number_to_currency(bet.amount) %> on <a href="https://fantasy.espn.com/football/fantasycast?leagueId=209719&matchupPeriodId=<%= @week %>&seasonId=<%= @year %>&teamId=<%= bet.game.user.espn_id %>"><%= bet.terms_description %></a><% if bet.odds.present? && bet.odds != '1:1' %>, offering <%= bet.odds %> odds.<% else %>.<% end %>
         <a href="#" class="<%= bet.side_bet_acceptances.size.positive? ? 'green' : 'red' %>" data-toggle="tooltip" data-placement="right" title="<%= bet.side_bet_acceptances.map { |sba| Rails.cache.fetch("nickname_#{sba.user_id}") }.join(', ').presence || 'No Takers Yet' %>">[<%= bet.side_bet_acceptances.size %> <%= bet.side_bet_acceptances.size == 1 ? 'Taker' : 'Takers' %>]</a>
+        <% if bet.possible_acceptances&.dig('users').present? %> (Specifically challenging: <%= bet.possible_acceptances&.dig('users').map { |id| Rails.cache.fetch("nickname_#{id}") } %>)<% end %>
       </li>
   <% end %>
   </ul>
