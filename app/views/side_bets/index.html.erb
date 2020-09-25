@@ -122,14 +122,122 @@
       </tbody>
     </table>
   </div>
+
+  <h3>Open Season-Long Bets</h3>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">Bet Type</th>
+        <th scope="col">Terms</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Proposer</th>
+        <th scope="col">Takers</th>
+        <th scope="col">Closing Date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @open_season_bets.each do |bet| %>
+        <tr>
+
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSeasonBetModal">
+    Add Season Bet
+  </button>
+  <div class="modal fade" id="addSeasonBetModal" tabindex="-1" role="dialog" aria-labelledby="addSeasonBetModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Season Bet</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="<%= propose_season_bet_path %>" method="post">
+            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <div class="form-group">
+              <label for="winner-select">Bet Type:</label>
+              <select class="custom-select mr-sm-2" id="bet-type-select" name="bet_type">
+                <% @season_bet_types.each do |tag, description| %>
+                  <option value="<%= tag %>"><%= description %></option>
+                <% end %>
+              </select>
+              <%= render "shared/errors", type: "bet_type" %>
+            </div>
+            <div class="form-group">
+              <label for="winner-select">Predicted Winner:</label>
+              <select class="custom-select mr-sm-2" id="winner-select" name="winner">
+                <% (@active_players + [:field]).each do |player| %>
+                  <option value="<%= player == :field ? player : player.id %>"><%= player == :field ? 'The Field' : player.random_nickname %></option>
+                <% end %>
+              </select>
+              <%= render "shared/errors", type: "winner" %>
+            </div>
+            <div class="form-group">
+              <label for="winner-select">Vs:</label>
+              <select class="custom-select mr-sm-2" id="loser-select" name="loser">
+                <% (@active_players + [:field]).each do |player| %>
+                  <option value="<%= player == :field ? player : player.id %>"><%= player == :field ? 'The Field' : player.random_nickname %></option>
+                <% end %>
+              </select>
+              <%= render "shared/errors", type: "loser" %>
+            </div>
+            <div class="form-group">
+              <label for="bet-amount">Bet Amount ($):</label>
+              <input type="number" step="0.1" id="bet-amount" name="amount">
+              <%= render "shared/errors", type: "amount" %>
+            </div>
+            <div class="form-group">
+              <label>Odds:</label>
+              <input class="odds-number" type="number" step="1" id="odds-for" name="odds_for" value="1"> to <input class="odds-number" type="number" step="1" id="odds-against" name="odds_against" value="1">
+              <img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you would pay 3x the amount to any winners and receive 2x the amount from any losers" src="<%= image_path('tooltip.png') %>" />
+              <%= render "shared/errors", type: "odds" %>
+            </div>
+            <div class="form-group">
+              <label for="line-select">Line:</label>
+              <input type="number" value="0" step="0.1" id="line" name="line">
+              <img class="questionmark" data-toggle="tooltip" title="eg 2.5 means you bet your selected player wins, ties, or loses by no more than 2.5 points. -1.5 means you bet your selected player wins by at least 1.5 points" src="<%= image_path('tooltip.png') %>" />
+              <%= render "shared/errors", type: "line" %>
+            </div>
+            <div class="form-group">
+              <label for="limit-num-acceptances">Limit # of Takers:</label>
+              <input type="number" value="" step="1" id="limit-num-acceptances" name="acceptances_limit" min="1" max="9">
+              <img class="questionmark" data-toggle="tooltip" title="Max number of other players that can take your action; leave blank to provide no limit" src="<%= image_path('tooltip.png') %>" />
+            </div>
+            <div class="form-group">
+              <label for="limit-player-acceptances">Challenge Specific Players: <img class="questionmark" data-toggle="tooltip" title="If you want to challenge only specific players, select any number here. Select none to leave all eligible. You might need to control-click to multi-select." src="<%= image_path('tooltip.png') %>" /></label>
+              <p>
+                <select name="acceptances_players[]" id="limit-player-acceptances" multiple>
+                  <% @active_players.reject { |player| player.id == current_user[:id] }.each do |player| %>
+                    <option value="<%= player.id %>"><%= player.random_nickname %></option>
+                  <% end %>
+                </select>
+              </p>
+              <%= render "shared/errors", type: "possible_acceptances" %>
+            </div>
+            <button class="btn btn-primary" type="submit">Confirm</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
   $(document).ready(function(){
     var aria_open = JSON.parse('<%= flash[:create_bet_error] || false %>');
-    console.log(aria_open);
+    var season_open = JSON.parse('<%= flash[:create_season_bet_error] || false %>');
     if (aria_open) {
       $("#addBetModal").modal('show');
+    }
+
+    if (season_open) {
+      $("#addSeasonBetModal").modal('show');
     }
   });
 </script>

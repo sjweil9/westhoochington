@@ -14,6 +14,13 @@ class SideBetsController < ApplicationController
         .all
         .reject { |game| game.opponent_id > game.user_id }
     @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten
+    @open_season_bets = SeasonSideBet.where(status: 'awaiting_bets').includes(:side_bet_acceptances).references(:side_bet_acceptances).all
+    @season_bet_types = {
+      final_standings: 'Final Finish',
+      total_points: 'Final Points',
+      regular_season_finish: 'Regular Season Finish',
+      regular_season_points: 'Regular Season Points'
+    }
   end
 
   def pending
