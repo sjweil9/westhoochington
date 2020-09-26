@@ -19,6 +19,14 @@ class SeasonSideBet < ApplicationRecord
     regular_season_points: 'Regular Season Points'
   }
 
+  VALID_BET_TYPES.keys.each do |type|
+    define_method("#{type}?") { bet_type == type.to_s }
+  end
+
+  def regular_season?
+    regular_season_finish? || regular_season_points?
+  end
+
   def player_vs_field?
     comparison_type == '1VF'
   end
@@ -47,6 +55,10 @@ class SeasonSideBet < ApplicationRecord
 
   def loser_nickname
     Rails.cache.fetch("nickname_#{bet_terms['loser_id']}")
+  end
+
+  def update_winner!
+
   end
 
   private

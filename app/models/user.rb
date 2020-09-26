@@ -19,6 +19,7 @@ class User < ApplicationRecord
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
     has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id
     has_one :"calculated_stats_#{year}", -> { where(season_year: year) }, class_name: 'SeasonUserStat'
+    has_one :"season_#{year}", -> { where(season_year: year) }, class_name: 'Season'
   end
 
   after_create :default_nicknames
@@ -208,6 +209,14 @@ class User < ApplicationRecord
 
         (send(:"yearly_opponent_#{method}_#{year}") / send("opponent_game_count_#{year}")).round(2)
       end
+    end
+
+    define_method("regular_rank_#{year}") do
+      send("season_#{year}")&.regular_rank&.to_i
+    end
+
+    define_method("playoff_rank_#{year}") do
+      send("season_#{year}")&.playoff_rank&.to_i
     end
 
     define_method("lucky_wins_#{year}") do
