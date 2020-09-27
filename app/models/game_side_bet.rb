@@ -41,14 +41,6 @@ class GameSideBet < ApplicationRecord
     str
   end
 
-  def valid_acceptor_ids
-    possible_acceptances&.dig('users').presence || User.pluck(:id)
-  end
-
-  def maximum_acceptors
-    possible_acceptances&.dig('max')
-  end
-
   def game_finished!
     winner_id = if line.present? && !line.zero?
                   predictor_score_base = game.user_id == predicted_winner_id ? game.active_total : game.opponent_active_total

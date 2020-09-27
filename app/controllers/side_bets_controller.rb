@@ -2,7 +2,7 @@ class SideBetsController < ApplicationController
   before_action :prime_nickname_cache, only: %i[index pending resolved]
 
   def index
-    offset = Time.now.monday? ? 36 : 35
+    offset = (Time.now.monday? || Time.now.sunday?) ? 36 : 35
     @current_week = Time.now.strftime('%U').to_i - offset
     @current_year = Date.today.year
     @current_games =
@@ -79,6 +79,15 @@ class SideBetsController < ApplicationController
 
   def accept_game_bet
     acceptance = SideBetAcceptance.new(side_bet_id: params[:side_bet_id], bet_type: 'game', user_id: current_user[:id])
+    unless acceptance.save
+      process_errors(acceptance)
+      flash[:sba_error] = "Failed to accept side bet; please try again. Or complain to the asshole that runs this thing."
+    end
+    redirect_to side_hustles_path
+  end
+
+  def accept_season_bet
+    acceptance = SideBetAcceptance.new(side_bet_id: params[:side_bet_id], bet_type: 'season', user_id: current_user[:id])
     unless acceptance.save
       process_errors(acceptance)
       flash[:sba_error] = "Failed to accept side bet; please try again. Or complain to the asshole that runs this thing."

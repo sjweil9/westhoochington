@@ -54,4 +54,12 @@ module SharedBetMethods
       "You are not in the list of players for whom this bet was proposed."
     end
   end
+
+  def valid_acceptor_ids
+    possible_acceptances&.dig('users').presence || User.pluck(:id)
+  end
+
+  def maximum_acceptors
+    possible_acceptances&.dig('max')
+  end
 end
