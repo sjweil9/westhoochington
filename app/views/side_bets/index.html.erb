@@ -40,7 +40,7 @@
                 <% if bet.line && !bet.line.zero? %>(<%= bet.line.positive? ? '+' : '' %><%= bet.line %>)<% end %>
                 <% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></li>
                 <% if !game.started && bet.valid_for_user_acceptance?(current_user[:id]) %>
-                (<a data-method="post" href="<%= accept_game_bet_path(bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> to win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)
+                (<a data-method="post" href="<%= accept_bet_path('game', bet.id) %>" onclick="return confirm('You will risk <%= number_to_currency(bet.proposer_payout) %> to win <%= number_to_currency(bet.acceptor_payout) %> if <%= bet.acceptor_condition_string %>. Ok?')">Accept Bet</a>)
                 <% else %>
                 <span data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">(Accept Bet)</span>
                 <% end %>
@@ -150,7 +150,7 @@
             <% else %>
               <% if bet.valid_for_user_acceptance?(current_user[:id]) %>
                 <span class="badge badge-success">Closes on <%= bet.closing_date.to_date %></span>
-                <a href="<%= accept_season_bet_path(bet.id) %>" data-method="post" class="btn btn-primary">Accept Bet</a>
+                <a href="<%= accept_bet_path('season', bet.id) %>" data-method="post" class="btn btn-primary">Accept Bet</a>
               <% else %>
                 <span class="badge badge-warning" data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">Closes on <%= bet.closing_date.to_date %></span>
               <% end %>
