@@ -5,6 +5,18 @@ module SharedBetMethods
     define_method("#{status}?") { self.status == status }
   end
 
+  def proposer_payout
+    return amount unless odds.present?
+
+    amount * odds.split(':').last.to_i
+  end
+
+  def acceptor_payout
+    return amount unless odds.present?
+
+    amount * odds.split(':').first.to_i
+  end
+
   def valid_status
     return if BET_STATUSES.include?(status)
 

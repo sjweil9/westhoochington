@@ -18,7 +18,8 @@ class CheckSeasonBetResolutionJob < ApplicationJob
     LoadWeeklyDataJob.new.perform_season_data(bet.season_year) # make sure seasons data is updated before calculating
     bettor_value, acceptor_value = determine_result_values(bet)
     won = bettor_value + bet.line > acceptor_value
-    bet.update(won: won)
+    json = { bettor_value: bettor_value, acceptor_value: acceptor_value }
+    bet.update(won: won, final_bet_results: json, status: 'awaiting_payment')
   end
 
   def determine_result_values(bet)
@@ -72,7 +73,6 @@ class CheckSeasonBetResolutionJob < ApplicationJob
   end
 
   def regular_season_completed?(year)
-    return true
     return true if year < Date.today.year
 
     current_week = Time.now.strftime('%U').to_i - 35

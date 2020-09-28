@@ -33,6 +33,7 @@ class SideBetsController < ApplicationController
                              .all
                              .map(&:side_bet_acceptances)
                              .flatten
+    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
 
   def resolved
@@ -55,6 +56,7 @@ class SideBetsController < ApplicationController
                               .all
                               .map(&:side_bet_acceptances)
                               .flatten
+    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
 
   def create_game_bet
@@ -92,6 +94,16 @@ class SideBetsController < ApplicationController
       acceptance.confirm_payment!
     else
       flash[:payment_error] = "You cannot mark this payment received as you are not the winner of this bet."
+    end
+    redirect_to pending_bets_path
+  end
+
+  def mark_payment_sent
+    acceptance = SideBetAcceptance.find(params[:acceptance_id])
+    if [acceptance.winner_id, acceptance.loser_id].include?(current_user[:id])
+      acceptance.mark_payment_sent!
+    else
+      flash[:payment_error] = "You cannot mark this payment sent as you are not involved in this bet."
     end
     redirect_to pending_bets_path
   end

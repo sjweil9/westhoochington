@@ -57,11 +57,47 @@ class SeasonSideBet < ApplicationRecord
     Rails.cache.fetch("nickname_#{bet_terms['loser_id']}")
   end
 
-  def update_winner!
+  def outcome_description
+    "#{final_winner}: #{final_winning_result} to #{final_loser}: #{final_losing_result}"
+  end
 
+  def predictor_won?
+    won
   end
 
   private
+
+  def final_winner
+    return if won.nil?
+
+    if player_vs_player?
+      won ? winner_nickname : loser_nickname
+    elsif bet_terms['winner_id']
+      won ? winner_nickname : 'The Field'
+    elsif bet_terms['loser_id']
+      won ? 'The Field' : loser_nickname
+    end
+  end
+
+  def final_loser
+    return if won.nil?
+
+    if player_vs_player?
+      won ? loser_nickname : winner_nickname
+    elsif bet_terms['winner_id']
+      won ? 'The Field' : winner_nickname
+    elsif bet_terms['loser_id']
+      won ? loser_nickname : 'The Field'
+    end
+  end
+
+  def final_winning_result
+    won ? final_bet_results['bettor_value'] : final_bet_results['acceptor_value']
+  end
+
+  def final_losing_result
+    won ? final_bet_results['acceptor_value'] : final_bet_results['bettor_value']
+  end
 
   VALID_COMPARISON_TYPES = %w[1VF 1V1]
 

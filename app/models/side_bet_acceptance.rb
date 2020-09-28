@@ -31,6 +31,13 @@ class SideBetAcceptance < ApplicationRecord
     side_bet.update(status: 'completed')
   end
 
+  def mark_payment_sent!
+    update(status: 'awaiting_confirmation')
+    return unless side_bet.side_bet_acceptances.all? { |sba| sba.awaiting_confirmation? || sba.completed? }
+
+    side_bet.update(status: 'awaiting_confirmation')
+  end
+
   private
 
   def set_defaults

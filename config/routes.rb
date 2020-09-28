@@ -12,7 +12,8 @@ Rails.application.routes.draw do
 
   get '/side_bets', to: 'side_bets#index', as: 'side_hustles'
   post '/game_side_bets', to: 'side_bets#create_game_bet', as: 'propose_game_bet'
-  post '/game_side_bets/acceptances/:acceptance_id/confirm_payment_received', to: 'side_bets#confirm_payment_received', as: 'confirm_payment_received'
+  post '/side_bets/acceptances/:acceptance_id/confirm_payment_received', to: 'side_bets#confirm_payment_received', as: 'confirm_payment_received'
+  post '/side_bets/acceptances/:acceptance_id/mark_payment_sent', to: 'side_bets#mark_payment_sent', as: 'mark_payment_sent'
 
   post '/season_side_bets', to: 'side_bets#create_season_bet', as: 'propose_season_bet'
 

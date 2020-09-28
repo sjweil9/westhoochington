@@ -14,18 +14,6 @@ class GameSideBet < ApplicationRecord
   validates :amount, numericality: true
   validates :line, numericality: true
 
-  def proposer_payout
-    return amount unless odds.present?
-
-    amount * odds.split(':').last.to_i
-  end
-
-  def acceptor_payout
-    return amount unless odds.present?
-
-    amount * odds.split(':').first.to_i
-  end
-
   def acceptor_condition_string
     "#{Rails.cache.fetch("nickname_#{accepting_winner_id}")} #{acceptor_line_description}"
   end
