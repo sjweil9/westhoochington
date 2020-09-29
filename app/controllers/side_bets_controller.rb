@@ -8,13 +8,14 @@ class SideBetsController < ApplicationController
     @current_games =
       Game
         .unscoped
-        .where(season_year: Date.today.year, week: @current_week)
+        .where(season_year: Date.today.year, week: @current_week, finished: false)
         .includes(game_side_bets: :side_bet_acceptances)
         .references(game_side_bets: :side_bet_acceptances)
         .all
+        .order(created_at: :desc)
         .reject { |game| game.opponent_id > game.user_id }
     @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten
-    @open_season_bets = SeasonSideBet.where(status: 'awaiting_bets').includes(:side_bet_acceptances).references(:side_bet_acceptances).all
+    @open_season_bets = SeasonSideBet.where(status: 'awaiting_bets').includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
     @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
 
@@ -23,6 +24,7 @@ class SideBetsController < ApplicationController
                       .where(status: %w[awaiting_payment awaiting_confirmation])
                       .includes(:side_bet_acceptances)
                       .references(:side_bet_acceptances)
+                      .order(created_at: :desc)
                       .all
                       .map(&:side_bet_acceptances)
                       .flatten
@@ -30,6 +32,7 @@ class SideBetsController < ApplicationController
                              .where(status: %w[awaiting_payment awaiting_confirmation])
                              .includes(:side_bet_acceptances)
                              .references(:side_bet_acceptances)
+                             .order(created_at: :desc)
                              .all
                              .map(&:side_bet_acceptances)
                              .flatten
@@ -46,6 +49,7 @@ class SideBetsController < ApplicationController
                             .where(status: 'completed', game_id: games.map(&:id))
                             .includes(:side_bet_acceptances)
                             .references(:side_bet_acceptances)
+                            .order(created_at: :desc)
                             .all
                             .map(&:side_bet_acceptances)
                             .flatten
@@ -53,6 +57,7 @@ class SideBetsController < ApplicationController
                               .where({ status: 'completed', season_year: filter_year }.compact)
                               .includes(:side_bet_acceptances)
                               .references(:side_bet_acceptances)
+                              .order(created_at: :desc)
                               .all
                               .map(&:side_bet_acceptances)
                               .flatten

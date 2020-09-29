@@ -30,11 +30,10 @@ class GameSideBet < ApplicationRecord
   end
 
   def game_finished!
-    winner_id = if line.present? && !line.zero?
-                  predictor_score_base = game.user_id == predicted_winner_id ? game.active_total : game.opponent_active_total
-                  acceptor_score_base = game.user_id == predicted_winner_id ? game.opponent_active_total : game.active_total
-                  predictor_score_base + line > acceptor_score_base ? predicted_winner_id : accepting_winner_id
-                end
+    predictor_score_base = game.user_id == predicted_winner_id ? game.active_total : game.opponent_active_total
+    acceptor_score_base = game.user_id == predicted_winner_id ? game.opponent_active_total : game.active_total
+    functional_line = line || 0
+    winner_id = predictor_score_base + functional_line > acceptor_score_base ? predicted_winner_id : accepting_winner_id
     update(status: 'awaiting_payment', actual_winner_id: winner_id)
     side_bet_acceptances.update_all(status: 'awaiting_payment')
   end

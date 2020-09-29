@@ -119,10 +119,42 @@
 <% end %>
 <h3>Side Hustle Results</h3>
 <% if @resolved_side_hustles.present? %>
-
+  <table border="1" cellpadding="1">
+    <thead>
+    <tr>
+      <th>Terms</th>
+      <th>Amount</th>
+      <th>Proposer</th>
+      <th>Acceptor</th>
+      <th>Game Result</th>
+      <th>Bet Outcome</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @resolved_side_hustles.each do |sba| %>
+      <tr>
+        <td><%= sba.side_bet.terms_description %></td>
+        <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %> (Paying <%= sba.side_bet.odds %>)<% end %></td>
+        <th scope="row"><a href="<%= user_profile_url(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a></th>
+        <th scope="row"><a href="<%= user_profile_url(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a></th>
+        <td>
+          <a href="<%= user_profile_url(sba.side_bet.game.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.user_id}") %></a>: <%= sba.side_bet.game.active_total.round(2) %> to
+          <a href="<%= user_profile_url(sba.side_bet.game.opponent_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.opponent_id}") %></a>: <%= sba.side_bet.game.opponent_active_total.round(2) %>
+        </td>
+        <th scope="row">
+          <% if sba.side_bet.predictor_won? %>
+            <a href="<%= user_profile_url(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.proposer_payout) %>
+          <% else %>
+            <a href="<%= user_profile_url(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.acceptor_payout) %>
+          <% end %>
+        </th>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 <% else %>
   <p>No bets were resolved this week. Booooorrrinnngggg!</p>
 <% end %>
-
+  <p><a href="http://www.westhoochington.com/side_bets">Go get it in for next week, boys!</a></p>
   </body>
 </html>

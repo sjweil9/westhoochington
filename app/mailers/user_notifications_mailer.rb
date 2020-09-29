@@ -51,6 +51,7 @@ class UserNotificationsMailer < ApplicationMailer
     @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
     @trend_breakers = calculate_trend_breakers
     @record_setters = calculate_record_setters
+    @resolved_side_hustles = GameSideBet.where(game_id: @games.map(&:id)).all.map(&:side_bet_acceptances).flatten
   end
 
   def championship_bracket?(game)

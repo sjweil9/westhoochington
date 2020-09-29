@@ -58,7 +58,7 @@
         <tr>
           <td><%= sba.side_bet.game.season_year %> - Week <%= sba.side_bet.game.week %></td>
           <td><%= sba.side_bet.terms_description %></td>
-          <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds.present? %> (Paying <%= sba.side_bet.odds %>)<% end %></td>
+          <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %> (Paying <%= sba.side_bet.odds %>)<% end %></td>
           <th scope="row"><a href="<%= user_profile_path(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a></th>
           <th scope="row"><a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a></th>
           <td>
