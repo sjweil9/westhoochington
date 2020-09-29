@@ -9,8 +9,6 @@ class SideBetsController < ApplicationController
       Game
         .unscoped
         .where(season_year: Date.today.year, week: @current_week)
-        .includes(game_side_bets: :side_bet_acceptances)
-        .references(game_side_bets: :side_bet_acceptances)
         .all
         .order(created_at: :desc)
         .reject { |game| game.opponent_id > game.user_id }
@@ -22,16 +20,12 @@ class SideBetsController < ApplicationController
   def pending
     @pending_game_bets = GameSideBet
                       .where(status: %w[awaiting_payment awaiting_confirmation])
-                      .includes(:side_bet_acceptances)
-                      .references(:side_bet_acceptances)
                       .order(created_at: :desc)
                       .all
                       .map(&:side_bet_acceptances)
                       .flatten
     @pending_season_bets = SeasonSideBet
                              .where(status: %w[awaiting_payment awaiting_confirmation])
-                             .includes(:side_bet_acceptances)
-                             .references(:side_bet_acceptances)
                              .order(created_at: :desc)
                              .all
                              .map(&:side_bet_acceptances)
@@ -47,16 +41,12 @@ class SideBetsController < ApplicationController
     games = Game.unscoped.where({ season_year: filter_year, week: filter_week }.compact).all
     @resolved_game_bets = GameSideBet
                             .where(status: 'completed', game_id: games.map(&:id))
-                            .includes(:side_bet_acceptances)
-                            .references(:side_bet_acceptances)
                             .order(created_at: :desc)
                             .all
                             .map(&:side_bet_acceptances)
                             .flatten
     @resolved_season_bets = SeasonSideBet
                               .where({ status: 'completed', season_year: filter_year }.compact)
-                              .includes(:side_bet_acceptances)
-                              .references(:side_bet_acceptances)
                               .order(created_at: :desc)
                               .all
                               .map(&:side_bet_acceptances)
