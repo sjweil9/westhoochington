@@ -65,6 +65,10 @@ class SeasonSideBet < ApplicationRecord
     won
   end
 
+  def finished?
+    !won.nil?
+  end
+
   private
 
   def final_winner

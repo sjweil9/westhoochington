@@ -10,7 +10,8 @@ class User < ApplicationRecord
   has_many :games, -> { where(season_year: Date.today.year ) }
   has_many :opponent_games, -> { where(season_year: Date.today.year) }, class_name: 'Game', foreign_key: :opponent_id
   has_many :historical_games, class_name: 'Game'
-  has_many :side_bets
+  has_many :season_side_bets
+  has_many :game_side_bets
   has_many :side_bet_acceptances
   has_many :seasons
   has_one :calculated_stats, class_name: 'UserStat'
@@ -23,6 +24,10 @@ class User < ApplicationRecord
   end
 
   after_create :default_nicknames
+
+  def side_bets
+    season_side_bets + game_side_bets
+  end
 
   def random_nickname
     Rails.cache.fetch("nickname_#{id}", expires_in: 30.seconds) do
@@ -396,16 +401,16 @@ class User < ApplicationRecord
   def side_bet_wins
     return @side_bet_wins if @side_bet_wins.present?
 
-    proposed_wins = side_bets.where(status: 'proposer', completed: true).count
-    accepted_wins = side_bet_acceptances.where(status: 'won').count
+    proposed_wins = side_bets.select(&:finished?).select(&:predictor_won?).size
+    accepted_wins = side_bet_acceptances.select { |sba| sba.side_bet.finished? && !sba.side_bet.predictor_won? }.size
     @side_bet_wins = proposed_wins + accepted_wins
   end
 
   def side_bet_losses
     return @side_bet_losses if @side_bet_losses.present?
 
-    proposed_losses = side_bets.where(status: 'takers', completed: true).all.select { |bet| bet.side_bet_acceptances.any? }.size
-    accepted_losses = side_bet_acceptances.where(status: 'lost').count
+    proposed_losses = side_bets.select(&:finished?).select { |sb| !sb.predictor_won? }.size
+    accepted_losses = side_bet_acceptances.select { |sba| sba.side_bet.finished? && sba.side_bet.predictor_won? }.size
     @side_bet_losses = proposed_losses + accepted_losses
   end
 
@@ -422,8 +427,8 @@ class User < ApplicationRecord
   def pending_side_bets
     return @pending_side_bets if @pending_side_bets.present?
 
-    proposed_pending = side_bets.where(status: 'pending', completed: false).count
-    accepted_pending = side_bet_acceptances.where(status: 'pending').count
+    proposed_pending = side_bets.select(&:pending?).size
+    accepted_pending = side_bet_acceptances.select { |sba| sba.side_bet.pending? }.size
     @pending_side_bets = proposed_pending + accepted_pending
   end
 

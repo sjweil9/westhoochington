@@ -17,6 +17,14 @@ module SharedBetMethods
     amount * odds.split(':').first.to_i
   end
 
+  def pending?
+    !finished?
+  end
+
+  def finished?
+    raise "must implement finished? in bet subclass"
+  end
+
   def valid_status
     return if BET_STATUSES.include?(status)
 

@@ -51,6 +51,10 @@ class GameSideBet < ApplicationRecord
     predicted_winner_id != actual_winner_id && actual_winner_id.present?
   end
 
+  def finished?
+    actual_winner_id.present?
+  end
+
   private
 
   def acceptor_line_description
