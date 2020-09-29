@@ -44,7 +44,7 @@ class SeasonSideBet < ApplicationRecord
   end
 
   def line_description
-    return unless line.present?
+    return unless line.present? && !line.zero?
 
     line.positive? ? " (+#{line})" : " (#{line})"
   end

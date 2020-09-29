@@ -8,7 +8,7 @@ class SideBetsController < ApplicationController
     @current_games =
       Game
         .unscoped
-        .where(season_year: Date.today.year, week: @current_week, finished: false)
+        .where(season_year: Date.today.year, week: @current_week)
         .includes(game_side_bets: :side_bet_acceptances)
         .references(game_side_bets: :side_bet_acceptances)
         .all
