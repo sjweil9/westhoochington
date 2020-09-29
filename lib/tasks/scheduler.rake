@@ -17,7 +17,7 @@ namespace :stats do
       offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
       current_week = Time.now.strftime('%U').to_i - offset
       current_year = Time.now.strftime('%Y')
-      puts "Starting weekly data load for week #{last_week} year #{current_year}..."
+      puts "Starting weekly data load for week #{current_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(current_week, current_year, skip_calculated_stats: true)
       puts "Completed weekly data load."
     end
