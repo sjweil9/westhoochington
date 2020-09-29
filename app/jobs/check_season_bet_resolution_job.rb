@@ -44,12 +44,12 @@ class CheckSeasonBetResolutionJob < ApplicationJob
     if bet.bet_terms['winner_id']
       # bet picked the user
       winner = User.find(bet.bet_terms['winner_id'])
-      other_users = Season.where(season_year: bet.season_year).all.map(&:user).reject { |user| user.id == winner.id }
+      other_users = Game.where(season_year: bet.season_year).all.map(&:user).uniq.reject { |user| user.id == winner.id }
       [winner.send(comparison_method), other_users.map(&comparison_method).max]
     else
       # bet picked the field
       loser = User.find(bet.bet_terms['loser_id'])
-      other_users = Season.where(season_year: bet.season_year).all.map(&:user).reject { |user| user.id == loser.id }
+      other_users = Game.where(season_year: bet.season_year).all.map(&:user).uniq.reject { |user| user.id == loser.id }
       [other_users.map(&comparison_method).max, loser.send(comparison_method)]
     end
   end

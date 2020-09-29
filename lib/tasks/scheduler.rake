@@ -53,6 +53,14 @@ namespace :stats do
     LoadWeeklyDataJob.new.perform_season_data(args[:year])
   end
 
+  task :load_current_season => :environment do
+    offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
+    current_week = Time.now.strftime('%U').to_i - offset
+    return unless current_week > 16
+
+    LoadWeeklyDataJob.new.perform_season_data(Date.today.year)
+  end
+
   task :load_csv => :environment do
     LoadWeeklyDataJob.new.perform_csv
   end

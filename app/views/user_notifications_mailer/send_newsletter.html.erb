@@ -67,35 +67,6 @@
     <% end %>
   </tbody>
 </table>
-<h3>Over/Unders</h3>
-<% if @new_over_unders.size.positive? || @new_over_under_lines.size.positive? || @new_over_under_bets.size.positive? %>
-  <% if @new_over_unders.size.positive? %>
-    <p>New Over/Unders:</p>
-    <ul>
-      <% @new_over_unders.each do |over_under| %>
-        <li><%= over_under.user.random_nickname %>: "<%= over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if @new_over_under_lines.size.positive? %>
-    <p>New Lines:</p>
-    <ul>
-      <% @new_over_under_lines.each do |line| %>
-        <li><%= line.user.random_nickname %>: <%= line.value %> on "<%= line.over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if @new_over_under_bets.size.positive? %>
-    <p>New Bets:</p>
-    <ul>
-      <% @new_over_under_bets.each do |bet| %>
-        <li><%= bet.user.random_nickname %>: <%= bet.direction %> on <%= bet.line.value %> for "<%= bet.line.over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-<% else %>
-  <p>Nobody added any over-unders this week. Booooorrrriinnngggggg</p>
-<% end %>
 <h3>Movers and Shakers</h3>
 <% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
 <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
@@ -146,7 +117,12 @@
     </ul>
   <% end %>
 <% end %>
+<h3>Side Hustle Results</h3>
+<% if @resolved_side_hustles.present? %>
 
+<% else %>
+  <p>No bets were resolved this week. Booooorrrinnngggg!</p>
+<% end %>
 
   </body>
 </html>
