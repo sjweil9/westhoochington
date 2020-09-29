@@ -39,6 +39,24 @@ class CalculateStatsJob < ApplicationJob
     update_narrowest_margin
   end
 
+  def update_side_hustles(side_bet)
+    users = [side_bet.user, *side_bet.side_bet_acceptances.map(&:user)]
+    users.each do |user|
+      update_side_hustle_stats(user)
+    end
+  end
+
+  def update_side_hustle_stats(user)
+    calculated_stats = user.calculated_stats || UserStat.create(user_id: user.id)
+    json = {
+      wins: user.side_bet_wins,
+      losses: user.side_bet_losses,
+      winrate: user.side_bet_winrate,
+      proposed: user.side_bets_proposed,
+    }
+    calculated_stats.update(side_bet_results: json)
+  end
+
   ###########################################################################################
   #                                 SEASONAL STATS                                          #
   ###########################################################################################

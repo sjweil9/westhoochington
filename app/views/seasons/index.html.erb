@@ -480,6 +480,65 @@
   </div>
   <div class="row margin-below">
     <h1 class="col border-bottom">
+      <img class="expand" data-toggle="collapse" data-target="#hustling" aria-expanded="true" aria-controls="hustling" src="<%= image_path('expand.png') %>" /> Hustling
+    </h1>
+  </div>
+  <div class="collapse" id="hustling">
+    <div class="row">
+      <div class="col-xs-12 col-lg-6">
+        <h3>Party Starter</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Total Proposed Hustles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.calculated_stats.side_bet_results['proposed'] }; sorted.each_with_index do |user, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.calculated_stats.side_bet_results['proposed'] == sorted[idx]&.calculated_stats.side_bet_results['proposed'] ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+                <th><%= user.calculated_stats.side_bet_results['proposed'] %></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6">
+        <h3>Top Shark</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Side Hustle Wins</th>
+              <th scope="col">Side Hustle Losses</th>
+              <th scope="col">Side Hustle Winrate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.calculated_stats.side_bet_results['winrate'] }; sorted.each_with_index do |user, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.calculated_stats.side_bet_results['winrate'] == sorted[idx]&.calculated_stats.side_bet_results['winrate'] ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+                <td><%= user.calculated_stats.side_bet_results['wins'] %></td>
+                <td><%= user.calculated_stats.side_bet_results['losses'] %></td>
+                <th><%= user.calculated_stats.side_bet_results['winrate'] %>%</th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row margin-below">
+    <h1 class="col border-bottom">
       <img class="expand" data-toggle="collapse" data-target="#h2h" aria-expanded="true" aria-controls="h2h" src="<%= image_path('expand.png') %>" /> Head to Head Records
     </h1>
   </div>

@@ -20,6 +20,7 @@ class CheckSeasonBetResolutionJob < ApplicationJob
     won = bettor_value + bet.line > acceptor_value
     json = { bettor_value: bettor_value, acceptor_value: acceptor_value }
     bet.update(won: won, final_bet_results: json, status: 'awaiting_payment')
+    CalculateStatsJob.new.update_side_hustles(bet)
   end
 
   def determine_result_values(bet)

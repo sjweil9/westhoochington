@@ -73,6 +73,7 @@ namespace :stats do
       (2012..Time.now.year).each do |year|
         CalculateStatsJob.new.perform_year(user.id, year)
       end
+      CalculateStatsJob.new.update_side_hustle_stats(user)
     end
 
     CalculateStatsJob.new.perform_game_level
