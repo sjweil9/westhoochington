@@ -9,6 +9,7 @@ class GameSideBet < ApplicationRecord
   end
 
   before_validation :set_defaults
+  after_create :update_calculated_stats
 
   validate :valid_winner, :valid_status, :valid_odds, :valid_acceptances
   validates :amount, numericality: true

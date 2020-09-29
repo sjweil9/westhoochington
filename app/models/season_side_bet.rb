@@ -5,6 +5,7 @@ class SeasonSideBet < ApplicationRecord
   has_many :side_bet_acceptances, -> { where(bet_type: 'season') }, foreign_key: :side_bet_id
 
   before_validation :set_defaults
+  after_create :update_calculated_stats
 
   validate :valid_winner, :valid_loser, :valid_status, :valid_odds, :valid_acceptances, :valid_bet_type,
            :valid_comparison_type, :valid_bet_terms

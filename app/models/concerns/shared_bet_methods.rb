@@ -82,4 +82,8 @@ module SharedBetMethods
   def maximum_acceptors
     possible_acceptances&.dig('max')
   end
+
+  def update_calculated_stats
+    CalculateStatsJob.new.update_side_hustles(self)
+  end
 end
