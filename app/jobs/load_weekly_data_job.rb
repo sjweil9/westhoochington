@@ -97,7 +97,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
     puts "Loading data for week #{week}"
 
-    response = RestClient.get(url, cookies: {SWID:"{3D566DFD-0281-4080-BC8C-6040AC2111D6}", espn_s2:"AECtxdpKxtPgixpViyPWhHzNEH2wH4JjqG2yiVqFF%2FZiRBbMVpbvvFxoFLNjkXOfba0JXYYhPpA17pu09eNOKgndykM0w0wEFFpjkK13DV73JjT3z6tA%2Bg8%2Bj%2FoknX0CdSoqox4fEaygdWX85atWUWVcSlQ7B2nQSx4iHqKUcDgRjhjJ9CQJtgUEry3JaId6o9aXo7ugfc6TOmuOK7N3JKh9%2FkWTKYba7xVXZ4MK7HjXNdjm66o4pAd4iDx7b9%2BMYDWqdDox6%2BOT8k%2BzOLh0W8eW"})
+    response = RestClient.get(url, cookies: {SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2})
     parsed_response = JSON.parse(response.body)
     matchup_period = matchup_period_for_week(week.to_i)
     data_for_week = parsed_response.dig('schedule').select { |game| game['matchupPeriodId'].to_i == matchup_period }
