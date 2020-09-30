@@ -44,6 +44,13 @@ class Season < ApplicationRecord
     season_year.to_i >= 2015
   end
 
+  def playoffs_started?
+    return true if completed?
+
+    current_week = Time.now.strftime('%U').to_i - 35
+    playoff_week?(current_week)
+  end
+
   def completed?
     return true if season_year < Date.today.year
 

@@ -11,6 +11,18 @@ namespace :stats do
     end
   end
 
+  desc "This is also called by scheduler to load the next week of games"
+  task :load_next_week_data => :environment do
+    unless Time.now.monday? || Time.now.in_time_zone('America/Chicago').hour < 7
+      offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
+      current_week = Time.now.strftime('%U').to_i - offset
+      current_year = Time.now.strftime('%Y')
+      puts "Starting weekly data load for week #{current_week} year #{current_year}..."
+      LoadWeeklyDataJob.perform_now(current_week, current_year, skip_calculated_stats: true)
+      puts "Completed weekly data load."
+    end
+  end
+
   desc "Load on demand from Yahoo archives"
   task :load_yahoo_data => :environment do
     LoadWeeklyDataJob.new.perform_csv(yahoo: true)
@@ -43,6 +55,14 @@ namespace :stats do
     LoadWeeklyDataJob.new.perform_season_data(args[:year])
   end
 
+  task :load_current_season => :environment do
+    offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
+    current_week = Time.now.strftime('%U').to_i - offset
+    return unless current_week > 16
+
+    LoadWeeklyDataJob.new.perform_season_data(Date.today.year)
+  end
+
   task :load_csv => :environment do
     LoadWeeklyDataJob.new.perform_csv
   end
@@ -53,6 +73,7 @@ namespace :stats do
       (2012..Time.now.year).each do |year|
         CalculateStatsJob.new.perform_year(user.id, year)
       end
+      CalculateStatsJob.new.update_side_hustle_stats(user)
     end
 
     CalculateStatsJob.new.perform_game_level
@@ -74,5 +95,23 @@ namespace :newsletter do
         UserNotificationsMailer.send_newsletter(involved_users, week, year).deliver
       end
     end
+  end
+end
+
+namespace :bets do
+  desc "Called by Heroku scheduler to update on any new action for the day"
+  task :send_updates => :environment do
+    BetNotificationsMailer.send_daily_update&.deliver
+  end
+
+  desc "Updates status on seasonal bets that are past their closed date"
+  task :update_seasonal_bets => :environment do
+    closed_bets = SeasonSideBet.where('closing_date < ?', Time.now.in_time_zone('America/Chicago').utc).where(status: 'awaiting_bets')
+    closed_bets.update_all(status: 'awaiting_resolution')
+  end
+
+  desc "Checks season bets for resolution"
+  task :check_season_bet_resolution => :environment do
+    CheckSeasonBetResolutionJob.new.perform
   end
 end

@@ -115,9 +115,9 @@ en:
       high:
         no_fucks: "%{name} had no fucks to give about ESPN's projections, as they dropped %{points} points despite being only projected for %{projected}."
         cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{name} for %{projected} points when they actually dropped %{points}."
+        vegas_trip: "%{name} should plan a Vegas trip this week, since the odds clearly don't mean shit to a man who beat out their %{projected} projection with %{points} points."
       medium:
         monkeys_missed: "ESPN's fantasy projection dart-throwing monkeys missed the mark this week on %{name}, who beat out their %{projected} projection with a solid %{points} points."
-        vegas_trip: "%{name} should plan a Vegas trip this week, since the odds clearly don't mean shit to a man who beat out their %{projected} projection with %{points} points."
       low:
         fantasy_oracle: "ESPN's fantasy oracle didn't sell anyone too short this week, but %{name} did manage to outperform their %{projected} point projection with %{points} points."
     standings:
@@ -169,6 +169,6 @@ en:
         header: "Words of Wisdom"
         body:
           l1: "The Fantasy football season is long. And, for 60% of us, ultimately frustrating."
-          l2: "While stepping back to reflect on another regular season in the books, we need some words of wisdom to center us. So heed this advice from the venerable Mr. Lahey:"
+          l2: "To weather the tide, we need some words of wisdom to center us. So heed this advice from the venerable Mr. Lahey:"
           l4: "\"When you keep getting pelted by shit balls, Deputy, you gotta get a shit bat.\""
           l5: "What's a shit bat, you ask? I don't fucking know, this wasn't supposed to actually be helpful, and neither are these:"

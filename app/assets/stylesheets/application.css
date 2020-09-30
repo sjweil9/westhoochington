@@ -33,8 +33,16 @@
     background-color: indianred;
 }
 
+.odds-number {
+    width: 50px;
+}
+
 small.green {
     color: green;
+}
+
+small.yellow {
+    color: yellow;
 }
 
 small.red {
@@ -48,6 +56,14 @@ small.black {
 img.vote {
   width: 2.5vh;
   height: 2.5vh;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
 }
 
 img.questionmark {

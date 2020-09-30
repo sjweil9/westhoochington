@@ -197,7 +197,7 @@
   </div>
   <div class="row margin-below">
     <h1 class="col border-bottom">
-      <img class="expand" data-toggle="collapse" data-target="#stats" aria-expanded="true" aria-controls="stats" src="<%= image_path('expand.png') %>" /> Points & Games
+      <img class="expand" data-toggle="collapse" data-target="#stats" aria-expanded="true" aria-controls="stats" src="<%= image_path('expand.png') %>" /> Points & Averages
     </h1>
   </div>
   <div class="collapse" id="stats">
@@ -302,66 +302,7 @@
   </div>
   <div class="row margin-below">
     <h1 class="col border-bottom">
-      <img class="expand" data-toggle="collapse" data-target="#shame" aria-expanded="true" aria-controls="shame" src="<%= image_path('expand.png') %>" /> Dubious Honors
-    </h1>
-  </div>
-  <div class="collapse" id="shame">
-    <div class="row">
-      <div class="col-xs-12 col-lg-6">
-        <h3>Most Times Fondling the Sacko</h3>
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">User</th>
-                <th scope="col">Sackos</th>
-                <th scope="col">Seasons</th>
-              </tr>
-            </thead>
-            <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| -user.total_sacko_seasons }; sorted.each_with_index do |user, idx| %>
-              <tr>
-                <th scope="row"><%= sorted[[idx - 1, 0].max]&.total_sacko_seasons == sorted[idx]&.total_sacko_seasons ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
-                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.total_sacko_seasons %></th>
-                <th><%= user.calculated_stats.sacko_seasons['seasons'] %></th>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="col-xs-12 col-lg-6">
-        <h3>Lowest Scoring Games</h3>
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-            <tr>
-              <th scope="col">Rank</th>
-              <th scope="col">User</th>
-              <th scope="col">Points</th>
-              <th scope="col">Week</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% @gls.lowest_score.each_with_index do |game, idx| %>
-              <tr>
-                <th scope="row"><%= (idx += 1).ordinalize %></th>
-                <th><a href="<%= user_profile_path(game['player_id']) %>"><%= Rails.cache.fetch("nickname_#{game['player_id']}") %></a></th>
-                <th><%= game['score'].round(2) %></th>
-                <th><a href="<%= stats_path(year: game['year'], week: game['week']) %>"><%= game['year'] %> - Week <%= game['week'] %></a> vs <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a></th>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row margin-below">
-    <h1 class="col border-bottom">
-      <img class="expand" data-toggle="collapse" data-target="#game-level" aria-expanded="true" aria-controls="game-level" src="<%= image_path('expand.png') %>" /> Game-Level Stats
+      <img class="expand" data-toggle="collapse" data-target="#game-level" aria-expanded="true" aria-controls="game-level" src="<%= image_path('expand.png') %>" /> Single Game Stats
     </h1>
   </div>
   <div class="collapse" id="game-level">
@@ -470,6 +411,124 @@
                 <th><%= game['opponent_score'].round(2) %></th>
                 <th scope="row"><%= game['margin'].round(2) %></th>
                 <th><a href="<%= stats_path(year: game['year'], week: game['week']) %>"><%= game['year'] %> - Week <%= game['week'] %></a> cucked by <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row margin-below">
+    <h1 class="col border-bottom">
+      <img class="expand" data-toggle="collapse" data-target="#shame" aria-expanded="true" aria-controls="shame" src="<%= image_path('expand.png') %>" /> Dubious Honors
+    </h1>
+  </div>
+  <div class="collapse" id="shame">
+    <div class="row">
+      <div class="col-xs-12 col-lg-6">
+        <h3>Most Times Fondling the Sacko</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Sackos</th>
+              <th scope="col">Seasons</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.total_sacko_seasons }; sorted.each_with_index do |user, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.total_sacko_seasons == sorted[idx]&.total_sacko_seasons ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+                <th><%= user.total_sacko_seasons %></th>
+                <th><%= user.calculated_stats.sacko_seasons['seasons'] %></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6">
+        <h3>Lowest Scoring Games</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Points</th>
+              <th scope="col">Week</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @gls.lowest_score.each_with_index do |game, idx| %>
+              <tr>
+                <th scope="row"><%= (idx += 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(game['player_id']) %>"><%= Rails.cache.fetch("nickname_#{game['player_id']}") %></a></th>
+                <th><%= game['score'].round(2) %></th>
+                <th><a href="<%= stats_path(year: game['year'], week: game['week']) %>"><%= game['year'] %> - Week <%= game['week'] %></a> vs <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row margin-below">
+    <h1 class="col border-bottom">
+      <img class="expand" data-toggle="collapse" data-target="#hustling" aria-expanded="true" aria-controls="hustling" src="<%= image_path('expand.png') %>" /> Hustling
+    </h1>
+  </div>
+  <div class="collapse" id="hustling">
+    <div class="row">
+      <div class="col-xs-12 col-lg-6">
+        <h3>Party Starter</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Total Proposed Hustles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.calculated_stats.side_bet_results['proposed'] }; sorted.each_with_index do |user, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.calculated_stats.side_bet_results['proposed'] == sorted[idx]&.calculated_stats.side_bet_results['proposed'] ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+                <th><%= user.calculated_stats.side_bet_results['proposed'] %></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6">
+        <h3>Top Shark</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Side Hustle Wins</th>
+              <th scope="col">Side Hustle Losses</th>
+              <th scope="col">Side Hustle Winrate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @users.sort_by { |user| -user.calculated_stats.side_bet_results['winrate'] }; sorted.each_with_index do |user, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.calculated_stats.side_bet_results['winrate'] == sorted[idx]&.calculated_stats.side_bet_results['winrate'] ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
+                <td><%= user.calculated_stats.side_bet_results['wins'] %></td>
+                <td><%= user.calculated_stats.side_bet_results['losses'] %></td>
+                <th><%= user.calculated_stats.side_bet_results['winrate'] %>%</th>
               </tr>
             <% end %>
             </tbody>

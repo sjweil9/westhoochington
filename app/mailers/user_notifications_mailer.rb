@@ -50,6 +50,8 @@ class UserNotificationsMailer < ApplicationMailer
     @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
     @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
     @trend_breakers = calculate_trend_breakers
+    @record_setters = calculate_record_setters
+    @resolved_side_hustles = GameSideBet.where(game_id: @games.map(&:id)).all.map(&:side_bet_acceptances).flatten
   end
 
   def championship_bracket?(game)
@@ -85,7 +87,7 @@ class UserNotificationsMailer < ApplicationMailer
 
   def calculate_trend_breakers
     @games.reduce(tie: [], lead: [], trend: []) do |memo, game|
-      record = game.user.lifetime_record_against(game.opponent)
+      record = game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string')
       if established_tie?(record, game)
         memo[:tie] << game
       elsif took_lead?(record, game)
@@ -95,6 +97,81 @@ class UserNotificationsMailer < ApplicationMailer
       end
       memo
     end
+  end
+
+  def calculate_record_setters
+    {
+      high_scores: calculate_new_high_scores,
+      low_scores: calculate_new_low_scores,
+      large_margins: calculate_new_large_margin,
+      narrow_margins: calculate_new_narrow_margin,
+    }
+  end
+
+  def calculate_new_high_scores
+    @games.reduce([]) do |memo, game|
+      index = gls.highest_score_espn.index do |sc|
+        sc['week'].to_i == game.week.to_i &&
+          sc['year'].to_i == game.season_year.to_i &&
+          sc['player_id'].to_i == game.user_id.to_i
+      end
+      if index
+        memo + [{ rank: index + 1, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total }]
+      else
+        memo
+      end
+    end
+  end
+
+  def calculate_new_low_scores
+    @games.reduce([]) do |memo, game|
+      index = gls.lowest_score.index do |sc|
+        sc['week'].to_i == game.week.to_i &&
+          sc['year'].to_i == game.season_year.to_i &&
+          sc['player_id'].to_i == game.user_id.to_i
+      end
+      if index
+        memo + [{ rank: index + 1, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total }]
+      else
+        memo
+      end
+    end
+  end
+
+  def calculate_new_large_margin
+    @games.reduce([]) do |memo, game|
+      game_data = gls.largest_margin.detect do |sc|
+        sc['week'].to_i == game.week.to_i &&
+          sc['year'].to_i == game.season_year.to_i &&
+          sc['player_id'].to_i == game.user_id.to_i
+      end
+      if game_data
+        index = gls.largest_margin.index(game_data) + 1
+        memo + [game_data.with_indifferent_access.merge(rank: index)]
+      else
+        memo
+      end
+    end
+  end
+
+  def calculate_new_narrow_margin
+    @games.reduce([]) do |memo, game|
+      game_data = gls.narrowest_margin.detect do |sc|
+        sc['week'].to_i == game.week.to_i &&
+          sc['year'].to_i == game.season_year.to_i &&
+          sc['player_id'].to_i == game.user_id.to_i
+      end
+      if game_data
+        index = gls.narrowest_margin.index(game_data) + 1
+        memo + [game_data.with_indifferent_access.merge(rank: index)]
+      else
+        memo
+      end
+    end
+  end
+
+  def gls
+    @gls ||= GameLevelStat.first
   end
 
   def established_tie?(record, game)

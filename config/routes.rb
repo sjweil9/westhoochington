@@ -11,10 +11,18 @@ Rails.application.routes.draw do
   post '/sessions', to: 'sessions#create', as: 'login'
 
   get '/side_bets', to: 'side_bets#index', as: 'side_hustles'
-  post '/side_bets', to: 'side_bets#create', as: 'propose_bet'
-  post '/side_bets/:side_bet_id/acceptances', to: 'side_bets#accept', as: 'accept_side_bet'
-  patch '/side_bets/:side_bet_id/status/:status', to: 'side_bets#update', as: 'complete_side_bet'
-  post '/side_bets/acceptances/:acceptance_id/mark_as_paid', to: 'side_bets#mark_as_paid', as: 'mark_as_paid'
+  post '/game_side_bets', to: 'side_bets#create_game_bet', as: 'propose_game_bet'
+  post '/side_bets/acceptances/:acceptance_id/confirm_payment_received', to: 'side_bets#confirm_payment_received', as: 'confirm_payment_received'
+  post '/side_bets/acceptances/:acceptance_id/mark_payment_sent', to: 'side_bets#mark_payment_sent', as: 'mark_payment_sent'
+
+  post '/season_side_bets', to: 'side_bets#create_season_bet', as: 'propose_season_bet'
+
+  post '/side_bets/:bet_type/:side_bet_id/acceptances', to: 'side_bets#accept_bet', as: 'accept_bet'
+
+  #patch '/side_bets/:side_bet_id/status/:status', to: 'side_bets#update', as: 'complete_side_bet'
+  #post '/side_bets/acceptances/:acceptance_id/mark_as_paid', to: 'side_bets#mark_as_paid', as: 'mark_as_paid'
+  get '/side_bets/pending', to: 'side_bets#pending', as: 'pending_bets'
+  get '/side_bets/resolved', to: 'side_bets#resolved', as: 'resolved_bets'
 
   post '/over_unders', to: 'over_unders#create', as: 'propose_over_under'
   get '/over_unders', to: 'over_unders#index', as: 'over_unders'

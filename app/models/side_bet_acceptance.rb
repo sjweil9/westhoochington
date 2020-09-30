@@ -1,26 +1,46 @@
 class SideBetAcceptance < ApplicationRecord
-  belongs_to :side_bet
   belongs_to :user
 
-  before_create :set_defaults
-
-  %w[won pending lost].each do |method|
-    define_method(:"#{method}?") { status == method }
+  def side_bet
+    @side_bet ||= case bet_type
+                  when 'game' then GameSideBet.find(side_bet_id)
+                  when 'season' then SeasonSideBet.find(side_bet_id)
+                  end
   end
 
-  def paid?
-    paid
+  before_validation :set_defaults
+
+  BET_STATUSES = %w[awaiting_resolution awaiting_payment awaiting_confirmation completed]
+
+  BET_STATUSES.each do |status|
+    define_method("#{status}?") { self.status == status }
   end
 
-  def mark_as_paid!
-    update(paid: true)
-    side_bet.check_paid_status!
+  def loser_id
+    side_bet.predictor_won? ? user_id : side_bet.user_id
+  end
+
+  def winner_id
+    side_bet.predictor_won? ? side_bet.user_id : user_id
+  end
+
+  def confirm_payment!
+    update(status: 'completed')
+    return unless side_bet.side_bet_acceptances.all?(&:completed?)
+
+    side_bet.update(status: 'completed')
+  end
+
+  def mark_payment_sent!
+    update(status: 'awaiting_confirmation')
+    return unless side_bet.side_bet_acceptances.all? { |sba| sba.awaiting_confirmation? || sba.completed? }
+
+    side_bet.update(status: 'awaiting_confirmation')
   end
 
   private
 
   def set_defaults
-    self.status = 'pending'
-    self.paid = false
+    self.status ||= 'awaiting_resolution'
   end
 end

@@ -67,48 +67,94 @@
     <% end %>
   </tbody>
 </table>
-<h3>Over/Unders</h3>
-<% if @new_over_unders.size.positive? || @new_over_under_lines.size.positive? || @new_over_under_bets.size.positive? %>
-  <% if @new_over_unders.size.positive? %>
-    <p>New Over/Unders:</p>
-    <ul>
-      <% @new_over_unders.each do |over_under| %>
-        <li><%= over_under.user.random_nickname %>: "<%= over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if @new_over_under_lines.size.positive? %>
-    <p>New Lines:</p>
-    <ul>
-      <% @new_over_under_lines.each do |line| %>
-        <li><%= line.user.random_nickname %>: <%= line.value %> on "<%= line.over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if @new_over_under_bets.size.positive? %>
-    <p>New Bets:</p>
-    <ul>
-      <% @new_over_under_bets.each do |bet| %>
-        <li><%= bet.user.random_nickname %>: <%= bet.direction %> on <%= bet.line.value %> for "<%= bet.line.over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-<% else %>
-  <p>Nobody added any over-unders this week. Booooorrrriinnngggggg</p>
-<% end %>
 <h3>Movers and Shakers</h3>
 <% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
 <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
 <% else %>
   <% @trend_breakers[:tie].each do |game| %>
-    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.lifetime_record_against(game.opponent) %></p>
+    <p><%= game.user.random_nickname %> managed to get out of the hole against <%= game.opponent.random_nickname %>, bringing their historical record to an even <%= game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string') %></p>
   <% end %>
   <% @trend_breakers[:lead].each do |game| %>
-    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.lifetime_record_against(game.opponent) %></p>
+    <p><%= game.user.random_nickname %> claimed a lead against <%= game.opponent.random_nickname %>, bringing their historical record up to <%= game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string') %></p>
   <% end %>
   <% @trend_breakers[:trend].each do |game| %>
-    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.lifetime_record_against(game.opponent) %> lifetime record in the matchup.</p>
+    <p><%= game.user.random_nickname %> found a rare win against <%= game.opponent.random_nickname %>, although they still have room to improve their lackluster <%= game.user.calculated_stats.lifetime_record.dig(game.opponent_id.to_s, 'record_string') %> lifetime record in the matchup.</p>
   <% end %>
 <% end %>
+<% if @record_setters.values.any?(&:present?) %>
+  <h3>Into the Record Books</h3>
+<p>The record books got a shake up this week.</p>
+<% if @record_setters[:high_scores].present? %>
+  <p>We had <%= @record_setters[:high_scores].size %> new <%= @record_setters[:high_scores].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time high scores:</p>
+<ul>
+  <% @record_setters[:high_scores].each do |game| %>
+    <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> moved into <%= game[:rank].ordinalize %> place with a stellar <%= game[:score].round(2) %> points against <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a></li>
+  <% end %>
+</ul>
+  <% end %>
+<% if @record_setters[:low_scores].present? %>
+    <p>We had <%= @record_setters[:low_scores].size %> shameful new <%= @record_setters[:low_scores].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time low scores:</p>
+    <ul>
+      <% @record_setters[:low_scores].each do |game| %>
+        <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> moved into "<%= game[:rank].ordinalize %> place" with a lackluster <%= game[:score].round(2) %> points against <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% if @record_setters[:large_margins].present? %>
+    <p>We had <%= @record_setters[:large_margins].size %> new <%= @record_setters[:large_margins].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time biggest T-Baggings:</p>
+    <ul>
+      <% @record_setters[:large_margins].each do |game| %>
+        <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> moved into <%= game[:rank].ordinalize %> place with a <%= game[:margin].round(2) %> point blowout against <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a>, putting up <%= game[:score] %> to <%= game[:opponent_score] %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% if @record_setters[:narrow_margins].present? %>
+    <p>We had <%= @record_setters[:narrow_margins].size %> new <%= @record_setters[:narrow_margins].size == 1 ? 'entry' : 'entries' %> into the Top 10 all-time narrowest cuckings:</p>
+    <ul>
+      <% @record_setters[:narrow_margins].each do |game| %>
+        <li><a href="<%= user_profile_url(game[:player_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:player_id]}") %></a> has the dubious honor of <%= game[:rank].ordinalize %> place all-time with a <%= game[:margin].round(2).abs %> defeat at the hands of <a href="<%= user_profile_url(game[:opponent_id]) %>"><%= Rails.cache.fetch("nickname_#{game[:opponent_id]}") %></a>, putting up <%= game[:score] %> to <%= game[:opponent_score] %></li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+<h3>Side Hustle Results</h3>
+<% if @resolved_side_hustles.present? %>
+  <table border="1" cellpadding="1">
+    <thead>
+    <tr>
+      <th>Terms</th>
+      <th>Amount</th>
+      <th>Proposer</th>
+      <th>Taker</th>
+      <th>Game Result</th>
+      <th>Bet Outcome</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @resolved_side_hustles.each do |sba| %>
+      <tr>
+        <td><%= sba.side_bet.terms_description %></td>
+        <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %> (Paying <%= sba.side_bet.odds %>)<% end %></td>
+        <th scope="row"><a href="<%= user_profile_url(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a></th>
+        <th scope="row"><a href="<%= user_profile_url(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a></th>
+        <td>
+          <a href="<%= user_profile_url(sba.side_bet.game.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.user_id}") %></a>: <%= sba.side_bet.game.active_total.round(2) %> to
+          <a href="<%= user_profile_url(sba.side_bet.game.opponent_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.opponent_id}") %></a>: <%= sba.side_bet.game.opponent_active_total.round(2) %>
+        </td>
+        <th scope="row">
+          <% if sba.side_bet.predictor_won? %>
+            <a href="<%= user_profile_url(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.proposer_payout) %>
+          <% else %>
+            <a href="<%= user_profile_url(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.acceptor_payout) %>
+          <% end %>
+        </th>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No bets were resolved this week. Booooorrrinnngggg!</p>
+<% end %>
+  <p><a href="http://www.westhoochington.com/side_bets">Go get it in for next week, boys!</a></p>
   </body>
 </html>

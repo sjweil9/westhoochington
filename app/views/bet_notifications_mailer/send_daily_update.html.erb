@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+<body>
+  <h1>Side Hustle Update</h1>
+  <h3>New Game Bets Proposed</h3>
+  <% if @new_bets_proposed.present? %>
+  <table>
+    <table border="1" cellpadding="2">
+      <thead>
+      <tr>
+        <th>Terms</th>
+        <th>Amount</th>
+        <th>Proposer</th>
+        <th>View Matchup</th>
+        <th>Possible Acceptors</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @new_bets_proposed.each do |bet| %>
+        <tr>
+          <td><%= bet.terms_description %></td>
+          <td><%= number_to_currency(bet.amount) %><% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><% end %></td>
+          <td><%= bet.user.random_nickname %></td>
+          <td><a href="https://fantasy.espn.com/football/fantasycast?leagueId=209719&matchupPeriodId=<%= @week %>&seasonId=<%= @year %>&teamId=<%= bet.game.user.espn_id %>">View Matchup</a></td>
+          <td>
+            <% if bet.possible_acceptances&.dig('any') %>
+              Anyone
+            <% elsif bet.possible_acceptances&.dig('users') %>
+              <%= bet.possible_acceptances&.dig('users').map { |id| Rails.cache.fetch("nickname_#{id}") }.join(', ') %>
+            <% elsif bet.maximum_acceptors %>
+              First <%= bet.maximum_acceptors %> Takers
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </table>
+  <% else %>
+    <p>No new game bets today.</p>
+  <% end %>
+  <h3>New Season Bets Proposed</h3>
+  <% if @new_season_bets.present? %>
+  <table>
+    <table border="1" cellpadding="2">
+      <thead>
+      <tr>
+        <th>Bet Type</th>
+        <th>Terms</th>
+        <th>Amount</th>
+        <th>Proposer</th>
+        <th>Closing Date</th>
+        <th>Possible Acceptors</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @new_season_bets.each do |bet| %>
+        <tr>
+          <td><%= SeasonSideBet::VALID_BET_TYPES[bet.bet_type.to_sym] %></td>
+          <td><%= bet.terms_description %></td>
+          <td><%= number_to_currency(bet.amount) %><% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><% end %></td>
+          <td><%= bet.user.random_nickname %></td>
+          <td><%= bet.closing_date.to_date %></td>
+          <td>
+            <% if bet.possible_acceptances&.dig('any') %>
+              Anyone
+            <% elsif bet.possible_acceptances&.dig('users') %>
+              <%= bet.possible_acceptances&.dig('users').map { |id| Rails.cache.fetch("nickname_#{id}") }.join(', ') %>
+            <% elsif bet.maximum_acceptors %>
+              First <%= bet.maximum_acceptors %> Takers
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </table>
+  <% else %>
+    <p>No new season bets today.</p>
+  <% end %>
+  <h3>New Takers</h3>
+  <% if @new_bets_accepted.present? %>
+  <ul>
+    <% @new_bets_accepted.each do |sba| %>
+      <li>
+        <%= sba.user.random_nickname %> took the action against "<%= sba.side_bet.terms_description %>", proposed by <%= sba.side_bet.user.random_nickname %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %>, getting <%= sba.side_bet.odds %> odds<% end %>.
+      </li>
+    <% end %>
+  </ul>
+  <% else %>
+    <p>No new acceptances today.</p>
+  <% end %>
+  <p><a href="http://www.westhoochington.com/side_bets">Go get a piece of this action!</a></p>
+</body>
