@@ -70,6 +70,12 @@ class NewsletterMessage < ApplicationRecord
   validates_uniqueness_of :template_string
   before_create :set_defaults
 
+  def use_message
+    # increment count of times used, and return template string
+    update(used: used + 1)
+    template_string
+  end
+
   def valid_category
     return if valid_category?
 

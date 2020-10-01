@@ -238,7 +238,7 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def replace_anchors(message, values)
-    message.template_string.gsub(/%\{\w+\}/) { |val| values[val.gsub(/[%{}]/, '').to_sym] || val }
+    message.use_message.gsub(/%\{\w+\}/) { |val| values[val.gsub(/[%{}]/, '').to_sym] || val }
   end
 
   def random_narrow_cucking_message
