@@ -1,57 +1,69 @@
 <div class="container-fluid">
-    <h1>Weekly Westhoochington Editorial Board</h1>
-    <h5>
+  <h1>Weekly Westhoochington Editorial Board</h1>
+  <div class="row margin-below">
+    <div class="col xs-10">
+      <h5>
         To contribute to the newsletter, you need to select a category, and then provide a template string.
         A template string must contain certain anchors, marked like %{winner}.
         For example, the category "Narrowest Cucking of the Week", when the margin is "very narrow" (margin < 5 points) contains the string:
         "Quite the nail-biter this week, with %{winner} scraping by %{loser} by only %{margin} points."
-        When the newsletter is generated, these anchors will get replaced by random nicknames or point values as appropriate.
+        When the newsletter is generated, these anchors will get replaced by nicknames or point values as appropriate.
         Toggle the section below to see the available categories and required anchor variables for each.
         Propose whatever you want; maximum trolling and mockery is encouraged.
         Selections will be weighted to favor contributions which have been used less times.
-    </h5>
-    <div class="row margin-below">
-        <h3 class="col border-bottom">
-            <img class="expand" data-toggle="collapse" data-target="#categories" aria-expanded="true" aria-controls="categories" src="<%= image_path('expand.png') %>" />Newsletter Categories
-        </h3>
+      </h5>
     </div>
-    <div class="collapse" id="categories">
-      <% NewsletterMessage::CATEGORIES.each do |_tag, object| %>
-        <div class="margin-below">
-          <h4><b><%= object[:label] %></b></h4>
-          <h5>Variables: <%= object[:variables].map { |var| "%{#{var}}" }.join(', ') %></h5>
-          <h5>Levels: <%= object[:levels].map { |level| "#{level[1]} (#{object[:direction]} #{level.last})" }.join(', ') %></h5>
-        </div>
-      <% end %>
+  </div>
+  <div class="row margin-below">
+    <div class="col-xs-10">
+      <h1>
+        <img class="expand" data-toggle="collapse" data-target="#categories" aria-expanded="true" aria-controls="categories" src="<%= image_path('expand.png') %>" /> Newsletter Categories
+      </h1>
+      <div class="collapse" id="categories">
+        <% NewsletterMessage::CATEGORIES.each do |_tag, object| %>
+          <div class="margin-below">
+            <h4><b><%= object[:label] %></b></h4>
+            <h5>Variables: <%= object[:variables].map { |var| "%{#{var}}" }.join(', ') %></h5>
+            <h5>Levels: <%= object[:levels].map { |level| "#{level[1]} (#{object[:direction]} #{level.last})" }.join(', ') %></h5>
+          </div>
+        <% end %>
+      </div>
     </div>
-    <h1 class="margin-above">Add Newsletter Message</h1>
-    <form action="<%= create_newsletter_message_path %>" method="post">
+  </div>
+  <div class="row margin-above">
+    <div class="col xs-10">
+      <h1>Add Newsletter Message</h1>
+      <form action="<%= create_newsletter_message_path %>" method="post">
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
         <div class="form-group">
-            <label for="category">Category</label>
-            <select class="custom-select mr-sm-2" id="category" name="category">
-              <% NewsletterMessage::CATEGORIES.each do |key, object| %>
-                <option value="<%= key %>"><%= object[:label] %></option>
-              <% end %>
-            </select>
-            <%= render "shared/errors", type: "category" %>
+          <label for="category">Category</label>
+          <select class="custom-select mr-sm-2" id="category" name="category">
+            <% NewsletterMessage::CATEGORIES.each do |key, object| %>
+              <option value="<%= key %>"><%= object[:label] %></option>
+            <% end %>
+          </select>
+          <%= render "shared/errors", type: "category" %>
         </div>
         <div class="form-group">
-            <label for="amount">Level</label>
-            <select class="custom-select mr-sm-2" id="level" name="level">
-              <% NewsletterMessage::CATEGORIES.dig(:high_score, :levels).each do |array| %>
-                <option value="<%= array[0] %>"><%= array[1] %></option>
-              <% end %>
-            </select>
-            <%= render "shared/errors", type: "amount" %>
+          <label for="amount">Level</label>
+          <select class="custom-select mr-sm-2" id="level" name="level">
+            <% NewsletterMessage::CATEGORIES.dig(:high_score, :levels).each do |array| %>
+              <option value="<%= array[0] %>"><%= array[1] %></option>
+            <% end %>
+          </select>
+          <%= render "shared/errors", type: "level" %>
         </div>
         <div class="form-group">
-            <label for="max_takers">Template String</label>
-            <input type="text" class="form-control" id="template_string" name="template_string" placeholder="Must contain <%= NewsletterMessage::CATEGORIES.dig(:high_score, :variables).map { |var| "%{#{var}}" }.join(', ') %>">
-            <%= render "shared/errors", type: "max_takers" %>
+          <label for="max_takers">Template String</label>
+          <input type="text" class="form-control" id="template_string" name="template_string" placeholder="Must contain <%= NewsletterMessage::CATEGORIES.dig(:high_score, :variables).map { |var| "%{#{var}}" }.join(', ') %>">
+          <%= render "shared/errors", type: "template_string" %>
         </div>
-        <button type="submit" class="btn btn-primary">Add</button>
-    </form>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Contribute</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>

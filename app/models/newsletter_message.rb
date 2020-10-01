@@ -61,4 +61,55 @@ class NewsletterMessage < ApplicationRecord
     '>' => lambda { |input, threshold| input > threshold },
     '<' => lambda { |input, threshold| input < threshold }
   }
+
+  validate :valid_category, :valid_level, :valid_template_string
+  before_create :set_defaults
+
+  def valid_category
+    return if valid_category?
+
+    errors.add(:category, "is invalid: must be one of #{valid_category_descriptions.join(', ')}")
+  end
+
+  def valid_category?
+    CATEGORIES.key?(category.to_sym)
+  end
+
+  def valid_category_descriptions
+    CATEGORIES.map { |_k, hash| hash[:label] }
+  end
+
+  def valid_level
+    return if !valid_category? || valid_level?
+
+    errors.add(:level, "is invalid: must be one of #{valid_level_descriptions.join(', ')}")
+  end
+
+  def valid_level?
+    CATEGORIES.dig(category.to_sym, :levels).any? { |lvl| lvl[0] == level.to_sym }
+  end
+
+  def valid_level_descriptions
+    CATEGORIES.dig(category.to_sym, :levels).map { |level| level[1] }
+  end
+
+  def valid_template_string
+    return if !valid_category? || valid_template_string?
+
+    errors.add(:template_string, "is invalid: must contain variables: #{decorated_variables.join(', ')}")
+  end
+
+  def valid_template_string?
+    decorated_variables.all? do |var|
+      template_string.include?(var)
+    end
+  end
+
+  def decorated_variables
+    CATEGORIES.dig(category.to_sym, :variables).map { |var| "%{#{var}}" }
+  end
+
+  def set_defaults
+    self.used = 0
+  end
 end
