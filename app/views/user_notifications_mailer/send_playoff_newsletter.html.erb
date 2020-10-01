@@ -78,35 +78,6 @@
     <% end %>
   <% end %>
 <% end %>
-<h3>Over/Unders</h3>
-<% if @new_over_unders.size.positive? || @new_over_under_lines.size.positive? || @new_over_under_bets.size.positive? %>
-  <% if @new_over_unders.size.positive? %>
-    <p>New Over/Unders:</p>
-    <ul>
-      <% @new_over_unders.each do |over_under| %>
-        <li><%= over_under.user.random_nickname %>: "<%= over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if @new_over_under_lines.size.positive? %>
-    <p>New Lines:</p>
-    <ul>
-      <% @new_over_under_lines.each do |line| %>
-        <li><%= line.user.random_nickname %>: <%= line.value %> on "<%= line.over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-  <% if @new_over_under_bets.size.positive? %>
-    <p>New Bets:</p>
-    <ul>
-      <% @new_over_under_bets.each do |bet| %>
-        <li><%= bet.user.random_nickname %>: <%= bet.direction %> on <%= bet.line.value %> for "<%= bet.line.over_under.description %>"</li>
-      <% end %>
-    </ul>
-  <% end %>
-<% else %>
-  <p>Nobody added any over-unders this week. Booooorrrriinnngggggg</p>
-<% end %>
 <h2>Words of Wisdom</h2>
   <% if @week.to_i == 16 %>
   No wisdom left to be had. It's all behind us, fuckers.

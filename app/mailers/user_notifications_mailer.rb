@@ -46,9 +46,6 @@ class UserNotificationsMailer < ApplicationMailer
     @games = Game.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all
     @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
-    @new_over_unders = OverUnder.includes(user: :nicknames).references(user: :nicknames).where(created_at: last_week).all
-    @new_over_under_lines = Line.includes(:over_under, user: :nicknames).references(:over_under, user: :nicknames).where(created_at: last_week).all
-    @new_over_under_bets = OverUnderBet.includes(user: :nicknames, line: :over_under).references(user: :nicknames, line: :over_under).where(created_at: last_week).all
     @trend_breakers = calculate_trend_breakers
     @record_setters = calculate_record_setters
     @resolved_side_hustles = GameSideBet.where(game_id: @games.map(&:id)).all.map(&:side_bet_acceptances).flatten
@@ -220,69 +217,98 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def random_high_score_message
-    i18n_key = if @high_score.active_total > 180
-                 'newsletter.high_score.crushed'
+    level = if @high_score.active_total > 180
+                 'crushed'
                elsif @high_score.active_total > 150
-                 'newsletter.high_score.very_high'
+                 'very_high'
                elsif @high_score.active_total > 130
-                 'newsletter.high_score.high'
+                 'high'
                elsif @high_score.active_total < 120
-                 'newsletter.high_score.low'
+                 'low'
                else
-                 'newsletter.high_score.medium'
+                 'medium'
                end
-    possible_messages = I18n.t(i18n_key).keys
-    I18n.t([i18n_key, possible_messages.sample].join('.'), nickname: @high_score.winner.random_nickname, score: @high_score.active_total)
+    possible_messages = NewsletterMessage.where(category: 'high_score', level: level, used: 0)
+    message = if possible_messages.size.zero?
+                NewsletterMessage.where(category: 'high_score', level: level).weighted_random.first
+              else
+                possible_messages.sample
+              end
+    replace_anchors(message, player: @high_score.winner.random_nickname, score: @high_score.active_total)
+  end
+
+  def replace_anchors(string, values)
+    string.gsub(/%\{\w+\}/) { |val| values[val.gsub(/[%{}]/, '').to_sym] || val }
   end
 
   def random_narrow_cucking_message
-    i18n_key = if @narrowest.margin.abs < 5
-                 'newsletter.narrowest.very_narrow'
+    level = if @narrowest.margin.abs < 5
+                 'very_narrow'
                elsif @narrowest.margin.abs < 10
-                 'newsletter.narrowest.medium'
+                 'medium'
                else
-                 'newsletter.narrowest.not_narrow'
-               end
-    possible_messages = I18n.t(i18n_key).keys
-    I18n.t([i18n_key, possible_messages.sample].join('.'), winner: @narrowest.winner.random_nickname, loser: @narrowest.loser.random_nickname, margin: @narrowest.margin.abs)
+                 'not_narrow'
+            end
+    possible_messages = NewsletterMessage.where(category: 'narrowest', level: level, used: 0)
+    message = if possible_messages.size.zero?
+                NewsletterMessage.where(category: 'narrowest', level: level).weighted_random.first
+              else
+                possible_messages.sample
+              end
+    replace_anchors(message, winner: @narrowest.winner.random_nickname, loser: @narrowest.loser.random_nickname, margin: @narrowest.margin.abs)
   end
 
   def random_biggest_bagging_message
-    i18n_key = if @largest.margin.abs > 50
-                 'newsletter.biggest.very_large'
+    level = if @largest.margin.abs > 50
+                 'very_large'
                elsif @largest.margin.abs > 30
-                 'newsletter.biggest.large'
+                 'large'
                elsif @largest.margin.abs > 10
-                 'newsletter.biggest.medium'
+                 'medium'
                else
-                 'newsletter.biggest.small'
+                 'small'
                end
-    possible_messages = I18n.t(i18n_key).keys
-    I18n.t([i18n_key, possible_messages.sample].join('.'), winner: @largest.winner.random_nickname, loser: @largest.loser.random_nickname, margin: @largest.margin.abs)
+    possible_messages = NewsletterMessage.where(category: 'biggest', level: level, used: 0)
+    message = if possible_messages.size.zero?
+                NewsletterMessage.where(category: 'biggest', level: level).weighted_random.first
+              else
+                possible_messages.sample
+              end
+    replace_anchors(message, winner: @largest.winner.random_nickname, loser: @largest.loser.random_nickname, margin: @largest.margin.abs)
   end
 
   def random_overperformer_message
-    i18n_key = if @overperformer.send("points_above_average_for_week_#{@year}", @week) > 30
-                 'newsletter.overperformer.big'
+    level = if @overperformer.send("points_above_average_for_week_#{@year}", @week) > 30
+                 'big'
                elsif @overperformer.send("points_above_average_for_week_#{@year}", @week) > 10
-                 'newsletter.overperformer.medium'
+                 'medium'
                else
-                 'newsletter.overperformer.low'
+                 'low'
                end
-    possible_messages = I18n.t(i18n_key).keys
-    I18n.t([i18n_key, possible_messages.sample].join('.'), name: @overperformer.random_nickname, points: @overperformer.send("game_for_week_#{@year}", @week)&.active_total, average: @overperformer.send("average_active_total_#{@year}"))
+    possible_messages = NewsletterMessage.where(category: 'overperformer', level: level, used: 0)
+    message = if possible_messages.size.zero?
+                NewsletterMessage.where(category: 'overperformer', level: level).weighted_random.first
+              else
+                possible_messages.sample
+              end
+    replace_anchors(message, player: @overperformer.random_nickname, points: @overperformer.send("game_for_week_#{@year}", @week)&.active_total, average: @overperformer.send("average_active_total_#{@year}"))
   end
 
   def random_projections_message
-    i18n_key = if @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 30
-                 'newsletter.outprojector.high'
+    level = if @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 30
+                 'high'
                elsif @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 10
-                 'newsletter.outprojector.medium'
+                 'medium'
                else
-                 'newsletter.outprojector.low'
+                 'low'
                end
-    possible_messages = I18n.t(i18n_key).keys
-    I18n.t([i18n_key, possible_messages.sample].join('.'), name: @outprojector.random_nickname, points: @outprojector.send("game_for_week_#{@year}", @week)&.active_total, projected: @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2))
+    possible_messages = NewsletterMessage.where(category: 'overperformer', level: level, used: 0)
+    message = if possible_messages.size.zero?
+                NewsletterMessage.where(category: 'overperformer', level: level).weighted_random.first
+              else
+                possible_messages.sample
+              end
+    replace_anchors(message, name: @outprojector.random_nickname, points: @outprojector.send("game_for_week_#{@year}", @week)&.active_total, projected: @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2))
   end
 
   def random_standings_message

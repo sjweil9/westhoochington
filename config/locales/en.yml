@@ -62,15 +62,15 @@ en:
         six_paper_joint: "I'm right out of wisdom, folks. With only the final week ahead of us, wherever you stand, there is not much to do now except <a href='https://www.youtube.com/watch?v=krxVNUwfaQs'>smoke a six paper point</a>."
     high_score:
       crushed:
-        record_books: "%{nickname} put up one for the record books this week with a %{score} point performance."
+        record_books: "%{player} put up one for the record books this week with a %{score} point performance."
       very_high:
-        dominant: "%{nickname} put up a dominant performance this week, posting %{score} points."
-        hot_damn: "Hot damn boys! %{nickname} just put on a show to the tune of %{score} points."
-        paving_a_point: "%{nickname} was really pavin' a fuckin' point with a %{score} point spectacle."
-        bear_on_the_pope: "Did %{nickname} get the high score this week with %{score} points? I don't know, does a bear shit on the pope?"
+        dominant: "%{player} put up a dominant performance this week, posting %{score} points."
+        hot_damn: "Hot damn boys! %{player} just put on a show to the tune of %{score} points."
+        paving_a_point: "%{player} was really pavin' a fuckin' point with a %{score} point spectacle."
+        bear_on_the_pope: "Did %{player} get the high score this week with %{score} points? I don't know, does a bear shit on the pope?"
       high:
-        solid_week: "It would be fair to say it was a solid week for %{nickname}, who took the high score with an impressive %{score} points."
-        big_money: "Big money baller alert! %{nickname} is gonna make that $20 rain at the clurrrb after showing off to the tune of %{score} points."
+        solid_week: "It would be fair to say it was a solid week for %{player}, who took the high score with an impressive %{score} points."
+        big_money: "Big money baller alert! %{player} is gonna make that $20 rain at the clurrrb after showing off to the tune of %{score} points."
       medium:
         not_flash: "You don't always need to put up flashy 150+ games to take home the big $20 prize, as %{nickname} and his %{score} points will attest."
         richer: "%{nickname} is now $20 richer after putting up %{score} points."
