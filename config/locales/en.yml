@@ -71,12 +71,12 @@ en:
       high:
         solid_week: "It would be fair to say it was a solid week for %{player}, who took the high score with an impressive %{score} points."
         big_money: "Big money baller alert! %{player} is gonna make that $20 rain at the clurrrb after showing off to the tune of %{score} points."
+        two_birds_stoned: "%{player} basically got two birds stoned at once, taking down the win and walking away with $20 on the back of their %{score} points."
       medium:
-        not_flash: "You don't always need to put up flashy 150+ games to take home the big $20 prize, as %{nickname} and his %{score} points will attest."
-        richer: "%{nickname} is now $20 richer after putting up %{score} points."
-        two_birds_stoned: "%{nickname} basically got two birds stoned at once, taking down the win and walking away with $20 on the back of their %{score} points."
+        not_flash: "You don't always need to put up flashy 150+ games to take home the big $20 prize, as %{player} and his %{score} points will attest."
+        richer: "%{player} is now $20 richer after putting up %{score} points."
       low:
-        pathetic: "It's honestly pathetic that %{nickname} was able to take $20 off only %{score} points. Everyone else should feel ashamed."
+        pathetic: "It's honestly pathetic that %{player} was able to take $20 off only %{score} points. Everyone else should feel ashamed."
     narrowest:
       very_narrow:
         nail_biter: "Quite the nail-biter this week, with %{winner} scraping by %{loser} by only %{margin} points."
@@ -102,24 +102,24 @@ en:
       small:
         tight_week: "It was a tight week overall, as the biggest margin was only %{margin} points by %{winner} over %{loser}."
     overperformer:
-      big:
-        impressive_performance: "A truly impressive performance by %{name}, who laid down %{points} points, crushing their season average of %{average}."
-        feeling_lucky: "%{name} was either on fire or just really feeling lucky this week, but either way they crushed their season average of %{average} with %{points} points."
-        phrases: "%{name} really seemed like a different person this week, leaving their %{average} average behind in favor of a %{points} point performance. Well hey, everybody goes through phrases after all."
+      large:
+        impressive_performance: "A truly impressive performance by %{player}, who laid down %{points} points, crushing their season average of %{average}."
+        feeling_lucky: "%{player} was either on fire or just really feeling lucky this week, but either way they crushed their season average of %{average} with %{points} points."
+        phrases: "%{player} really seemed like a different person this week, leaving their %{average} average behind in favor of a %{points} point performance. Well hey, everybody goes through phrases after all."
       medium:
-        real_improvement: "%{name} demonstrated some real improvement this week after beating their season average of %{average} with a score of %{points} points."
-        steps_up: "%{name} took some steps up in the world today, going from a season average of %{average} to a more impressive %{points}."
+        real_improvement: "%{player} demonstrated some real improvement this week after beating their season average of %{average} with a score of %{points} points."
+        steps_up: "%{player} took some steps up in the world today, going from a season average of %{average} to a more impressive %{points}."
       low:
-        not_shining_week: "It was not a shining week for improvements, but %{name} managed to out-perform their season average of %{average} by putting up %{points} points."
+        not_shining_week: "It was not a shining week for improvements, but %{player} managed to out-perform their season average of %{average} by putting up %{points} points."
     outprojector:
-      high:
-        no_fucks: "%{name} had no fucks to give about ESPN's projections, as they dropped %{points} points despite being only projected for %{projected}."
-        cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{name} for %{projected} points when they actually dropped %{points}."
-        vegas_trip: "%{name} should plan a Vegas trip this week, since the odds clearly don't mean shit to a man who beat out their %{projected} projection with %{points} points."
+      large:
+        no_fucks: "%{player} had no fucks to give about ESPN's projections, as they dropped %{points} points despite being only projected for %{projected}."
+        cumshot_seizure: "ESPN projections were about as accurate as a cumshot during a seizure this week, projecting %{player} for %{projected} points when they actually dropped %{points}."
+        vegas_trip: "%{player} should plan a Vegas trip this week, since the odds clearly don't mean shit to a man who beat out their %{projected} projection with %{points} points."
       medium:
-        monkeys_missed: "ESPN's fantasy projection dart-throwing monkeys missed the mark this week on %{name}, who beat out their %{projected} projection with a solid %{points} points."
+        monkeys_missed: "ESPN's fantasy projection dart-throwing monkeys missed the mark this week on %{player}, who beat out their %{projected} projection with a solid %{points} points."
       low:
-        fantasy_oracle: "ESPN's fantasy oracle didn't sell anyone too short this week, but %{name} did manage to outperform their %{projected} point projection with %{points} points."
+        fantasy_oracle: "ESPN's fantasy oracle didn't sell anyone too short this week, but %{player} did manage to outperform their %{projected} point projection with %{points} points."
     standings:
       ladies: "Well, ladies and other ladies, that leaves us with these standings:"
       validation: "Oh, so you need validation, huh? Well, some of you can get it from looking at these standings:"

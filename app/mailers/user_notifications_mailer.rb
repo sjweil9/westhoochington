@@ -237,8 +237,8 @@ class UserNotificationsMailer < ApplicationMailer
     replace_anchors(message, player: @high_score.winner.random_nickname, score: @high_score.active_total)
   end
 
-  def replace_anchors(string, values)
-    string.gsub(/%\{\w+\}/) { |val| values[val.gsub(/[%{}]/, '').to_sym] || val }
+  def replace_anchors(message, values)
+    message.template_string.gsub(/%\{\w+\}/) { |val| values[val.gsub(/[%{}]/, '').to_sym] || val }
   end
 
   def random_narrow_cucking_message
@@ -279,7 +279,7 @@ class UserNotificationsMailer < ApplicationMailer
 
   def random_overperformer_message
     level = if @overperformer.send("points_above_average_for_week_#{@year}", @week) > 30
-                 'big'
+                 'large'
                elsif @overperformer.send("points_above_average_for_week_#{@year}", @week) > 10
                  'medium'
                else
@@ -296,19 +296,19 @@ class UserNotificationsMailer < ApplicationMailer
 
   def random_projections_message
     level = if @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 30
-                 'high'
+                 'large'
                elsif @outprojector.send("points_above_projection_for_week_#{@year}", @week) > 10
                  'medium'
                else
                  'low'
                end
-    possible_messages = NewsletterMessage.where(category: 'overperformer', level: level, used: 0)
+    possible_messages = NewsletterMessage.where(category: 'outprojector', level: level, used: 0)
     message = if possible_messages.size.zero?
-                NewsletterMessage.where(category: 'overperformer', level: level).weighted_random.first
+                NewsletterMessage.where(category: 'outprojector', level: level).weighted_random.first
               else
                 possible_messages.sample
               end
-    replace_anchors(message, name: @outprojector.random_nickname, points: @outprojector.send("game_for_week_#{@year}", @week)&.active_total, projected: @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2))
+    replace_anchors(message, player: @outprojector.random_nickname, points: @outprojector.send("game_for_week_#{@year}", @week)&.active_total, projected: @outprojector.send("game_for_week_#{@year}", @week)&.projected_total&.round(2))
   end
 
   def random_standings_message
@@ -324,5 +324,17 @@ class UserNotificationsMailer < ApplicationMailer
     body_keys = I18n.t("#{selected_key}.body").keys
     body_lines = body_keys.map { |key| I18n.t("#{selected_key}.body.#{key}") }
     [I18n.t("#{selected_key}.header"), body_lines]
+  end
+end
+
+
+NewsletterMessage::CATEGORIES.each do |category, object|
+  object[:levels].each do |level|
+    level = level[0]
+    key = "newsletter.#{category}.#{level}"
+    possible_values = I18n.t(key).values
+    possible_values.each do |value|
+      NewsletterMessage.create(user_id: 1, category: category, level: level, template_string: value)
+    end
   end
 end

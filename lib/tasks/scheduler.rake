@@ -85,7 +85,7 @@ namespace :newsletter do
   task :send => :environment do
     week = Time.now.strftime('%U').to_i - 36
     year = Date.today.year
-    if Time.now.tuesday? && week.positive? && week <= 16
+    #if Time.now.tuesday? && week.positive? && week <= 16
       relevant_week = [14, 16].include?(week) ? week - 1 : week
       involved_users = Game.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 
@@ -93,6 +93,21 @@ namespace :newsletter do
         UserNotificationsMailer.send_playoff_newsletter(involved_users, week, year).deliver
       elsif week <= 12
         UserNotificationsMailer.send_newsletter(involved_users, week, year).deliver
+      end
+    #end
+  end
+
+  desc "Initial load for old yaml-based messages to new model"
+  task :load_messages => :environment do
+    NewsletterMessage::CATEGORIES.each do |category, object|
+      object[:levels].each do |level|
+        level = level[0]
+        key = "newsletter.#{category}.#{level}"
+        possible_values = I18n.t(key).values
+        possible_values.each do |value|
+          user = User.find_by(email: 'stephen.weil@gmail.com')
+          NewsletterMessage.create(user_id: user.id, category: category, level: level, template_string: value)
+        end
       end
     end
   end
