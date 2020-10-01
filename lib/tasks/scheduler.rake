@@ -85,7 +85,7 @@ namespace :newsletter do
   task :send => :environment do
     week = Time.now.strftime('%U').to_i - 36
     year = Date.today.year
-    #if Time.now.tuesday? && week.positive? && week <= 16
+    if Time.now.tuesday? && week.positive? && week <= 16
       relevant_week = [14, 16].include?(week) ? week - 1 : week
       involved_users = Game.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 
@@ -94,7 +94,7 @@ namespace :newsletter do
       elsif week <= 12
         UserNotificationsMailer.send_newsletter(involved_users, week, year).deliver
       end
-    #end
+    end
   end
 
   desc "Initial load for old yaml-based messages to new model"
