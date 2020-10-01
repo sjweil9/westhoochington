@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_21_040259) do
+ActiveRecord::Schema.define(version: 2020_09_29_070222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,32 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
     t.json "highest_score_yahoo"
   end
 
+  create_table "game_side_bet_acceptances", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "game_side_bet_id"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_side_bet_id"], name: "index_game_side_bet_acceptances_on_game_side_bet_id"
+    t.index ["user_id"], name: "index_game_side_bet_acceptances_on_user_id"
+  end
+
+  create_table "game_side_bets", force: :cascade do |t|
+    t.bigint "game_id"
+    t.bigint "user_id"
+    t.integer "predicted_winner_id"
+    t.string "status"
+    t.integer "actual_winner_id"
+    t.decimal "amount"
+    t.string "odds"
+    t.json "possible_acceptances"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "line"
+    t.index ["game_id"], name: "index_game_side_bets_on_game_id"
+    t.index ["user_id"], name: "index_game_side_bets_on_user_id"
+  end
+
   create_table "games", force: :cascade do |t|
     t.bigint "user_id"
     t.integer "opponent_id"
@@ -49,6 +75,8 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
     t.float "opponent_active_total"
     t.float "opponent_projected_total"
     t.float "opponent_bench_total"
+    t.boolean "started"
+    t.boolean "finished"
     t.index ["user_id"], name: "index_games_on_user_id"
   end
 
@@ -133,6 +161,25 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
     t.index ["user_id"], name: "index_podcasts_on_user_id"
   end
 
+  create_table "season_side_bets", force: :cascade do |t|
+    t.integer "season_year"
+    t.bigint "user_id"
+    t.string "bet_type"
+    t.string "status"
+    t.json "bet_terms"
+    t.decimal "amount"
+    t.string "odds"
+    t.decimal "line"
+    t.string "comparison_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "closing_date"
+    t.json "possible_acceptances"
+    t.boolean "won"
+    t.json "final_bet_results"
+    t.index ["user_id"], name: "index_season_side_bets_on_user_id"
+  end
+
   create_table "season_user_stats", force: :cascade do |t|
     t.integer "season_year"
     t.bigint "user_id"
@@ -169,17 +216,18 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "season_year"
+    t.boolean "finished"
     t.index ["user_id"], name: "index_seasons_on_user_id"
   end
 
   create_table "side_bet_acceptances", force: :cascade do |t|
-    t.bigint "side_bet_id"
+    t.string "type"
     t.bigint "user_id"
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "status"
-    t.boolean "paid"
-    t.index ["side_bet_id"], name: "index_side_bet_acceptances_on_side_bet_id"
+    t.string "bet_type"
+    t.integer "side_bet_id"
     t.index ["user_id"], name: "index_side_bet_acceptances_on_user_id"
   end
 
@@ -215,6 +263,7 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
     t.decimal "average_margin"
     t.json "sacko_seasons"
     t.json "lifetime_record"
+    t.json "side_bet_results"
     t.index ["user_id"], name: "index_user_stats_on_user_id"
   end
 
@@ -228,12 +277,17 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
     t.datetime "updated_at", null: false
     t.boolean "newsletter"
     t.boolean "podcast_flag"
+    t.integer "espn_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
+  add_foreign_key "game_side_bet_acceptances", "game_side_bets"
+  add_foreign_key "game_side_bet_acceptances", "users"
+  add_foreign_key "game_side_bets", "games"
+  add_foreign_key "game_side_bets", "users"
   add_foreign_key "games", "users"
   add_foreign_key "lines", "over_unders"
   add_foreign_key "lines", "users"
@@ -246,9 +300,9 @@ ActiveRecord::Schema.define(version: 2020_09_21_040259) do
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
   add_foreign_key "podcasts", "users"
+  add_foreign_key "season_side_bets", "users"
   add_foreign_key "season_user_stats", "users"
   add_foreign_key "seasons", "users"
-  add_foreign_key "side_bet_acceptances", "side_bets"
   add_foreign_key "side_bet_acceptances", "users"
   add_foreign_key "side_bets", "users"
   add_foreign_key "user_stats", "users"

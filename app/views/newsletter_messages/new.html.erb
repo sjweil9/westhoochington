@@ -16,21 +16,13 @@
         </h3>
     </div>
     <div class="collapse" id="categories">
-      <h4><b>High Score</b></h4>
-        <h5>Variables: %{nickname}, %{score}</h5>
-        <h5>Levels: Crushed (> 180), Very High (> 150), High (> 130), Medium (120 - 130), Low (< 120)</h5>
-        <h4><b>Narrowest Cucking</b></h4>
-        <h5>Variables: %{winner}, %{loser}, %{margin}</h5>
-        <h5>Levels: Very Narrow (< 5), Medium (< 10), Not Narrow (> 10)</h5>
-        <h4><b>Biggest T-Bagging</b></h4>
-        <h5>Variables: %{winner}, %{loser}, %{margin}</h5>
-        <h5>Levels: Very Large (> 50), Large (> 30), Medium (> 10), Small (< 10)</h5>
-        <h4><b>Overperformer</b></h4>
-        <h5>Variables: %{name}, %{points}, %{average}</h5>
-        <h5>Levels: Large (> 30), Medium (> 10), Low (< 10)</h5>
-        <h4><b>Projections, Shmrojections</b></h4>
-        <h5>Variables: %{name}, %{points}, %{projected}</h5>
-        <h5>Levels: Large (> 30), Medium (> 10), Low (< 10)</h5>
+      <% NewsletterMessage::CATEGORIES.each do |_tag, object| %>
+        <div class="margin-below">
+          <h4><b><%= object[:label] %></b></h4>
+          <h5>Variables: <%= object[:variables].map { |var| "%{#{var}}" }.join(', ') %></h5>
+          <h5>Levels: <%= object[:levels].map { |level| "#{level[1]} (#{object[:direction]} #{level.last})" }.join(', ') %></h5>
+        </div>
+      <% end %>
     </div>
     <h1 class="margin-above">Add Newsletter Message</h1>
     <form action="<%= create_newsletter_message_path %>" method="post">
@@ -38,27 +30,46 @@
         <div class="form-group">
             <label for="category">Category</label>
             <select class="custom-select mr-sm-2" id="category" name="category">
-            <% @categories.each do |category| %>
-              <option value="<%= category[:key] %>"><%= category[:label] %></option>
-            <% end %>
+              <% NewsletterMessage::CATEGORIES.each do |key, object| %>
+                <option value="<%= key %>"><%= object[:label] %></option>
+              <% end %>
             </select>
             <%= render "shared/errors", type: "category" %>
         </div>
         <div class="form-group">
             <label for="amount">Level</label>
-            <input type="number" class="form-control" id="amount" name="side_bet[amount]" step="0.1">
+            <select class="custom-select mr-sm-2" id="level" name="level">
+              <% NewsletterMessage::CATEGORIES.dig(:high_score, :levels).each do |array| %>
+                <option value="<%= array[0] %>"><%= array[1] %></option>
+              <% end %>
+            </select>
             <%= render "shared/errors", type: "amount" %>
         </div>
         <div class="form-group">
-            <label for="max_takers">Max Takers (Leave Blank if You Aren't a Pussy)</label>
-            <input type="number" class="form-control" id="max_takers" name="side_bet[max_takers]" step="1">
+            <label for="max_takers">Template String</label>
+            <input type="text" class="form-control" id="template_string" name="template_string" placeholder="Must contain <%= NewsletterMessage::CATEGORIES.dig(:high_score, :variables).map { |var| "%{#{var}}" }.join(', ') %>">
             <%= render "shared/errors", type: "max_takers" %>
-        </div>
-        <div class="form-group">
-            <label for="closing_date">Closing Date</label>
-            <input type="date" class="form-control" id="closing_date" name="side_bet[closing_date]">
-            <%= render "shared/errors", type: "closing_date" %>
         </div>
         <button type="submit" class="btn btn-primary">Add</button>
     </form>
 </div>
+
+<script>
+  const categories = JSON.parse('<%= NewsletterMessage::CATEGORIES.to_json.html_safe %>');
+
+  $('#category').on('change', function() {
+    let current_selection = this.value;
+    let level_selector = $('#level');
+    level_selector.empty();
+    let new_options = categories[current_selection]['levels'];
+    new_options.forEach(option => {
+      let element = $('<option></option>').attr('value', option[0]).text(option[1]);
+      level_selector.append(element);
+    });
+    let variables = categories[current_selection]['variables'].map(val => {
+      return `%{${val}}`;
+    }).join(', ');
+    let new_placeholder = `Must contain ${variables}`;
+    $('#template_string').attr('placeholder', new_placeholder);
+  })
+</script>
