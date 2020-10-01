@@ -106,7 +106,8 @@ namespace :newsletter do
         possible_values = I18n.t(key).values
         possible_values.each do |value|
           user = User.find_by(email: 'stephen.weil@gmail.com')
-          NewsletterMessage.create(user_id: user.id, category: category, level: level, template_string: value)
+          message = NewsletterMessage.create(user_id: user.id, category: category, level: level, template_string: value)
+          message.update(used: 1) # load initial ones as used so that any new contributions get precedence
         end
       end
     end
