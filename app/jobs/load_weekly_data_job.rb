@@ -97,7 +97,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
     puts "Loading data for week #{week}"
 
-    response = RestClient.get(url, cookies: {SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2})
+    response = RestClient.get(url, cookies: cookies)
     parsed_response = JSON.parse(response.body)
     matchup_period = matchup_period_for_week(week.to_i)
     data_for_week = parsed_response.dig('schedule').select { |game| game['matchupPeriodId'].to_i == matchup_period }
@@ -147,6 +147,30 @@ class LoadWeeklyDataJob < ApplicationJob
       game ||= Game.new
 
       game.update(game_data)
+
+      team_players.each do |player|
+        player_id = player['playerId']
+        player_name = player.dig('playerPoolEntry', 'player', 'fullName')
+        player_record = Player.find_by(espn_id: player_id)
+        player_record ||= Player.new
+        player_record.update(espn_id: player_id, name: player_name)
+
+        user_id = user_id_for(team)
+        game_id = Game.find_by(season_year: year, week: week, user_id: user_id).id
+        actual_points = player.dig('playerPoolEntry', 'player', 'stats').detect { |stat| stat['statSourceId'].zero? }&.dig('appliedTotal')
+        projected_points = player.dig('playerPoolEntry', 'player', 'stats').detect { |stat| stat['statSourceId'] == 1 }&.dig('appliedTotal')
+        player_game_data = {
+          player_id: player_record.id,
+          user_id: user_id,
+          game_id: game_id,
+          points: actual_points || 0.0,
+          projected_points: projected_points || 0.0,
+          active: ACTIVE_PLAYER_SLOTS.include?(player['lineupSlotId']),
+        }
+        player_game = PlayerGame.find_by(player_id: player_record.id, user_id: user_id, game_id: game_id)
+        player_game ||= PlayerGame.new
+        player_game.update(player_game_data)
+      end
     end
 
     return if skip_calculated_stats
@@ -159,11 +183,81 @@ class LoadWeeklyDataJob < ApplicationJob
     CalculateStatsJob.new.perform_game_level
   end
 
+  # DO NOT USE BELOW, HARD TO KNOW IF ACTIVE OR NOT, USE WEEKLY DATA LOAD
+  def perform_player_data(year, week)
+    url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?view=kona_playercard&scoringPeriodId=#{week}"
+    headers = {"X-Fantasy-Filter"=>"{\"players\":{\"filterActive\":{\"value\":true}}}"}
+    response = RestClient.get(url, headers.merge(cookies: cookies))
+    players = JSON.parse(response.body)['players']
+    players.each do |player|
+      id = player['id']
+      name = player.dig('player', 'fullName')
+      player_record = Player.find_by(espn_id: id)
+      player_record ||= Player.new
+      player_record.update(espn_id: id, name: name)
+
+      # FA
+      next if player['onTeamId'].zero?
+
+      # statSourceId == 1 means projection, 0 is actual
+      player_game = player.dig('player', 'stats').detect { |stat| stat['seasonId'] == year && stat['scoringPeriodId'] == week && stat['statSourceId'].zero? }
+      next unless player_game.present?
+
+      user_id = User.find_by(espn_id: player['onTeamId']).id
+      game_id = Game.find_by(season_year: year, week: week, user_id: user_id).id
+      player_game_data = {
+        player_id: player_record.id,
+        user_id: user_id,
+        game_id: game_id,
+        points: player_game['appliedTotal'],
+        active: player.dig('player', 'active'),
+      }
+      player_game = PlayerGame.find_by(player_id: player_record.id, user_id: user_id, game_id: game_id)
+      player_game ||= PlayerGame.new
+      player_game.update(player_game_data)
+    end
+  end
+
+  def perform_transaction_data(year, week)
+    url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?scoringPeriodId=#{week}&view=mDraftDetail&view=mStatus&view=mSettings&view=mTeam&view=mTransactions2&view=modular&view=mNav"
+    response = RestClient.get(url, cookies: cookies)
+    transactions = JSON.parse(response.body)['transactions']
+
+    waiver_moves = transactions.select { |trans| trans['type'] == 'WAIVER' }
+    waiver_moves.each do |move|
+      next unless %w[FAILED_INVALIDPLAYERSOURCE EXECUTED].include?(move['status'])
+
+      successful_bid = move['status'] == 'EXECUTED' ?
+                         move :
+                         waiver_moves.detect { |mv| mv['status'] == 'EXECUTED' && mv.dig('items', 0, 'playerId') == move.dig('items', 0, 'playerId') }
+
+      # if player submitted multiple attempts to get same player (eg dropping diff players), not counting those as failures
+      next if successful_bid != move && successful_bid['teamId'] == move['teamId']
+
+      espn_player_id, team_id = move['items'].detect { |item| item['type'] == 'ADD' }.values_at('playerId', 'toTeamId')
+      player_id = Player.find_by(espn_id: espn_player_id).id
+      user_id = User.find_by(espn_id: team_id).id
+      transaction_data = {
+        player_id: player_id,
+        user_id: user_id,
+        success: move['status'] == 'EXECUTED',
+        season_year: year,
+        week: week,
+        bid_amount: move['bidAmount'],
+        winning_bid: successful_bid['bidAmount'],
+      }
+
+      transaction = PlayerFaabTransaction.find_by(player_id: player_id, user_id: user_id, season_year: year, week: week)
+      transaction ||= PlayerFaabTransaction.new
+      transaction.update(transaction_data)
+    end
+  end
+
   def perform_historical(year)
     @year = year.to_s
     url = base_historical_url + "&seasonId=#{year}"
 
-    response = RestClient.get(url, cookies: {SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2})
+    response = RestClient.get(url, cookies: cookies)
     parsed_response = JSON.parse(response.body).first
 
     games = parsed_response['schedule']
@@ -214,7 +308,7 @@ class LoadWeeklyDataJob < ApplicationJob
     @year = year.to_s
     url ||= base_historical_url + "&seasonId=#{year}"
 
-    response = RestClient.get(url, cookies: {SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2})
+    response = RestClient.get(url, cookies: cookies)
     # when you retry with the override URL, its got the same data structure as the other URL, but it's no longer an array, because... reasons?
     retries.positive? ? parsed_response = JSON.parse(response.body) : parsed_response = JSON.parse(response.body).first
 
@@ -304,6 +398,10 @@ class LoadWeeklyDataJob < ApplicationJob
 
   private
 
+  def cookies
+    { SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2 }
+  end
+
   ROSTER_SLOT_MAPPING = {
     '20': 'BENCH',
     '2': 'RB',
@@ -313,6 +411,7 @@ class LoadWeeklyDataJob < ApplicationJob
     '23': 'FLEX',
     '6': 'TE',
     '16': 'DST',
+    '21': 'IR',
   }.with_indifferent_access
 
   ACTIVE_PLAYER_SLOTS = [2, 4, 17, 0, 23, 6, 16]

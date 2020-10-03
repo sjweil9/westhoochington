@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_01_030932) do
+ActiveRecord::Schema.define(version: 2020_10_02_235432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,41 @@ ActiveRecord::Schema.define(version: 2020_10_01_030932) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_over_unders_on_user_id"
+  end
+
+  create_table "player_faab_transactions", force: :cascade do |t|
+    t.bigint "player_id"
+    t.bigint "user_id"
+    t.boolean "success"
+    t.integer "season_year"
+    t.integer "week"
+    t.integer "bid_amount"
+    t.integer "winning_bid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_player_faab_transactions_on_player_id"
+    t.index ["user_id"], name: "index_player_faab_transactions_on_user_id"
+  end
+
+  create_table "player_games", force: :cascade do |t|
+    t.bigint "player_id"
+    t.bigint "user_id"
+    t.bigint "game_id"
+    t.decimal "points"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "projected_points"
+    t.index ["game_id"], name: "index_player_games_on_game_id"
+    t.index ["player_id"], name: "index_player_games_on_player_id"
+    t.index ["user_id"], name: "index_player_games_on_user_id"
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.integer "espn_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "podcasts", force: :cascade do |t|
@@ -299,6 +334,11 @@ ActiveRecord::Schema.define(version: 2020_10_01_030932) do
   add_foreign_key "over_under_bets", "lines"
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
+  add_foreign_key "player_faab_transactions", "players"
+  add_foreign_key "player_faab_transactions", "users"
+  add_foreign_key "player_games", "games"
+  add_foreign_key "player_games", "players"
+  add_foreign_key "player_games", "users"
   add_foreign_key "podcasts", "users"
   add_foreign_key "season_side_bets", "users"
   add_foreign_key "season_user_stats", "users"

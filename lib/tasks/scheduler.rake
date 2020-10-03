@@ -23,6 +23,26 @@ namespace :stats do
     end
   end
 
+  desc "Used to load waiver transactions"
+  task :load_waiver_transactions => :environment do
+    current_week = Time.now.strftime('%U').to_i - 35
+    if Time.now.wednesday? && current_week.positive? && current_week <= 16
+      current_year = Date.today.year
+      LoadWeeklyDataJob.new.perform_transaction_data(current_year, current_week)
+    end
+  end
+
+  desc "Used to load backlog transaction data"
+  task :load_historical_transactions => :environment do
+    current_year = Date.today.year
+    (2018..current_year).each do |year|
+      max_week = year == current_year ? Time.now.strftime('%U').to_i - 36 : 16
+      (1..max_week).each do |week|
+        LoadWeeklyDataJob.new.perform_transaction_data(year, week)
+      end
+    end
+  end
+
   desc "Load on demand from Yahoo archives"
   task :load_yahoo_data => :environment do
     LoadWeeklyDataJob.new.perform_csv(yahoo: true)
