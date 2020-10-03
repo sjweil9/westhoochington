@@ -59,11 +59,12 @@ namespace :stats do
   desc "This task would be run on demand"
   task :load_backlog_data => :environment do
     current_year = Time.now.year
-    last_week = Time.now.strftime('%U').to_i - 36
-
-    # for current year, we just go up to the current week
-    (1..last_week).to_a.each do |week|
-      LoadWeeklyDataJob.perform_now(week, current_year)
+    (2018..current_year).each do |year|
+      # for current year, we just go up to the current week
+      max_week = year == current_year ? Time.now.strftime('%U').to_i - 36 : 17
+      (1...max_week).to_a.each do |week|
+        LoadWeeklyDataJob.perform_now(week, year)
+      end
     end
   end
 

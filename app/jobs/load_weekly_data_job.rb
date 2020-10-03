@@ -95,7 +95,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
     url = "#{base_url}&scoringPeriodId=#{week}"
 
-    puts "Loading data for week #{week}"
+    puts "Loading data for week #{week}, #{year}"
 
     response = RestClient.get(url, cookies: cookies)
     parsed_response = JSON.parse(response.body)
@@ -156,7 +156,7 @@ class LoadWeeklyDataJob < ApplicationJob
         player_record.update(espn_id: player_id, name: player_name)
 
         user_id = user_id_for(team)
-        game_id = Game.find_by(season_year: year, week: week, user_id: user_id).id
+        game_id = Game.find_by(season_year: year, week: week, user_id: user_id)&.id
         actual_points = player.dig('playerPoolEntry', 'player', 'stats').detect { |stat| stat['statSourceId'].zero? }&.dig('appliedTotal')
         projected_points = player.dig('playerPoolEntry', 'player', 'stats').detect { |stat| stat['statSourceId'] == 1 }&.dig('appliedTotal')
         player_game_data = {
@@ -166,6 +166,7 @@ class LoadWeeklyDataJob < ApplicationJob
           points: actual_points || 0.0,
           projected_points: projected_points || 0.0,
           active: ACTIVE_PLAYER_SLOTS.include?(player['lineupSlotId']),
+          lineup_slot: ROSTER_SLOT_MAPPING[player['lineupSlotId'].to_s]
         }
         player_game = PlayerGame.find_by(player_id: player_record.id, user_id: user_id, game_id: game_id)
         player_game ||= PlayerGame.new
@@ -403,7 +404,7 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   ROSTER_SLOT_MAPPING = {
-    '20': 'BENCH',
+    '20': 'BN',
     '2': 'RB',
     '4': 'WR',
     '17': 'K',
