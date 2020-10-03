@@ -29,6 +29,7 @@ namespace :stats do
     if Time.now.wednesday? && current_week.positive? && current_week <= 16
       current_year = Date.today.year
       LoadWeeklyDataJob.new.perform_transaction_data(current_year, current_week)
+      CalculateStatsJob.new.update_faab(current_year)
     end
   end
 
@@ -40,7 +41,9 @@ namespace :stats do
       (1..max_week).each do |week|
         LoadWeeklyDataJob.new.perform_transaction_data(year, week)
       end
+      CalculateStatsJob.new.update_faab(year)
     end
+    CalculateStatsJob.new.update_faab('alltime')
   end
 
   desc "Load on demand from Yahoo archives"

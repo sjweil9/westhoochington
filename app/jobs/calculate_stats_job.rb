@@ -57,6 +57,14 @@ class CalculateStatsJob < ApplicationJob
     calculated_stats.update(side_bet_results: json)
   end
 
+  def update_faab(year)
+    calculated_stats = FaabStat.find_by(season_year: year) || FaabStat.create(season_year: year)
+    filter_params = { season_year: year == 'alltime' ? nil : year }.compact
+    update_biggest_load(calculated_stats, filter_params)
+    update_narrowest_fail(calculated_stats, filter_params)
+    update_biggest_overpay(calculated_stats, filter_params)
+  end
+
   ###########################################################################################
   #                                 SEASONAL STATS                                          #
   ###########################################################################################
@@ -327,5 +335,59 @@ class CalculateStatsJob < ApplicationJob
     @two_game_playoff_years ||= Season.all.reduce({}) do |memo, season|
       memo.merge(season.season_year.to_s => season.two_game_playoff?)
     end
+  end
+
+  ##################################################################################
+  #                          FAAB METHODS                                          #
+  ##################################################################################
+
+  def update_biggest_load(calculated_stats, filter_params)
+    transactions = PlayerFaabTransaction.where(filter_params).order(bid_amount: :desc).first(10)
+    json = transactions.map do |transaction|
+      {
+        user_id: transaction.user_id,
+        year: transaction.season_year,
+        week: transaction.week,
+        player_id: transaction.player_id,
+        amount: transaction.bid_amount,
+        success: transaction.success,
+      }
+    end
+    calculated_stats.update(biggest_load: json)
+  end
+
+  def update_narrowest_fail(calculated_stats, filter_params)
+    transactions = PlayerFaabTransaction.where(filter_params.merge(success: false)).order('winning_bid - bid_amount ASC').first(10)
+    json = transactions.map do |transaction|
+      winning_transaction = PlayerFaabTransaction.find_by(filter_params.merge(success: true, player_id: transaction.player_id))
+        {
+          user_id: transaction.user_id,
+          year: transaction.season_year,
+          week: transaction.week,
+          player_id: transaction.player_id,
+          amount: transaction.bid_amount,
+          winning_amount: transaction.winning_bid,
+          winning_user_id: winning_transaction.user_id,
+        }
+    end
+    calculated_stats.update(narrowest_fail: json)
+  end
+
+  def update_biggest_overpay(calculated_stats, filter_params)
+    transactions = PlayerFaabTransaction.where(filter_params.merge(success: true)).all
+    hashes = transactions.map do |transaction|
+      next_highest_bid = PlayerFaabTransaction.where(filter_params.merge(success: false, player_id: transaction.player_id)).order(bid_amount: :desc).first
+      {
+        user_id: transaction.user_id,
+        year: transaction.season_year,
+        week: transaction.week,
+        player_id: transaction.player_id,
+        amount: transaction.bid_amount,
+        next_highest_amount: next_highest_bid&.bid_amount || 0.0,
+        next_highest_user_id: next_highest_bid&.user_id || 'None',
+      }
+    end
+    json = hashes.sort_by { |hash| -(hash[:amount] - hash[:next_highest_amount]) }.first(10)
+    calculated_stats.update(biggest_overpay: json)
   end
 end

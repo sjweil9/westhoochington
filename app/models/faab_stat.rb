@@ -1,0 +1,2 @@
+class FaabStat < ApplicationRecord
+end
