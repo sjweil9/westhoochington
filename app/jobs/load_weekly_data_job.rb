@@ -148,6 +148,9 @@ class LoadWeeklyDataJob < ApplicationJob
 
       game.update(game_data)
 
+      # only load player stats if game ended
+      next unless game_data['winner'] != 'UNDECIDED'
+
       team_players.each do |player|
         player_id = player['playerId']
         player_name = player.dig('playerPoolEntry', 'player', 'fullName')
