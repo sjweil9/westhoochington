@@ -2,8 +2,13 @@ class Game < ApplicationRecord
   belongs_to :user
   belongs_to :opponent, class_name: 'User'
   has_many :game_side_bets
+  has_many :player_games
 
   default_scope { where(finished: true) }
+
+  def lineup
+    player_games.lineup_order
+  end
 
   after_update :set_bet_statuses
 

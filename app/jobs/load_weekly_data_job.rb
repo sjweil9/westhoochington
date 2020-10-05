@@ -170,7 +170,7 @@ class LoadWeeklyDataJob < ApplicationJob
           projected_points: projected_points || 0.0,
           active: ACTIVE_PLAYER_SLOTS.include?(player['lineupSlotId']),
           lineup_slot: ROSTER_SLOT_MAPPING[player['lineupSlotId'].to_s],
-          default_lineup_slot: ROSTER_SLOT_MAPPING[player.dig('playerPoolEntry', 'player', 'defaultPositionId')],
+          default_lineup_slot: POSITION_ID_MAPPING[player.dig('playerPoolEntry', 'player', 'defaultPositionId').to_s],
         }
         player_game = PlayerGame.find_by(player_id: player_record.id, user_id: user_id, game_id: game_id)
         player_game ||= PlayerGame.new
@@ -417,6 +417,15 @@ class LoadWeeklyDataJob < ApplicationJob
     '6': 'TE',
     '16': 'DST',
     '21': 'IR',
+  }.with_indifferent_access
+
+  POSITION_ID_MAPPING = {
+    '1': 'QB',
+    '2': 'RB',
+    '5': 'K',
+    '3': 'WR',
+    '4': 'TE',
+    '16': 'DST'
   }.with_indifferent_access
 
   ACTIVE_PLAYER_SLOTS = [2, 4, 17, 0, 23, 6, 16]
