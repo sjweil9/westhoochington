@@ -3,12 +3,12 @@ namespace :stats do
   task :load_weekly_data => :environment do
     # last scoring week still not complete, wait until Tuesday to load
     last_week = Time.now.strftime('%U').to_i - 36
-    if Time.now.tuesday? && last_week.positive? && last_week <= 16
+    #if Time.now.tuesday? && last_week.positive? && last_week <= 16
       current_year = Time.now.strftime('%Y')
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(last_week, current_year)
       puts "Completed weekly data load."
-    end
+    #end
   end
 
   desc "This is also called by scheduler to load the next week of games"
@@ -70,7 +70,7 @@ namespace :stats do
 
   task :load_historical_data => :environment do
     current_year = Time.now.year
-    (2015...current_year).each do |year|
+    (2015..2017).each do |year|
       LoadWeeklyDataJob.new.perform_historical(year)
     end
   end

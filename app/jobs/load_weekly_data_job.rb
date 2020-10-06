@@ -259,38 +259,79 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def perform_historical(year)
+    # make sure you don't accidentally run this for more recent years that have better data
+    return if year.to_i >= 2018
+
     @year = year.to_s
     url = base_historical_url + "&seasonId=#{year}"
+    (1..15).each do |week|
+      headers = {"X-Fantasy-Filter"=>"{\"schedule\":{\"filterMatchupPeriodIds\":{\"value\":[#{week}]}}}"}
+      response = RestClient.get(url + "&scoringPeriodId=#{week}", headers.merge(cookies: cookies))
+      parsed_response = JSON.parse(response.body).first
 
-    response = RestClient.get(url, cookies: cookies)
-    parsed_response = JSON.parse(response.body).first
+      data_for_week = parsed_response['schedule']
+      teams = EMAIL_MAPPING[@year].keys.map(&:to_s).map(&:to_i)
+      teams.each do |team|
+        game_data = data_for_week.detect { |game| game.dig('away', 'teamId') == team || game.dig('home', 'teamId') == team }
 
-    games = parsed_response['schedule']
+        next unless game_data
 
-    unless @year.to_i >= 2018 # this doesn't have projected numbers, so not overriding
-      games.each do |game|
-        %w[home away].each do |side|
-          other_side = side == 'home' ? 'away' : 'home'
-          game_data = {
-            active_total: game.dig(side, 'totalPoints'),
-            season_year: @year.to_i,
-            week: game['matchupPeriodId'],
-            user_id: user_id_for(game.dig(side, 'teamId')),
-            opponent_id: user_id_for(game.dig(other_side, 'teamId')),
-            opponent_active_total: game.dig(other_side, 'totalPoints'),
+        team_data = game_data.dig('away', 'teamId') == team ? game_data['away'] : game_data['home']
+        other_team_data = game_data.dig('away', 'teamId') == team ? game_data['home'] : game_data['away']
+        team_players = team_data.dig('rosterForMatchupPeriod', 'entries')
+        other_team_players = other_team_data.dig('rosterForMatchupPeriod', 'entries')
+        game_data = {
+          active_total: team_data.dig('rosterForMatchupPeriod', 'appliedStatTotal') || team_data['totalPoints'],
+          bench_total: bench_total(team_players),
+          season_year: @year.to_i,
+          week: week,
+          user_id: user_id_for(team),
+          opponent_id: user_id_for(other_team_data['teamId']),
+          opponent_active_total: other_team_data.dig('rosterForMatchupPeriod', 'appliedStatTotal') || other_team_data['totalPoints'],
+          opponent_bench_total: bench_total(other_team_players),
+          started: true,
+          finished: true,
+        }
+
+        game = Game.find_by(
+          week: week,
+          season_year: @year.to_i,
+          user_id: user_id_for(team),
+          opponent_id: user_id_for(other_team_data['teamId'])
+        )
+        game ||= Game.new
+
+        game.update(game_data)
+
+        binding.pry if team_players.nil?
+        team_players.each do |player|
+          player_id = player['playerId']
+          player_name = player.dig('playerPoolEntry', 'player', 'fullName')
+          player_record = Player.find_by(espn_id: player_id)
+          player_record ||= Player.new
+          player_record.update(espn_id: player_id, name: player_name)
+
+          user_id = user_id_for(team)
+          game_id = game.id
+          actual_points = player.dig('playerPoolEntry', 'appliedStatTotal')
+          player_game_data = {
+            player_id: player_record.id,
+            user_id: user_id,
+            game_id: game_id,
+            points: actual_points || 0.0,
+            active: true,
+            lineup_slot: POSITION_ID_MAPPING[player.dig('playerPoolEntry', 'player', 'defaultPositionId').to_s],
+            default_lineup_slot: POSITION_ID_MAPPING[player.dig('playerPoolEntry', 'player', 'defaultPositionId').to_s],
           }
-
-          game_to_create = Game.find_by(
-            week: game['matchupPeriodId'],
-            season_year: @year.to_i,
-            user_id: user_id_for(game.dig(side, 'teamId')),
-            opponent_id: user_id_for(game.dig(other_side, 'teamId'))
-          ) || Game.new
-
-          game_to_create.update(game_data)
+          player_game = PlayerGame.find_by(player_id: player_record.id, user_id: user_id, game_id: game_id)
+          player_game ||= PlayerGame.new
+          player_game.update(player_game_data)
         end
       end
     end
+
+    general_response = RestClient.get(url, cookies: cookies)
+    parsed_response = JSON.parse(general_response.body).first
 
     user_results = parsed_response['teams']
 
@@ -466,7 +507,7 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def base_historical_url
-    "https://fantasy.espn.com/apis/v3/games/ffl/leagueHistory/209719?view=mMatchupScore&view=mRoster&view=mScoreboard&view=mSettings&view=mTopPerformers&view=mTeam&view=modular&view=mNav"
+    "https://fantasy.espn.com/apis/v3/games/ffl/leagueHistory/209719?view=modular&view=mNav&view=mMatchupScore&view=mScoreboard&view=mSettings&view=mTopPerformers&view=mTeam"
   end
   
   def user_id_for(team_id)
