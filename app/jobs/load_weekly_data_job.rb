@@ -112,16 +112,16 @@ class LoadWeeklyDataJob < ApplicationJob
       team_players = team_data.dig('rosterForCurrentScoringPeriod', 'entries')
       other_team_players = other_team_data.dig('rosterForCurrentScoringPeriod', 'entries')
       game_data = {
-        active_total: team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal'),
-        bench_total: bench_total(team_players),
-        projected_total: projected_total(team_players),
+        active_total: team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal') || 0.0,
+        bench_total: bench_total(team_players) || 0.0,
+        projected_total: projected_total(team_players) || 0.0,
         season_year: @year.to_i,
         week: week,
         user_id: user_id_for(team),
         opponent_id: user_id_for(other_team_data['teamId']),
-        opponent_active_total: other_team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal'),
-        opponent_bench_total: bench_total(other_team_players),
-        opponent_projected_total: projected_total(other_team_players),
+        opponent_active_total: other_team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal') || 0.0,
+        opponent_bench_total: bench_total(other_team_players) || 0.0,
+        opponent_projected_total: projected_total(other_team_players) || 0.0,
         started: lineup_locked?([*team_players, *other_team_players]),
         finished: game_data['winner'] != 'UNDECIDED',
       }
