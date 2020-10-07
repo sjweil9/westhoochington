@@ -265,8 +265,13 @@ class LoadWeeklyDataJob < ApplicationJob
     @year = year.to_s
     url = base_historical_url + "&seasonId=#{year}"
     (1..15).each do |week|
-      headers = {"X-Fantasy-Filter"=>"{\"schedule\":{\"filterMatchupPeriodIds\":{\"value\":[#{week}]}}}"}
-      response = RestClient.get(url + "&scoringPeriodId=#{week}", headers.merge(cookies: cookies))
+      headers = if week == 15
+                  {"X-Fantasy-Filter"=>"{\"schedule\":{\"filterCurrentMatchupPeriod\":{\"value\":true}}}"}
+                else
+                  {"X-Fantasy-Filter"=>"{\"schedule\":{\"filterMatchupPeriodIds\":{\"value\":[#{week}]}}}"}
+                end
+      url_to_use = week == 15 ? url : url + "&scoringPeriodId=#{week}"
+      response = RestClient.get(url_to_use, headers.merge(cookies: cookies))
       parsed_response = JSON.parse(response.body).first
 
       data_for_week = parsed_response['schedule']
@@ -303,7 +308,6 @@ class LoadWeeklyDataJob < ApplicationJob
 
         game.update(game_data)
 
-        binding.pry if team_players.nil?
         team_players.each do |player|
           player_id = player['playerId']
           player_name = player.dig('playerPoolEntry', 'player', 'fullName')
