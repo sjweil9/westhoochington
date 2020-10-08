@@ -385,7 +385,8 @@ class CalculateStatsJob < ApplicationJob
         player_id: transaction.player_id,
         amount: transaction.bid_amount,
         next_highest_amount: next_highest_bid&.bid_amount || 0.0,
-        next_highest_user_id: next_highest_bid&.user_id || 'None',
+        next_highest_user_id: next_highest_bid&.user_id,
+        overpay: transaction.bid_amount - (next_highest_bid&.bid_amount || 0.0),
       }
     end
     json = hashes.sort_by { |hash| -(hash[:amount] - hash[:next_highest_amount]) }.first(10)

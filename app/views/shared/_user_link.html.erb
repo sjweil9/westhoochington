@@ -1,0 +1,1 @@
+<a href="<%= user_profile_path(user_id) %>"><%= Rails.cache.fetch("nickname_#{user_id}").presence || User.find(user_id).random_nickname %></a>
