@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_04_225956) do
+ActiveRecord::Schema.define(version: 2020_10_08_034704) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2020_10_04_225956) do
     t.json "biggest_overpay"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "most_impactful"
   end
 
   create_table "game_level_stats", force: :cascade do |t|
