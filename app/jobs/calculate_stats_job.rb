@@ -64,6 +64,7 @@ class CalculateStatsJob < ApplicationJob
     update_narrowest_fail(calculated_stats, filter_params)
     update_biggest_overpay(calculated_stats, filter_params)
     update_most_impactful(calculated_stats, filter_params)
+    update_most_impactful_ppg(calculated_stats, filter_params)
   end
 
   ###########################################################################################
@@ -369,6 +370,7 @@ class CalculateStatsJob < ApplicationJob
           amount: transaction.bid_amount,
           winning_amount: transaction.winning_bid,
           winning_user_id: winning_transaction.user_id,
+          margin: transaction.winning_bid - transaction.bid_amount,
         }
     end
     calculated_stats.update(narrowest_fail: json)
@@ -414,5 +416,30 @@ class CalculateStatsJob < ApplicationJob
     end
     json = hashes.sort_by { |hash| -hash[:points_scored] }.first(10)
     calculated_stats.update(most_impactful: json)
+  end
+
+  def update_most_impactful_ppg(calculated_stats, filter_params)
+    transactions = PlayerFaabTransaction.where(filter_params.merge(success: true)).all
+    hashes = transactions.map do |transaction|
+      relevant_games = PlayerGame.where(
+        player_id: transaction.player_id,
+        user_id: transaction.user_id,
+        game_id: Game.where(season_year: transaction.season_year).where('week >= ?', transaction.week).pluck(:id),
+        active: true
+      ).all
+      points_scored = relevant_games.sum { |game| game.points || 0.0 }
+      actual_count = relevant_games.reduce(0) { |memo, game| game.game.playoff? ? memo + 2 : memo + 1 }
+      {
+        user_id: transaction.user_id,
+        year: transaction.season_year,
+        week: transaction.week,
+        player_id: transaction.player_id,
+        amount: transaction.bid_amount,
+        ppg: (points_scored.to_f / ([actual_count, 1].max).to_f).round(2),
+        games_played: actual_count,
+      }
+    end
+    json = hashes.sort_by { |hash| -hash[:ppg] }.first(10)
+    calculated_stats.update(most_impactful_ppg: json)
   end
 end
