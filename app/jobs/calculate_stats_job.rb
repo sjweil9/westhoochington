@@ -110,7 +110,7 @@ class CalculateStatsJob < ApplicationJob
 
   def update_high_scores(user, year, calculated_stats)
     games = Game.where(season_year: year).reject(&:playoff?)
-    high_scores = user.send("games_#{year}").select { |game| game.weekly_high_score?(games) }
+    high_scores = user.send("games_#{year}").reject(&:playoff?).select { |game| game.weekly_high_score?(games) }
     weeks = high_scores.map do |game|
       { week: game.week, opponent_id: game.opponent_id }
     end
