@@ -69,7 +69,6 @@ namespace :stats do
   end
 
   task :load_historical_data => :environment do
-    current_year = Time.now.year
     (2015..2017).each do |year|
       LoadWeeklyDataJob.new.perform_historical(year)
     end

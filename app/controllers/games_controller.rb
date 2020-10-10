@@ -9,6 +9,13 @@ class GamesController < ApplicationController
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id))
     @playoffs = @games.any?(&:playoff?)
     @completed = Season.find_by(season_year: @year)&.completed?
+    @faab = FaabStat.find_by(season_year: @year)
+    player_ids = %w[biggest_load narrowest_fail biggest_overpay most_impactful most_impactful_ppg most_impactful_ppd].reduce([]) do |memo, type|
+      memo + @faab.send(type).map { |trans| trans['player_id'] }
+    end
+    @players = Player.where(id: player_ids).all.reduce({}) do |memo, player|
+      memo.merge(player.id.to_s => player)
+    end
     render :index
   end
 

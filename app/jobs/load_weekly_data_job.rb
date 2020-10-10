@@ -298,14 +298,25 @@ class LoadWeeklyDataJob < ApplicationJob
           finished: true,
         }
 
-        game = Game.find_by(
-          week: week,
+        game = Game.unscoped.find_by(
+          week: [14, 16].include?(week) ? week - 1 : week,
           season_year: @year.to_i,
           user_id: user_id_for(team),
           opponent_id: user_id_for(other_team_data['teamId'])
         )
-        game ||= Game.new
 
+        if [14, 16].include?(week) && game
+          game.active_total += game_data[:active_total]
+          game.bench_total += game_data[:bench_total]
+          game.projected_total += game_data[:projected_total]
+          game.opponent_active_total += game_data[:opponent_active_total]
+          game.opponent_bench_total += game_data[:opponent_bench_total]
+          game.opponent_projected_total += game_data[:opponent_projected_total]
+          game.save
+          next
+        end
+
+        game ||= Game.new
         game.update(game_data)
 
         team_players.each do |player|
