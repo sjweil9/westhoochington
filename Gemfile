@@ -37,6 +37,7 @@ gem 'aws-sdk', '~> 2'
 
 gem 'jquery-rails'
 gem 'bootstrap', '>= 4.3.1'
+gem 'hirb'
 
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
@@ -52,7 +53,6 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'pry'
   gem 'pry-nav'
-  gem 'hirb'
   gem 'rails-footnotes'
   gem 'memory-profiler'
 end
