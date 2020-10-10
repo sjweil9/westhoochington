@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_08_045455) do
+ActiveRecord::Schema.define(version: 2020_10_10_163454) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2020_10_08_045455) do
     t.datetime "updated_at", null: false
     t.json "most_impactful"
     t.json "most_impactful_ppg"
+    t.json "most_impactful_ppd"
   end
 
   create_table "game_level_stats", force: :cascade do |t|
