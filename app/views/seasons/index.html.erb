@@ -325,7 +325,7 @@
                 <th scope="row"><%= (idx += 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(game['player_id']) %>"><%= Rails.cache.fetch("nickname_#{game['player_id']}") %></a></th>
                 <th><%= game['score'].round(2) %></th>
-                <th><%= render "shared/game_link", id: game['id'], year: game['year'], week: game['week'], opponent_id: game['opponent_id'], lineup: game['lineup'] %></th>
+                <th><%= render "shared/game_link", id: game['id'], year: game['year'], week: game['week'], opponent_id: game['opponent_id'], lineup: game['lineup'], total_points: game['total_points'] %></th>
               </tr>
             <% end %>
             </tbody>
@@ -469,7 +469,7 @@
                 <th scope="row"><%= (idx += 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(game['player_id']) %>"><%= Rails.cache.fetch("nickname_#{game['player_id']}") %></a></th>
                 <th><%= game['score'].round(2) %></th>
-                <th><%= render "shared/game_link", id: game['id'], year: game['year'], week: game['week'], opponent_id: game['opponent_id'], lineup: game['lineup'] %></th>
+                <th><%= render "shared/game_link", id: game['id'], year: game['year'], week: game['week'], opponent_id: game['opponent_id'], lineup: game['lineup'], total_points: game['total_points'] %></th>
               </tr>
             <% end %>
             </tbody>

@@ -112,7 +112,7 @@ class CalculateStatsJob < ApplicationJob
     games = Game.where(season_year: year).reject(&:playoff?)
     high_scores = user.send("games_#{year}").reject(&:playoff?).select { |game| game.weekly_high_score?(games) }
     weeks = high_scores.map do |game|
-      { week: game.week, opponent_id: game.opponent_id }
+      { week: game.week, opponent_id: game.opponent_id, lineup: game.lineup_array, id: game.id, total_points: game.active_total }
     end
     calculated_stats.update(weekly_high_scores: high_scores.size, high_score_weeks: weeks)
   end
@@ -281,7 +281,7 @@ class CalculateStatsJob < ApplicationJob
   def update_highest_score_espn
     highest_scores = Game.where('season_year >= ?', 2015).order(active_total: :desc).all.reject(&:playoff?).first(10)
     json = highest_scores.map do |game|
-      { id: game.id, year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total, lineup: game.lineup_array }
+      { id: game.id, year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total, lineup: game.lineup_array, total_points: game.active_total }
     end
     GameLevelStat.first_or_create.update(highest_score_espn: json)
   end
@@ -297,7 +297,7 @@ class CalculateStatsJob < ApplicationJob
   def update_lowest_score
     lowest_scores = Game.order(active_total: :asc).all.reject { |g| g.playoff? && two_game_playoff_years[g.season_year.to_s] }.first(10)
     json = lowest_scores.map do |game|
-      { id: game.id, year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total, lineup: game.lineup_array }
+      { id: game.id, year: game.season_year, week: game.week, player_id: game.user_id, opponent_id: game.opponent_id, score: game.active_total, lineup: game.lineup_array, total_points: game.active_total }
     end
     GameLevelStat.first_or_create.update(lowest_score: json)
   end

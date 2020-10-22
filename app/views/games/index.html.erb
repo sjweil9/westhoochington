@@ -274,7 +274,8 @@
                 <th><%= user.send("calculated_stats_#{@year}").weekly_high_scores %></th>
                 <td>
                   <% user.send("calculated_stats_#{@year}").high_score_weeks.each_with_index do |game, idx| %>
-                    <a href="<%= stats_path(year: @year, week: game['week']) %>">Week <%= game['week'] %></a> vs <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}") %></a><% if idx + 1 != user.send("calculated_stats_#{@year}").weekly_high_scores %>,<% end %>
+                    <a data-toggle="modal" data-target="#lineup<%= game['id'] %>" href="#">Week <%= game['week'] %></a> vs <a href="<%= user_profile_path(game['opponent_id']) %>"><%= Rails.cache.fetch("nickname_#{game['opponent_id']}").presence || User.find(game['opponent_id']).random_nickname %></a><% if idx + 1 != user.send("calculated_stats_#{@year}").weekly_high_scores %>,<% end %>
+                    <%= render "shared/lineup", lineup: game['lineup'], id: game['id'], total_points: game['total_points'] %>
                   <% end %>
                 </td>
               </tr>
