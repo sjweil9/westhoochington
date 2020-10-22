@@ -10,6 +10,18 @@ class Game < ApplicationRecord
     player_games.lineup_order
   end
 
+  def lineup_array
+    lineup.includes(:player).references(:player).map do |player_game|
+      {
+        player_id: player_game.player_id,
+        name: player_game.player.name,
+        position: player_game.lineup_slot,
+        points: player_game.points,
+        projected_points: player_game.projected_points,
+      }
+    end
+  end
+
   after_update :set_bet_statuses
 
   def set_bet_statuses

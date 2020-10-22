@@ -1,0 +1,26 @@
+<div class="modal fade" id="lineup<%= id %>" tabindex="-1" role="dialog" aria-labelledby="lineup<%= id %>" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <table>
+          <thead>
+          <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Position</th>
+            <th scope="col">Points</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% lineup.each do |player| %>
+            <tr>
+              <td><%= player['name'] %></td>
+              <td><%= player['position'] %></td>
+              <td><%= player['points'] %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
