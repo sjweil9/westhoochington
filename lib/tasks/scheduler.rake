@@ -1,9 +1,9 @@
 namespace :stats do
   desc "This task is called by the Heroku scheduler add-on"
-  task :load_weekly_data => :environment do
+  task :load_weekly_data, [:override_day] => :environment do |_t, args|
     # last scoring week still not complete, wait until Tuesday to load
     last_week = Time.now.strftime('%U').to_i - 36
-    if Time.now.tuesday? && last_week.positive? && last_week <= 16
+    if (Time.now.tuesday? && last_week.positive? && last_week <= 16) || args[:override_day]
       current_year = Time.now.strftime('%Y')
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(last_week, current_year)
@@ -105,10 +105,10 @@ end
 
 namespace :newsletter do
   desc "Called by Heroku scheduler to send newsletter"
-  task :send => :environment do
+  task :send, [:override_day] => :environment do |_t, args|
     week = Time.now.strftime('%U').to_i - 36
     year = Date.today.year
-    if Time.now.tuesday? && week.positive? && week <= 16
+    if (Time.now.tuesday? && week.positive? && week <= 16) || args[:override_day]
       relevant_week = [14, 16].include?(week) ? week - 1 : week
       involved_users = Game.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 

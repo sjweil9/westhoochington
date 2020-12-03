@@ -57,7 +57,7 @@ class CheckSeasonBetResolutionJob < ApplicationJob
 
   def determine_pvp_result_value(bet)
     predicted_winner = User.find(bet.bet_terms['winner_id'])
-    predicted_loser = user.find(bet.bet_terms['loser_id'])
+    predicted_loser = User.find(bet.bet_terms['loser_id'])
     if bet.regular_season_points?
       method = "regular_yearly_active_total_#{bet.season_year}"
       [predicted_winner.send(method), predicted_loser.send(method)]
