@@ -22,6 +22,22 @@ class Game < ApplicationRecord
     end
   end
 
+  def active_total
+    attributes['active_total']&.to_f&.round(2)
+  end
+
+  def opponent_active_total
+    attributes['opponent_active_total']&.to_f&.round(2)
+  end
+
+  def projected_total
+    attributes['projected_total']&.to_f&.round(2)
+  end
+
+  def opponent_projected_total
+    attributes['opponent_projected_total']&.to_f&.round(2)
+  end
+
   after_update :set_bet_statuses
 
   def set_bet_statuses
@@ -49,11 +65,11 @@ class Game < ApplicationRecord
   end
 
   def winning_score
-    won? ? active_total : opponent_active_total
+    (won? ? active_total : opponent_active_total).to_f.round(2)
   end
 
   def losing_score
-    won? ? opponent_active_total : active_total
+    (won? ? opponent_active_total : active_total).to_f.round(2)
   end
 
   def won?
