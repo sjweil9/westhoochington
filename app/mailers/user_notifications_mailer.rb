@@ -19,7 +19,7 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def send_playoff_newsletter(emails, week, year)
-    set_basic_variables(week, year)
+    set_basic_variables(week, year, true)
     @championship_games = @games.select { |game| championship_bracket?(game) }
     @irrelevant_games = @games.select { |game| irrelevant?(game) }
     @sacko_games = @games.select { |game| sacko?(game) }
@@ -40,10 +40,11 @@ class UserNotificationsMailer < ApplicationMailer
 
   private
 
-  def set_basic_variables(week, year)
+  def set_basic_variables(week, year, playoff = false)
     @year = year
     @week = week
     @games = Game.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all
+    @games = Game.unscoped.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all if playoff
     @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
     @trend_breakers = calculate_trend_breakers
