@@ -108,7 +108,7 @@ class User < ApplicationRecord
 
   def playoff_seed(year)
     @playoff_seeds ||= {}
-    @playoff_seeds[year] ||= seasons.detect { |season| season.send("#{year}?") }&.regular_rank || calculate_playoff_seed(year)
+    @playoff_seeds[year] ||= seasons.detect { |season| season.send("#{year}?") }&.regular_rank&.to_i || calculate_playoff_seed(year)
   end
 
   def calculate_playoff_seed(year)
