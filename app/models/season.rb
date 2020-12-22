@@ -55,6 +55,6 @@ class Season < ApplicationRecord
     return true if season_year < Date.today.year
 
     current_week = Time.now.strftime('%U').to_i - 35
-    current_week >= 16
+    current_week > 16
   end
 end
