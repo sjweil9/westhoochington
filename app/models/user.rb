@@ -141,12 +141,14 @@ class User < ApplicationRecord
                    else
                      historical_games.map(&:active_total).reduce(:+)
                    end
-    @average_points_scored[platform] = 0 if !points_total || !games_played
+    @average_points_scored[platform] = 0 if points_total.zero? || games_played.zero?
     @average_points_scored[platform] ||= (points_total / games_played.to_f).round(2)
   end
 
   def average_margin_of_victory
     games_played = historical_games.size + (2 * seasons.select(&:two_game_playoff?).size)
+    return 0.0 if games_played.zero?
+
     (historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
   end
 
