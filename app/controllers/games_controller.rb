@@ -1,6 +1,6 @@
 class GamesController < ApplicationController
   def index
-    @year = params[:year] || Date.today.year
+    @year = params[:year] || Season.all.max_by(&:season_year).season_year
     @week = params[:week] || 'season'
     return weekly if @week && @week != 'season'
 
