@@ -401,7 +401,7 @@ class User < ApplicationRecord
   def side_bet_wins
     return @side_bet_wins if @side_bet_wins.present?
 
-    proposed_wins = side_bets.select(&:finished?).select(&:predictor_won?).size
+    proposed_wins = side_bets.select(&:finished?).select { |sb| sb.predictor_won? && sb.side_bet_acceptances.size.positive? }.size
     accepted_wins = side_bet_acceptances.select { |sba| sba.side_bet.finished? && !sba.side_bet.predictor_won? }.size
     @side_bet_wins = proposed_wins + accepted_wins
   end
@@ -409,7 +409,7 @@ class User < ApplicationRecord
   def side_bet_losses
     return @side_bet_losses if @side_bet_losses.present?
 
-    proposed_losses = side_bets.select(&:finished?).select { |sb| !sb.predictor_won? }.size
+    proposed_losses = side_bets.select(&:finished?).select { |sb| !sb.predictor_won? && sb.side_bet_acceptances.size.positive? }.size
     accepted_losses = side_bet_acceptances.select { |sba| sba.side_bet.finished? && sba.side_bet.predictor_won? }.size
     @side_bet_losses = proposed_losses + accepted_losses
   end
