@@ -424,6 +424,10 @@ class User < ApplicationRecord
     @side_bets_proposed ||= side_bets.size
   end
 
+  def side_bets_accepted
+    @side_bets_accepted ||= side_bet_acceptances.size
+  end
+
   def pending_side_bets
     return @pending_side_bets if @pending_side_bets.present?
 

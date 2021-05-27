@@ -53,6 +53,7 @@ class CalculateStatsJob < ApplicationJob
       losses: user.side_bet_losses,
       winrate: user.side_bet_winrate,
       proposed: user.side_bets_proposed,
+      accepted: user.side_bets_accepted,
     }
     calculated_stats.update(side_bet_results: json)
   end
