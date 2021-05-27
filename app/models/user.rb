@@ -141,7 +141,7 @@ class User < ApplicationRecord
                    else
                      historical_games.map(&:active_total).reduce(:+)
                    end
-    @average_points_scored[platform] = 0 if points_total.zero? || games_played.zero?
+    @average_points_scored[platform] = 0 if !points_total || !games_played || points_total.zero? || games_played.zero?
     @average_points_scored[platform] ||= (points_total / games_played.to_f).round(2)
   end
 
