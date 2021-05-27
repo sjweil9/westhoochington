@@ -456,7 +456,8 @@ class User < ApplicationRecord
     'sccrrckstr@gmail.com',
     'jstatham3@gmail.com',
     'john.rosensweig@gmail.com',
-    'brandon.tricou@gmail.com'
+    'brandon.tricou@gmail.com',
+    'michael.i.zack@gmail.com',
   ]
 
   NICKNAMES = {
@@ -474,7 +475,8 @@ class User < ApplicationRecord
     'sccrrckstr@gmail.com':['Netanyahu'],
     'jstatham3@gmail.com':['Ty'],
     'john.rosensweig@gmail.com':['Rosenswag'],
-    'brandon.tricou@gmail.com':['Brandon']
+    'brandon.tricou@gmail.com':['Brandon'],
+    'michael.i.zack@gmail.com':['Brother Mike', 'Birther Mike'],
   }.with_indifferent_access
 
   def allowed_email
@@ -484,7 +486,7 @@ class User < ApplicationRecord
   end
 
   def default_nicknames
-    NICKNAMES[email].each do |nickname|
+    NICKNAMES[email]&.each do |nickname|
       Nickname.create(user_id: id, name: nickname)
     end
   end
