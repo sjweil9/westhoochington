@@ -130,11 +130,11 @@
             </tr>
             </thead>
             <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| user.average_final_finish }; sorted.each_with_index do |user, idx| %>
+            <% rank = 1; sorted = @users.sort_by { |user| user.average_final_finish.zero? ? 10.0 : user.average_final_finish }; sorted.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_final_finish == sorted[idx]&.average_final_finish ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.average_final_finish %></th>
+                <th><%= user.average_final_finish.zero? ? 'N/A' : user.average_final_finish %></th>
               </tr>
             <% end %>
             </tbody>
@@ -153,11 +153,11 @@
             </tr>
             </thead>
             <tbody>
-            <% rank = 1; sorted = @users.sort_by { |user| user.average_regular_season_finish }; sorted.each_with_index do |user, idx| %>
+            <% rank = 1; sorted = @users.sort_by { |user| user.average_regular_season_finish.zero? ? 10.0 : user.average_regular_season_finish }; sorted.each_with_index do |user, idx| %>
               <tr>
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.average_regular_season_finish == sorted[idx]&.average_regular_season_finish ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></th>
-                <th><%= user.average_regular_season_finish %></th>
+                <th><%= user.average_regular_season_finish.zero? ? 'N/A' : user.average_regular_season_finish %></th>
               </tr>
             <% end %>
             </tbody>

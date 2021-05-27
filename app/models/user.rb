@@ -394,7 +394,7 @@ class User < ApplicationRecord
   def points_for_mir(record_string)
     win, loss, tie = record_string.split(' - ').map(&:to_f)
     return 0.0 if win.zero? && loss.zero? && tie.zero?
-    
+
     ((win / (loss + tie + win)) * 100.0).round(2)
   end
 
