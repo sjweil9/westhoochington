@@ -27,6 +27,7 @@ gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 gem 'devise', '>= 4.6.0'
+gem 'discordrb'
 gem 'rest-client'
 gem 'sendgrid-ruby'
 gem "railties", ">= 5.2.2.1"
