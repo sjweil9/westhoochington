@@ -153,7 +153,7 @@ namespace :discord do
       "captrf@gmail.com" => "869575333970599936",
       "seidmangar@gmail.com" => "",
       "michael.i.zack@gmail.com" => "206055078099025922",
-      "john.rosensweigh@gmail.com" => ""
+      "john.rosensweigh@gmail.com" => "363521698244591616"
     }
 
     email_mapping.each do |email, discord_id|
