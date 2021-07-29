@@ -35,6 +35,12 @@ class User < ApplicationRecord
     end
   end
 
+  def discord_mention
+    return random_nickname unless discord_id.present?
+
+    "<@#{discord_id}>"
+  end
+
   def weighted_nicknames
     nicknames.map do |nickname|
       downvotes = nickname.votes.select(&:down?).size

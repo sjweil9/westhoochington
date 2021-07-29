@@ -48,17 +48,25 @@ module Discord
       end
 
       def nickname
-        bet.user.random_nickname
+        bet.user.discord_mention
       end
 
       def possible_acceptors
         if bet.possible_acceptances&.dig("any")
           "Anyone"
         elsif bet.possible_acceptances&.dig("users")
-          bet.possible_acceptances["users"].map { |id| User.find(id).random_nickname }.join(", ")
+          bet.possible_acceptances["users"].map { |id| User.find(id).discord_mention }.join(", ")
         elsif bet.maximum_acceptors
           bet.maximum_acceptors > 1 ? "First #{bet.maximum_acceptors} Takers" : "First Taker"
         end
+      end
+
+      def player_nickname
+        bet.game.user.discord_mention
+      end
+
+      def opponent_nickname
+        bet.game.opponent.discord_mention
       end
     end
   end

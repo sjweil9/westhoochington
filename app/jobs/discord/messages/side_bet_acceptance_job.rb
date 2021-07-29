@@ -17,7 +17,7 @@ module Discord
       end
 
       def acceptor_nickname
-        acceptance.user.random_nickname
+        acceptance.user.discord_mention
       end
 
       def content
@@ -25,7 +25,7 @@ module Discord
           #{acceptor_nickname} has taken some action!
           Type: #{matchup_type}
           Terms: #{bet.terms_description}
-          Proposed By: #{bet.user.random_nickname}
+          Proposed By: #{bet.user.discord_mention}
           Amount: #{amount} #{amount_clarification}
         CONTENT
       end
