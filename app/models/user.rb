@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :seasons
   has_one :calculated_stats, class_name: 'UserStat'
 
+  scope :active, -> { where(active: true) }
+
   (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
     has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id

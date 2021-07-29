@@ -12,7 +12,7 @@ class SideBetsController < ApplicationController
         .all
         .order(created_at: :desc)
         .reject { |game| game.opponent_id > game.user_id }
-    @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten.presence || users_from_last_season
+    @active_players = User.active.all
     @open_season_bets = SeasonSideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
     @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
@@ -145,9 +145,5 @@ class SideBetsController < ApplicationController
 
   def prime_nickname_cache
     User.all.each(&:random_nickname) # make sure cache is primed always
-  end
-
-  def users_from_last_season
-    Season.where(season_year: Season.maximum(:season_year)).all.map(&:user)
   end
 end
