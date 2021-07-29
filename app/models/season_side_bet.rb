@@ -52,11 +52,11 @@ class SeasonSideBet < ApplicationRecord
   end
 
   def winner_nickname
-    Rails.cache.fetch("nickname_#{bet_terms['winner_id']}")
+    Rails.cache.fetch("nickname_#{bet_terms['winner_id']}") { User.find(bet_terms["winner_id"]).random_nickname }
   end
 
   def loser_nickname
-    Rails.cache.fetch("nickname_#{bet_terms['loser_id']}")
+    Rails.cache.fetch("nickname_#{bet_terms['loser_id']}") { User.find(bet_terms["loser_id"]).random_nickname }
   end
 
   def outcome_description

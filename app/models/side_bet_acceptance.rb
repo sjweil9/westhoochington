@@ -9,6 +9,7 @@ class SideBetAcceptance < ApplicationRecord
   end
 
   before_validation :set_defaults
+  after_create :post_to_discord
 
   BET_STATUSES = %w[awaiting_resolution awaiting_payment awaiting_confirmation completed]
 
@@ -42,5 +43,9 @@ class SideBetAcceptance < ApplicationRecord
 
   def set_defaults
     self.status ||= 'awaiting_resolution'
+  end
+
+  def post_to_discord
+    Discord::Messages::SideBetAcceptanceJob.perform_now(self)
   end
 end
