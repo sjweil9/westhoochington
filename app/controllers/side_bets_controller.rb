@@ -13,7 +13,6 @@ class SideBetsController < ApplicationController
         .order(created_at: :desc)
         .reject { |game| game.opponent_id > game.user_id }
     @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten.presence || users_from_last_season
-    @active_players = User.all
     @open_season_bets = SeasonSideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
     @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
