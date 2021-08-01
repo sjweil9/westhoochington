@@ -203,8 +203,8 @@
               <label class="col-sm-5 col-form-label" for="winner-select">Predicted Winner:</label>
               <div class="col-sm-7">
                 <select class="custom-select mr-sm-2" id="winner-select" name="winner">
-                  <% (@active_players + [:field]).each do |player| %>
-                    <option value="<%= player == :field ? player : player.id %>"><%= player == :field ? 'The Field' : player.random_nickname %></option>
+                  <% (@active_players + [:field, :over_under]).each do |player| %>
+                    <option value="<%= [:field, :over_under].include?(player) ? player : player.id %>"><%= player == :field ? 'The Field' : (player == :over_under ? 'Over Under' : player.random_nickname) %></option>
                   <% end %>
                 </select>
                 <%= render "shared/errors", type: "winner" %>
@@ -291,5 +291,9 @@
     if (season_open) {
       $("#addSeasonBetModal").modal('show');
     }
+
+    $("loser-select").change(function () {
+      debugger;
+    })
   });
 </script>

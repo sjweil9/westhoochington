@@ -30,16 +30,22 @@ class SeasonSideBet < ApplicationRecord
   end
 
   def player_vs_field?
-    comparison_type == '1VF'
+    comparison_type == '1VF'.freeze
   end
 
   def player_vs_player?
-    comparison_type == '1V1'
+    comparison_type == '1V1'.freeze
+  end
+
+  def over_under?
+    comparison_type == 'OU'.freeze
   end
 
   def terms_description
     if player_vs_player?
       "#{winner_nickname}#{line_description} over #{loser_nickname}"
+    elsif over_under?
+      "#{winner_nickname}"
     else
       bet_terms['winner_id'] ? "#{winner_nickname}#{line_description} over The Field" : "The Field#{line_description} over #{loser_nickname}"
     end
@@ -105,7 +111,7 @@ class SeasonSideBet < ApplicationRecord
     won ? final_bet_results['acceptor_value'] : final_bet_results['bettor_value']
   end
 
-  VALID_COMPARISON_TYPES = %w[1VF 1V1]
+  VALID_COMPARISON_TYPES = %w[1VF 1V1 OU]
 
   def valid_bet_type
     return if VALID_BET_TYPES.keys.include?(bet_type.to_sym)
