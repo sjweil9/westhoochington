@@ -74,8 +74,8 @@ Rails.application.configure do
   }
 
   ActionMailer::Base.smtp_settings = {
-    :user_name => ENV['SENDGRID_USERNAME'],
-    :password => ENV['SENDGRID_PASSWORD'],
+    :user_name => Rails.application.credentials[:sendgrid_username],
+    :password => Rails.application.credentials[:sendgrid_password],
     :domain => 'westhoochington.com',
     :address => 'smtp.sendgrid.net',
     :port => 587,

@@ -17,7 +17,11 @@ class CheckSeasonBetResolutionJob < ApplicationJob
   def calculate_winner(bet)
     LoadWeeklyDataJob.new.perform_season_data(bet.season_year) # make sure seasons data is updated before calculating
     bettor_value, acceptor_value = determine_result_values(bet)
-    won = bettor_value + bet.line > acceptor_value
+    if bet.regular_season_points? || bet.total_points?
+      won = bettor_value + bet.line > acceptor_value
+    else
+      won = bettor_value + bet.line < acceptor_value
+    end
     json = { bettor_value: bettor_value, acceptor_value: acceptor_value }
     bet.update(won: won, final_bet_results: json, status: 'awaiting_payment')
     bet.side_bet_acceptances.update_all(status: 'awaiting_payment')
@@ -43,16 +47,18 @@ class CheckSeasonBetResolutionJob < ApplicationJob
                           :"yearly_active_total_#{bet.season_year}"
                         end
 
+    direction = (bet.regular_season_points? || bet.total_points?) ? :max : :min
+
     if bet.bet_terms['winner_id']
       # bet picked the user
       winner = User.find(bet.bet_terms['winner_id'])
       other_users = Game.where(season_year: bet.season_year).all.map(&:user).uniq.reject { |user| user.id == winner.id }
-      [winner.send(comparison_method), other_users.map(&comparison_method).max]
+      [winner.send(comparison_method), other_users.map(&comparison_method).send(direction)]
     else
       # bet picked the field
       loser = User.find(bet.bet_terms['loser_id'])
       other_users = Game.where(season_year: bet.season_year).all.map(&:user).uniq.reject { |user| user.id == loser.id }
-      [other_users.map(&comparison_method).max, loser.send(comparison_method)]
+      [other_users.map(&comparison_method).send(direction), loser.send(comparison_method)]
     end
   end
 

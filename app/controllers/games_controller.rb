@@ -1,6 +1,6 @@
 class GamesController < ApplicationController
   def index
-    @year = params[:year] || Date.today.year
+    @year = params[:year] || most_recent_year
     @week = params[:week] || 'season'
     return weekly if @week && @week != 'season'
 
@@ -42,6 +42,10 @@ class GamesController < ApplicationController
     # old approach causes some issues during week-week transition
     # Time.now.strftime('%U').to_i - 35
     @current_week ||= Game.where(season_year: @year || Date.today.year).order(:week).reverse.first&.week || 0
+  end
+
+  def most_recent_year
+    ActiveRecord::Base.connection.execute("SELECT MAX(season_year) FROM games;").values.flatten.first
   end
 
   def user_joins

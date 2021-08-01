@@ -53,6 +53,7 @@ class CalculateStatsJob < ApplicationJob
       losses: user.side_bet_losses,
       winrate: user.side_bet_winrate,
       proposed: user.side_bets_proposed,
+      accepted: user.side_bets_accepted,
     }
     calculated_stats.update(side_bet_results: json)
   end
@@ -203,18 +204,20 @@ class CalculateStatsJob < ApplicationJob
 
   def update_average_finish(user, calculated_stats)
     season_count = user.seasons.size
-    calculated_stats.update(average_finish: (user.seasons.map(&:playoff_rank).reduce(:+) / season_count.to_f).round(2))
+    average_value = season_count.zero? ? 0.0 : (user.seasons.map(&:playoff_rank).reduce(:+) / season_count.to_f).round(2)
+    calculated_stats.update(average_finish: average_value)
   end
 
   def update_average_regular_season_finish(user, calculated_stats)
     season_count = user.seasons.size
-    calculated_stats.update(average_regular_season_finish: (user.seasons.map(&:regular_rank).reduce(:+) / season_count.to_f).round(2))
+    average_value = season_count.zero? ? 0.0 : (user.seasons.map(&:regular_rank).reduce(:+) / season_count.to_f).round(2)
+    calculated_stats.update(average_regular_season_finish: average_value)
   end
 
   def update_playoff_rate(user, calculated_stats)
     total = user.seasons.size
     playoffs = user.seasons.select(&:playoff_appearance?).size
-    rate = ((playoffs.to_f / total.to_f) * 100.0).round(2)
+    rate = total.zero? ? 0.0 : ((playoffs.to_f / total.to_f) * 100.0).round(2)
     json_hash = {
       rate: rate,
       playoffs: playoffs,
@@ -235,7 +238,7 @@ class CalculateStatsJob < ApplicationJob
 
   def update_average_margin(user, calculated_stats)
     games_played = user.historical_games.size + (2 * user.seasons.select(&:two_game_playoff?).size)
-    margin = (user.historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
+    margin = games_played.zero? ? 0.0 : (user.historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
     calculated_stats.update(average_margin: margin)
   end
 

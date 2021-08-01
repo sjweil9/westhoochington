@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :seasons
   has_one :calculated_stats, class_name: 'UserStat'
 
+  scope :active, -> { where(active: true) }
+
   (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
     has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id
@@ -25,6 +27,12 @@ class User < ApplicationRecord
 
   after_create :default_nicknames
 
+  ADMIN_LIST = %w[stephen.weil@gmail.com].freeze
+
+  def admin?
+    ADMIN_LIST.include?(email)
+  end
+
   def side_bets
     season_side_bets + game_side_bets
   end
@@ -33,6 +41,12 @@ class User < ApplicationRecord
     Rails.cache.fetch("nickname_#{id}", expires_in: 30.seconds) do
       weighted_nicknames.sample&.name
     end
+  end
+
+  def discord_mention
+    return random_nickname unless discord_id.present?
+
+    "<@#{discord_id}>"
   end
 
   def weighted_nicknames
@@ -141,12 +155,14 @@ class User < ApplicationRecord
                    else
                      historical_games.map(&:active_total).reduce(:+)
                    end
-    @average_points_scored[platform] = 0 if !points_total || !games_played
+    @average_points_scored[platform] = 0 if points_total.nil? || games_played.nil? || points_total.zero? || games_played.zero?
     @average_points_scored[platform] ||= (points_total / games_played.to_f).round(2)
   end
 
   def average_margin_of_victory
     games_played = historical_games.size + (2 * seasons.select(&:two_game_playoff?).size)
+    return 0.0 if games_played.zero?
+
     (historical_games.map(&:margin).reduce(:+) / games_played.to_f).round(2)
   end
 
@@ -391,6 +407,8 @@ class User < ApplicationRecord
 
   def points_for_mir(record_string)
     win, loss, tie = record_string.split(' - ').map(&:to_f)
+    return 0.0 if win.zero? && loss.zero? && tie.zero?
+
     ((win / (loss + tie + win)) * 100.0).round(2)
   end
 
@@ -401,7 +419,7 @@ class User < ApplicationRecord
   def side_bet_wins
     return @side_bet_wins if @side_bet_wins.present?
 
-    proposed_wins = side_bets.select(&:finished?).select(&:predictor_won?).size
+    proposed_wins = side_bets.select(&:finished?).select { |sb| sb.predictor_won? && sb.side_bet_acceptances.size.positive? }.size
     accepted_wins = side_bet_acceptances.select { |sba| sba.side_bet.finished? && !sba.side_bet.predictor_won? }.size
     @side_bet_wins = proposed_wins + accepted_wins
   end
@@ -409,7 +427,7 @@ class User < ApplicationRecord
   def side_bet_losses
     return @side_bet_losses if @side_bet_losses.present?
 
-    proposed_losses = side_bets.select(&:finished?).select { |sb| !sb.predictor_won? }.size
+    proposed_losses = side_bets.select(&:finished?).select { |sb| !sb.predictor_won? && sb.side_bet_acceptances.size.positive? }.size
     accepted_losses = side_bet_acceptances.select { |sba| sba.side_bet.finished? && sba.side_bet.predictor_won? }.size
     @side_bet_losses = proposed_losses + accepted_losses
   end
@@ -422,6 +440,10 @@ class User < ApplicationRecord
 
   def side_bets_proposed
     @side_bets_proposed ||= side_bets.size
+  end
+
+  def side_bets_accepted
+    @side_bets_accepted ||= side_bet_acceptances.size
   end
 
   def pending_side_bets
@@ -452,7 +474,8 @@ class User < ApplicationRecord
     'sccrrckstr@gmail.com',
     'jstatham3@gmail.com',
     'john.rosensweig@gmail.com',
-    'brandon.tricou@gmail.com'
+    'brandon.tricou@gmail.com',
+    'michael.i.zack@gmail.com',
   ]
 
   NICKNAMES = {
@@ -470,7 +493,8 @@ class User < ApplicationRecord
     'sccrrckstr@gmail.com':['Netanyahu'],
     'jstatham3@gmail.com':['Ty'],
     'john.rosensweig@gmail.com':['Rosenswag'],
-    'brandon.tricou@gmail.com':['Brandon']
+    'brandon.tricou@gmail.com':['Brandon'],
+    'michael.i.zack@gmail.com':['Brother Mike', 'Birther Mike'],
   }.with_indifferent_access
 
   def allowed_email
@@ -480,7 +504,7 @@ class User < ApplicationRecord
   end
 
   def default_nicknames
-    NICKNAMES[email].each do |nickname|
+    NICKNAMES[email]&.each do |nickname|
       Nickname.create(user_id: id, name: nickname)
     end
   end

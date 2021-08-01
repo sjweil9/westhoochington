@@ -138,6 +138,39 @@ namespace :newsletter do
   end
 end
 
+EMAIL_DISCORD_MAPPING = {
+  "stephen.weil@gmail.com" => "363522619435384834",
+  "sccrrckstr@gmail.com" => "818951282575540224",
+  "ovaisinamullah@gmail.com" => "695409268764967034",
+  "mikelacy3@gmail.com" => "",
+  "tonypelli@gmail.com" => "",
+  "goblue101@gmail.com" => "710358726401458186",
+  "pkaushish@gmail.com" => "869598426571087922",
+  "adamkos101@gmail.com" => "698642107371356220",
+  "captrf@gmail.com" => "869575333970599936",
+  "seidmangar@gmail.com" => "",
+  "michael.i.zack@gmail.com" => "206055078099025922",
+  "john.rosensweig@gmail.com" => "363521698244591616"
+}
+
+namespace :discord do
+  desc "Set discord IDs for all users"
+  task :set_ids => :environment do
+    EMAIL_DISCORD_MAPPING.each do |email, discord_id|
+      User.find_by(email: email)&.update(discord_id: discord_id)
+    end
+  end
+end
+
+namespace :users do
+  desc "Set active users"
+  task :set_active => :environment do
+    EMAIL_DISCORD_MAPPING.each do |email, _|
+      User.find_by(email: email)&.update(active: true)
+    end
+  end
+end
+
 namespace :bets do
   desc "Called by Heroku scheduler to update on any new action for the day"
   task :send_updates => :environment do
