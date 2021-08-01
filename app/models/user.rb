@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :seasons
   has_one :calculated_stats, class_name: 'UserStat'
 
+  scope :active, -> { where(active: true) }
+
   (2012..Date.today.year).each do |year|
     has_many :"games_#{year}", -> { where(season_year: year) }, class_name: 'Game'
     has_many :"opponent_games_#{year}", -> { where(season_year: year)}, class_name: 'Game', foreign_key: :opponent_id
@@ -25,6 +27,12 @@ class User < ApplicationRecord
 
   after_create :default_nicknames
 
+  ADMIN_LIST = %w[stephen.weil@gmail.com].freeze
+
+  def admin?
+    ADMIN_LIST.include?(email)
+  end
+
   def side_bets
     season_side_bets + game_side_bets
   end
@@ -33,6 +41,12 @@ class User < ApplicationRecord
     Rails.cache.fetch("nickname_#{id}", expires_in: 30.seconds) do
       weighted_nicknames.sample&.name
     end
+  end
+
+  def discord_mention
+    return random_nickname unless discord_id.present?
+
+    "<@#{discord_id}>"
   end
 
   def weighted_nicknames

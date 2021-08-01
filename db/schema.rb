@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_10_163454) do
+ActiveRecord::Schema.define(version: 2021_07_29_033451) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -255,6 +255,8 @@ ActiveRecord::Schema.define(version: 2020_10_10_163454) do
     t.json "unlucky_loss_weeks"
     t.integer "projected_wins"
     t.integer "wins_above_projection"
+    t.json "total_points_per_position"
+    t.json "percentage_points_per_position"
     t.index ["user_id"], name: "index_season_user_stats_on_user_id"
   end
 
@@ -327,6 +329,8 @@ ActiveRecord::Schema.define(version: 2020_10_10_163454) do
     t.boolean "newsletter"
     t.boolean "podcast_flag"
     t.integer "espn_id"
+    t.string "discord_id"
+    t.boolean "active"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

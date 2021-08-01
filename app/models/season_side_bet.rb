@@ -6,6 +6,7 @@ class SeasonSideBet < ApplicationRecord
 
   before_validation :set_defaults
   after_create :update_calculated_stats
+  after_create :post_to_discord
 
   validate :valid_winner, :valid_loser, :valid_status, :valid_odds, :valid_acceptances, :valid_bet_type,
            :valid_comparison_type, :valid_bet_terms
@@ -51,11 +52,11 @@ class SeasonSideBet < ApplicationRecord
   end
 
   def winner_nickname
-    Rails.cache.fetch("nickname_#{bet_terms['winner_id']}")
+    Rails.cache.fetch("nickname_#{bet_terms['winner_id']}") { User.find(bet_terms["winner_id"]).random_nickname }
   end
 
   def loser_nickname
-    Rails.cache.fetch("nickname_#{bet_terms['loser_id']}")
+    Rails.cache.fetch("nickname_#{bet_terms['loser_id']}") { User.find(bet_terms["loser_id"]).random_nickname }
   end
 
   def outcome_description
@@ -146,5 +147,9 @@ class SeasonSideBet < ApplicationRecord
     return if closing_date && closing_date.in_time_zone('America/Chicago') > Time.now.in_time_zone('America/Chicago')
 
     errors.add(:closing_date, "is invalid: must be a future date.")
+  end
+
+  def post_to_discord
+    Discord::Messages::SeasonSideBetJob.perform_now(self)
   end
 end

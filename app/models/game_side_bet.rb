@@ -10,6 +10,7 @@ class GameSideBet < ApplicationRecord
 
   before_validation :set_defaults
   after_create :update_calculated_stats
+  after_create :post_to_discord
 
   validate :valid_winner, :valid_status, :valid_odds, :valid_acceptances
   validates :amount, numericality: true
@@ -87,5 +88,9 @@ class GameSideBet < ApplicationRecord
     return if [game.user_id, game.opponent_id].include?(predicted_winner_id)
 
     errors.add(:predicted_winner_id, "was somehow not one of the two involved players; either you're trying some whack shit, or this shit is fucked up, so let me know if it's the latter.")
+  end
+
+  def post_to_discord
+    Discord::Messages::GameSetBetJob.perform_now(self)
   end
 end

@@ -12,7 +12,7 @@ class SideBetsController < ApplicationController
         .all
         .order(created_at: :desc)
         .reject { |game| game.opponent_id > game.user_id }
-    @active_players = @current_games.map { |game| [game.user, game.opponent] }.flatten
+    @active_players = User.active.all
     @open_season_bets = SeasonSideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
     @season_bet_types = SeasonSideBet::VALID_BET_TYPES
   end
@@ -85,7 +85,7 @@ class SideBetsController < ApplicationController
 
   def confirm_payment_received
     acceptance = SideBetAcceptance.find(params[:acceptance_id])
-    if acceptance.winner_id == current_user[:id]
+    if acceptance.winner_id == current_user[:id] || current_user.admin?
       acceptance.confirm_payment!
     else
       flash[:payment_error] = "You cannot mark this payment received as you are not the winner of this bet."
