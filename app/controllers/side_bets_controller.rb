@@ -85,7 +85,7 @@ class SideBetsController < ApplicationController
 
   def confirm_payment_received
     acceptance = SideBetAcceptance.find(params[:acceptance_id])
-    if acceptance.winner_id == current_user[:id]
+    if acceptance.winner_id == current_user[:id] || current_user.admin?
       acceptance.confirm_payment!
     else
       flash[:payment_error] = "You cannot mark this payment received as you are not the winner of this bet."
