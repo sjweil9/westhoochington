@@ -27,6 +27,12 @@ class User < ApplicationRecord
 
   after_create :default_nicknames
 
+  ADMIN_LIST = %w[stephen.weil@gmail.com].freeze
+
+  def admin?
+    ADMIN_LIST.include?(email)
+  end
+
   def side_bets
     season_side_bets + game_side_bets
   end
