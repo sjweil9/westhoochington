@@ -200,6 +200,16 @@
             </div>
             <div class="form-group row">
               <div class="col-sm-7">
+                <select class="custom-select mr-sm-2" id="bet-type-ou-select" name="bet_type">
+                  <% @season_bet_types.each do |tag, description| %>
+                    <option value="<%= tag %>"><%= description %></option>
+                  <% end %>
+                </select>
+                <%= render "shared/errors", type: "bet_type" %>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-sm-7">
                 <select class="custom-select mr-0" id="winner-ou-select" name="over_under">
                   <% %w[over under].each do |option| %>
                     <option value="<%= option %>"><%= option.capitalize %></option>
@@ -209,16 +219,6 @@
               </div>
               <div class="col-sm-1 no-gutters ml-0">
                 <img class="d-inline-block questionmark" data-toggle="tooltip" title="Note: 'Over' means 'Better Than', so in the context of standings bets, betting 'Player X Under 4th' means 'I think they will be 5th or worse'" src="<%= image_path('tooltip.png') %>" />
-              </div>
-            </div>
-            <div class="form-group row">
-              <div class="col-sm-7">
-                <select class="custom-select mr-sm-2" id="bet-type-ou-select" name="bet_type">
-                  <% @season_bet_types.each do |tag, description| %>
-                    <option value="<%= tag %>"><%= description %></option>
-                  <% end %>
-                </select>
-                <%= render "shared/errors", type: "bet_type" %>
               </div>
             </div>
             <div class="form-group row">
