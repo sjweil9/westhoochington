@@ -142,13 +142,13 @@ EMAIL_DISCORD_MAPPING = {
   "stephen.weil@gmail.com" => "363522619435384834",
   "sccrrckstr@gmail.com" => "818951282575540224",
   "ovaisinamullah@gmail.com" => "695409268764967034",
-  "mikelacy3@gmail.com" => "",
-  "tonypelli@gmail.com" => "",
+  "mikelacy3@gmail.com" => "186243621039767553",
+  "tonypelli@gmail.com" => "806630836576976936",
   "goblue101@gmail.com" => "710358726401458186",
   "pkaushish@gmail.com" => "869598426571087922",
   "adamkos101@gmail.com" => "698642107371356220",
   "captrf@gmail.com" => "869575333970599936",
-  "seidmangar@gmail.com" => "",
+  "seidmangar@gmail.com" => "873210954601594951",
   "michael.i.zack@gmail.com" => "206055078099025922",
   "john.rosensweig@gmail.com" => "363521698244591616"
 }
