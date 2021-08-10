@@ -12,7 +12,7 @@ class SeasonSideBet < ApplicationRecord
            :valid_comparison_type, :valid_bet_terms
   validate :valid_closing_date, on: :create
   validates :amount, numericality: true
-  validates :line, numericality: true
+  validates :line, numericality: true, allow_nil: true
 
   VALID_BET_TYPES = {
     final_standings: 'Final Finish',
@@ -45,7 +45,7 @@ class SeasonSideBet < ApplicationRecord
     if player_vs_player?
       "#{winner_nickname}#{line_description} over #{loser_nickname}"
     elsif over_under?
-      "#{winner_nickname}"
+      "#{winner_nickname} #{over_under_direction} #{over_under_threshold}"
     else
       bet_terms['winner_id'] ? "#{winner_nickname}#{line_description} over The Field" : "The Field#{line_description} over #{loser_nickname}"
     end
@@ -66,6 +66,8 @@ class SeasonSideBet < ApplicationRecord
   end
 
   def outcome_description
+    return over_under_outcome_description if over_under?
+
     "#{final_winner}: #{final_winning_result} to #{final_loser}: #{final_losing_result}"
   end
 
@@ -77,7 +79,39 @@ class SeasonSideBet < ApplicationRecord
     !won.nil?
   end
 
+  def over?
+    bet_terms['over_under'] == 'over'
+  end
+
+  def under?
+    bet_terms['over_under'] == 'under'
+  end
+
   private
+
+  def over_under_direction
+    bet_terms['over_under']&.downcase
+  end
+
+  def over_under_threshold
+    (final_standings? || regular_season_finish?) ? "#{bet_terms['threshold'].to_i.ordinalize} Place" : "#{bet_terms['threshold']} Points"
+  end
+
+  def over_under_outcome_description
+    "#{predicted_nickname} (#{final_value}) #{over_under_outcome_direction} #{over_under_threshold}"
+  end
+
+  def predicted_nickname
+    bet_terms['winner_id'] ? winner_nickname : loser_nickname
+  end
+
+  def final_value
+    (final_standings? || regular_season_finish?) ? final_bet_results['bettor_value'].to_i.ordinalize : final_bet_results['bettor_value']
+  end
+
+  def over_under_outcome_direction
+    won ? bet_terms['over_under'] : %w[over under].detect { |val| val != bet_terms['over_under'] }
+  end
 
   def final_winner
     return if won.nil?
@@ -97,10 +131,18 @@ class SeasonSideBet < ApplicationRecord
     if player_vs_player?
       won ? loser_nickname : winner_nickname
     elsif bet_terms['winner_id']
-      won ? 'The Field' : winner_nickname
+      won ? loser_description : winner_nickname
     elsif bet_terms['loser_id']
-      won ? loser_nickname : 'The Field'
+      won ? loser_nickname : winner_description
     end
+  end
+
+  def loser_description
+    over_under? ? 'Under' : 'The Field'
+  end
+
+  def winner_description
+    over_under? ? 'Over' : 'The Field'
   end
 
   def final_winning_result
@@ -126,7 +168,7 @@ class SeasonSideBet < ApplicationRecord
   end
 
   def valid_bet_terms
-    if player_vs_field?
+    if player_vs_field? || over_under?
       return if bet_terms && bet_terms.values_at('winner_id', 'loser_id').compact.size == 1
 
       errors.add(:bet_terms, "are invalid: if comparing against the field, you must select exactly one winner.")

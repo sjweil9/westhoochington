@@ -33,6 +33,7 @@ module SharedBetMethods
 
   def set_defaults
     self.status ||= 'awaiting_bets'
+    self.line ||= 0
   end
 
   def valid_odds

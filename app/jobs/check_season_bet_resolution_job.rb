@@ -17,15 +17,31 @@ class CheckSeasonBetResolutionJob < ApplicationJob
   def calculate_winner(bet)
     LoadWeeklyDataJob.new.perform_season_data(bet.season_year) # make sure seasons data is updated before calculating
     bettor_value, acceptor_value = determine_result_values(bet)
-    if bet.regular_season_points? || bet.total_points?
-      won = bettor_value + bet.line > acceptor_value
-    else
-      won = bettor_value + bet.line < acceptor_value
-    end
+    won = evaluate_scores(bettor_value, acceptor_value, bet)
     json = { bettor_value: bettor_value, acceptor_value: acceptor_value }
     bet.update(won: won, final_bet_results: json, status: 'awaiting_payment')
     bet.side_bet_acceptances.update_all(status: 'awaiting_payment')
     CalculateStatsJob.new.update_side_hustles(bet)
+  end
+
+  def evaluate_scores(bettor_value, acceptor_value, bet)
+    if bet.regular_season_points? || bet.total_points?
+      if bet.over_under? && bet.over?
+        bettor_value + bet.line > acceptor_value
+      elsif bet.over_under? && bet.under?
+        bettor_value + bet.line < acceptor_value
+      else
+        bettor_value + bet.line > acceptor_value
+      end
+    else
+      if bet.over_under? && bet.over?
+        bettor_value + bet.line < acceptor_value
+      elsif bet.over_under? && bet.under?
+        bettor_value + bet.line > acceptor_value
+      else
+        bettor_value + bet.line < acceptor_value
+      end
+    end
   end
 
   def determine_result_values(bet)
@@ -33,6 +49,8 @@ class CheckSeasonBetResolutionJob < ApplicationJob
       determine_pvf_result_value(bet)
     elsif bet.player_vs_player?
       determine_pvp_result_value(bet)
+    elsif bet.over_under?
+      determine_over_under_result_value(bet)
     end
   end
 
@@ -77,6 +95,23 @@ class CheckSeasonBetResolutionJob < ApplicationJob
     elsif bet.total_points
       method = "yearly_active_total_#{bet.season_year}"
       [predicted_winner.send(method), predicted_loser.send(method)]
+    end
+  end
+
+  def determine_over_under_result_value(bet)
+    predicted_winner = User.find(bet.bet_terms['winner_id'])
+    if bet.regular_season_points?
+      method = "regular_yearly_active_total_#{bet.season_year}"
+      [predicted_winner.send(method), bet.bet_terms['threshold'].to_f]
+    elsif bet.regular_season_finish?
+      method = "season_#{bet.season_year}"
+      [predicted_winner.send(method).regular_rank.to_i, bet.bet_terms['threshold'].to_i]
+    elsif bet.final_standings?
+      method = "season_#{bet.season_year}"
+      [predicted_winner.send(method).playoff_rank.to_i, bet.bet_terms['threshold'].to_i]
+    elsif bet.total_points
+      method = "yearly_active_total_#{bet.season_year}"
+      [predicted_winner.send(method), bet.bet_terms['threshold'].to_f]
     end
   end
 

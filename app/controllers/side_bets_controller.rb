@@ -74,6 +74,16 @@ class SideBetsController < ApplicationController
     redirect_to side_hustles_path
   end
 
+  def create_over_under_bet
+    create_params = handle_custom_season_params(over_under_bet_params)
+    side_bet = SeasonSideBet.new(create_params)
+    unless side_bet.save
+      process_errors(side_bet)
+      flash[:create_over_under_bet_error] = true
+    end
+    redirect_to side_hustles_path
+  end
+
   def accept_bet
     acceptance = SideBetAcceptance.new(side_bet_id: params[:side_bet_id], bet_type: params[:bet_type], user_id: current_user[:id])
     unless acceptance.save
@@ -129,13 +139,15 @@ class SideBetsController < ApplicationController
 
   def handle_custom_season_params(params)
     params = handle_custom_params(params)
-    comparison_type = [params[:winner], params[:loser]].include?('field') ? '1VF': '1V1'
+    comparison_type = [params[:winner], params[:loser]].include?('field') ? '1VF': (params[:over_under] ? 'OU' : '1V1')
     terms = {
       winner_id: params[:winner] != 'field' ? params[:winner].to_i : nil,
-      loser_id: params[:loser] != 'field' ? params[:loser].to_i : nil,
+      loser_id: params[:loser] != 'field' ? params[:loser]&.to_i : nil,
+      over_under: params[:over_under].presence,
+      threshold: params[:threshold].presence
     }.compact
     params
-      .except(:winner, :loser)
+      .except(:winner, :loser, :threshold, :over_under)
       .merge(
         comparison_type: comparison_type,
         bet_terms: terms,
@@ -145,5 +157,11 @@ class SideBetsController < ApplicationController
 
   def prime_nickname_cache
     User.all.each(&:random_nickname) # make sure cache is primed always
+  end
+
+  def over_under_bet_params
+    params
+      .permit(:threshold, :over_under, :bet_type, :winner, :closing_date, :season_year, *SHARED_BET_PARAMS)
+      .merge(user_id: current_user[:id])
   end
 end
