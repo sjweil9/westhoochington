@@ -170,3 +170,9 @@ button.min-width-button {
         max-height: 2.5vh;
     }
 }
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+}

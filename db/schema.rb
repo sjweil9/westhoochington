@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_29_033451) do
+ActiveRecord::Schema.define(version: 2021_08_19_025025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -160,6 +160,17 @@ ActiveRecord::Schema.define(version: 2021_07_29_033451) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_over_unders_on_user_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "payment_type"
+    t.decimal "amount"
+    t.integer "season_year"
+    t.integer "week"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_payments_on_user_id"
   end
 
   create_table "player_faab_transactions", force: :cascade do |t|
@@ -352,6 +363,7 @@ ActiveRecord::Schema.define(version: 2021_07_29_033451) do
   add_foreign_key "over_under_bets", "lines"
   add_foreign_key "over_under_bets", "users"
   add_foreign_key "over_unders", "users"
+  add_foreign_key "payments", "users"
   add_foreign_key "player_faab_transactions", "players"
   add_foreign_key "player_faab_transactions", "users"
   add_foreign_key "player_games", "games"

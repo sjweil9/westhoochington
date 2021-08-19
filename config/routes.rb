@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   root to: 'games#index', as: 'home'
 
+  get '/rules', to: 'rules#index'
+
   post '/users', to: 'users#create', as: 'register'
   post '/users/:user_id/nicknames', to: 'nicknames#create', as: 'create_nickname'
   put '/users/:user_id/password', to: 'users#edit_password', as: 'edit_password'
