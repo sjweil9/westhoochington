@@ -15,7 +15,7 @@ class Payment < ApplicationRecord
   private
 
   def validate_bet_type
-    return if PAYOUT_MAP.keys.include?(type)
+    return if PAYOUT_MAP.keys.include?(payment_type)
 
     errors.add(:payment_type, "Not a valid type.")
   end
