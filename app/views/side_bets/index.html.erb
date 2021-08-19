@@ -132,6 +132,40 @@
       <% end %>
       </tbody>
     </table>
+    <% if @current_games.present? %>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addWeeklyBetModal">
+        Add Weekly Bet
+      </button>
+      <div class="modal fade" id="addWeeklyBetModal" tabindex="-1" role="dialog" aria-labelledby="addWeeklyBetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Weekly Bet</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="<%= propose_weekly_bet_path %>" method="post">
+                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                <input type="hidden" name="season_year" value="<%= Date.today.year %>">
+                <div class="form-group row">
+                  <label class="col-sm-5 col-form-label" for="winner-select">Bet Type:</label>
+                  <div class="col-sm-7">
+                    <select class="custom-select mr-sm-2" id="bet-type-select" name="bet_type">
+                      <% @season_bet_types.each do |tag, description| %>
+                        <option value="<%= tag %>"><%= description %></option>
+                      <% end %>
+                    </select>
+                    <%= render "shared/errors", type: "bet_type" %>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
 
   <h3>Active Season-Long Bets</h3>

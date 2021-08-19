@@ -10,9 +10,9 @@ class GamesController < ApplicationController
     @playoffs = @games.any?(&:playoff?)
     @completed = Season.find_by(season_year: @year)&.completed?
     if @year.to_i >= 2018
-      @faab = FaabStat.find_by(season_year: @year)
+      @faab = FaabStat.find_or_create_by(season_year: @year)
       player_ids = %w[biggest_load narrowest_fail biggest_overpay most_impactful most_impactful_ppg most_impactful_ppd].reduce([]) do |memo, type|
-        memo + @faab.send(type).map { |trans| trans['player_id'] }
+        memo + (@faab.send(type)&.map { |trans| trans['player_id'] } || [])
       end
       @players = Player.where(id: player_ids).all.reduce({}) do |memo, player|
         memo.merge(player.id.to_s => player)

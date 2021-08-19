@@ -99,7 +99,7 @@ class LoadWeeklyDataJob < ApplicationJob
       '10': 'seidmangar@gmail.com',
       '11': 'sccrrckstr@gmail.com',
       '12': 'michael.i.zack@gmail.com',
-      '13': 'john.rosensweigh@gmail.com'
+      '13': 'john.rosensweig@gmail.com'
     },
   }.with_indifferent_access
 
@@ -120,7 +120,7 @@ class LoadWeeklyDataJob < ApplicationJob
       game_data = data_for_week.detect { |game| game.dig('away', 'teamId') == team || game.dig('home', 'teamId') == team }
 
       next unless game_data
-
+      
       team_data = game_data.dig('away', 'teamId') == team ? game_data['away'] : game_data['home']
       other_team_data = game_data.dig('away', 'teamId') == team ? game_data['home'] : game_data['away']
       team_players = team_data.dig('rosterForCurrentScoringPeriod', 'entries')
@@ -163,7 +163,7 @@ class LoadWeeklyDataJob < ApplicationJob
       game.update(game_data)
 
       # only load player stats if game ended
-      next unless game_data['winner'] != 'UNDECIDED'
+      next unless game_data['winner'] && game_data['winner'] != 'UNDECIDED'
 
       team_players.each do |player|
         player_id = player['playerId']
