@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_19_025025) do
+ActiveRecord::Schema.define(version: 2021_08_20_025408) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -346,6 +346,22 @@ ActiveRecord::Schema.define(version: 2021_08_19_025025) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "weekly_side_bets", force: :cascade do |t|
+    t.string "comparison_type"
+    t.json "bet_terms"
+    t.integer "season_year"
+    t.integer "week"
+    t.bigint "user_id"
+    t.string "status"
+    t.decimal "amount"
+    t.string "odds"
+    t.decimal "line"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "possible_acceptances"
+    t.index ["user_id"], name: "index_weekly_side_bets_on_user_id"
+  end
+
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
   add_foreign_key "game_side_bet_acceptances", "game_side_bets"
@@ -376,4 +392,5 @@ ActiveRecord::Schema.define(version: 2021_08_19_025025) do
   add_foreign_key "side_bet_acceptances", "users"
   add_foreign_key "side_bets", "users"
   add_foreign_key "user_stats", "users"
+  add_foreign_key "weekly_side_bets", "users"
 end

@@ -87,4 +87,16 @@ module SharedBetMethods
   def update_calculated_stats
     CalculateStatsJob.new.update_side_hustles(self)
   end
+
+  def winner_nickname
+    Rails.cache.fetch("nickname_#{bet_terms['winner_id']}") { User.find(bet_terms["winner_id"]).random_nickname }
+  end
+
+  def loser_nickname
+    Rails.cache.fetch("nickname_#{bet_terms['loser_id']}") { User.find(bet_terms["loser_id"]).random_nickname }
+  end
+
+  def player_nickname
+    Rails.cache.fetch("nickname_#{bet_terms['player_id']}") { User.find(bet_terms["player_id"]).random_nickname }
+  end
 end

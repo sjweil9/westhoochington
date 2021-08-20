@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
   post '/season_side_bets', to: 'side_bets#create_season_bet', as: 'propose_season_bet'
   post '/over_under_bets', to: 'side_bets#create_over_under_bet', as: 'propose_over_under_bet'
+  post '/weekly_side_bets', to: 'side_bets#create_weekly_bet', as: 'propose_weekly_bet'
 
   post '/side_bets/:bet_type/:side_bet_id/acceptances', to: 'side_bets#accept_bet', as: 'accept_bet'
 

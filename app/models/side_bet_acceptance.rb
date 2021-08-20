@@ -5,6 +5,7 @@ class SideBetAcceptance < ApplicationRecord
     @side_bet ||= case bet_type
                   when 'game' then GameSideBet.find(side_bet_id)
                   when 'season' then SeasonSideBet.find(side_bet_id)
+                  when 'weekly' then WeeklySideBet.find(side_bet_id)
                   end
   end
 

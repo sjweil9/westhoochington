@@ -14,7 +14,10 @@ class SideBetsController < ApplicationController
         .reject { |game| game.opponent_id > game.user_id }
     @active_players = User.active.all
     @open_season_bets = SeasonSideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
+    @open_weekly_bets = WeeklySideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
     @season_bet_types = SeasonSideBet::VALID_BET_TYPES
+    @weekly_bet_types = WeeklySideBet::BET_TYPE_DESCRIPTIONS
+    @week_started = @current_games.any?(&:started)
   end
 
   def pending
@@ -84,6 +87,16 @@ class SideBetsController < ApplicationController
     redirect_to side_hustles_path
   end
 
+  def create_weekly_bet
+    create_params = handle_custom_weekly_params(weekly_bet_params)
+    side_bet = WeeklySideBet.new(create_params)
+    unless side_bet.save
+      process_errors(side_bet)
+      flash[:create_weekly_bet_error] = true
+    end
+    redirect_to side_hustles_path
+  end
+
   def accept_bet
     acceptance = SideBetAcceptance.new(side_bet_id: params[:side_bet_id], bet_type: params[:bet_type], user_id: current_user[:id])
     unless acceptance.save
@@ -137,6 +150,18 @@ class SideBetsController < ApplicationController
       .merge(user_id: current_user[:id])
   end
 
+  def handle_custom_weekly_params(params)
+    params = handle_custom_params(params)
+    terms = {
+      winner_id: params[:winner]&.to_i,
+      loser_id: params[:loser]&.to_i,
+      player_id: params[:player]&.to_i,
+      direction: params[:direction].presence,
+      line: params[:line].presence
+    }.compact
+    params.except(:winner, :loser, :player, :direction, :line).merge(bet_terms: terms)
+  end
+
   def handle_custom_season_params(params)
     params = handle_custom_params(params)
     comparison_type = [params[:winner], params[:loser]].include?('field') ? '1VF': (params[:over_under] ? 'OU' : '1V1')
@@ -163,5 +188,11 @@ class SideBetsController < ApplicationController
     params
       .permit(:threshold, :over_under, :bet_type, :winner, :closing_date, :season_year, *SHARED_BET_PARAMS)
       .merge(user_id: current_user[:id])
+  end
+
+  def weekly_bet_params
+    params
+      .permit(:line, :direction, :winner, :loser, :player, :season_year, :week, :comparison_type, *SHARED_BET_PARAMS)
+      .merge(user_id: current_user[:id], status: "awaiting_bets")
   end
 end
