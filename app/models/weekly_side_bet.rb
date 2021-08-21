@@ -42,10 +42,28 @@ class WeeklySideBet < ApplicationRecord
     end
   end
 
+  def outcome_description
+    return over_under_outcome_description if over_under?
+
+    "#{final_winner}: #{final_winning_result} to #{final_loser}: #{final_losing_result}"
+  end
+
+  def over_under_outcome_description
+    "#{predicted_nickname} (#{final_value}) #{over_under_outcome_direction} #{over_under_threshold}"
+  end
+
   private
 
-  def over_under_direction
-    bet_terms['direction']&.downcase
+  def predicted_nickname
+    bet_terms['winner_id'] ? winner_nickname : loser_nickname
+  end
+
+  def final_value
+    (final_standings? || regular_season_finish?) ? final_bet_results['bettor_value'].to_i.ordinalize : final_bet_results['bettor_value']
+  end
+
+  def over_under_outcome_direction
+    won ? bet_terms['direction'] : %w[over under].detect { |val| val != bet_terms['over_under'] }
   end
 
   def over_under_threshold

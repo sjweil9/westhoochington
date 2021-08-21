@@ -1,0 +1,52 @@
+<h3>Pending Weekly Bets</h3>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">Season Year</th>
+      <th scope="col">Week</th>
+      <th scope="col">Bet Type</th>
+      <th scope="col">Terms</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Proposer</th>
+      <th scope="col">Taker</th>
+      <th scope="col">Final Results</th>
+      <th scope="col">Bet Outcome</th>
+      <th scope="col">Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% pending_weekly_bets.each do |sba| %>
+      <tr>
+        <td><%= sba.side_bet.season_year %></td>
+        <td><%= sba.side_bet.week %></td>
+        <td><%= weekly_bet_types[sba.side_bet.comparison_type.to_sym] %></td>
+        <td><%= sba.side_bet.terms_description %></td>
+        <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds && sba.side_bet.odds != '1:1' %>, paying <%= sba.side_bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means the proposer pays out 3x the amount if they lose, and gets 2x the amount if they win" src="<%= image_path('tooltip.png') %>" /><% end %></td>
+        <th scope="row"><a href="<%= user_profile_path(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a></th>
+        <th scope="row"><a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a></th>
+        <td>
+          <%= sba.side_bet.outcome_description %>
+        </td>
+        <td>
+          <% if sba.side_bet.won %>
+            <a href="<%= user_profile_path(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.proposer_payout) %>
+          <% else %>
+            <a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.acceptor_payout) %>
+          <% end %>
+        </td>
+        <td>
+          <% if sba.awaiting_payment? && sba.loser_id == current_user[:id] %>
+            <a href="<%= mark_payment_sent_path(sba.id) %>" class="btn btn-success" data-method="post">Mark Payment Sent</a>
+          <% elsif (sba.awaiting_payment? || sba.awaiting_confirmation?) && (sba.winner_id == current_user[:id] || current_user.admin?) %>
+            <a href="<%= confirm_payment_received_path(sba.id) %>" class="btn btn-success" data-method="post">Confirm Payment Received</a>
+          <% else %>
+            <%= sba.status.titleize %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

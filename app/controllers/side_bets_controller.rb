@@ -1,5 +1,6 @@
 class SideBetsController < ApplicationController
   before_action :prime_nickname_cache, only: %i[index pending resolved]
+  before_action :set_bet_types, only: %i[index pending resolved]
 
   def index
     offset = (Time.now.monday? || Time.now.sunday?) ? 36 : 35
@@ -15,8 +16,6 @@ class SideBetsController < ApplicationController
     @active_players = User.active.all
     @open_season_bets = SeasonSideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
     @open_weekly_bets = WeeklySideBet.where(status: %w[awaiting_resolution awaiting_bets]).includes(:side_bet_acceptances).references(:side_bet_acceptances).order(created_at: :desc).all
-    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
-    @weekly_bet_types = WeeklySideBet::BET_TYPE_DESCRIPTIONS
     @week_started = @current_games.any?(&:started)
   end
 
@@ -33,7 +32,12 @@ class SideBetsController < ApplicationController
                              .all
                              .map(&:side_bet_acceptances)
                              .flatten
-    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
+    @pending_weekly_bets = WeeklySideBet
+                             .where(status: %w[awaiting_payment awaiting_confirmation])
+                             .order(created_at: :desc)
+                             .all
+                             .map(&:side_bet_acceptances)
+                             .flatten
   end
 
   def resolved
@@ -54,7 +58,12 @@ class SideBetsController < ApplicationController
                               .all
                               .map(&:side_bet_acceptances)
                               .flatten
-    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
+    @resolved_weekly_bets = WeeklySideBet
+                              .where(status: "completed", season_year: filter_year, week: filter_week)
+                              .order(created_at: :desc)
+                              .all
+                              .map(&:side_bet_acceptances)
+                              .flatten
   end
 
   def create_game_bet
@@ -194,5 +203,10 @@ class SideBetsController < ApplicationController
     params
       .permit(:line, :direction, :winner, :loser, :player, :season_year, :week, :comparison_type, *SHARED_BET_PARAMS)
       .merge(user_id: current_user[:id], status: "awaiting_bets")
+  end
+
+  def set_bet_types
+    @season_bet_types = SeasonSideBet::VALID_BET_TYPES
+    @weekly_bet_types = WeeklySideBet::BET_TYPE_DESCRIPTIONS
   end
 end
