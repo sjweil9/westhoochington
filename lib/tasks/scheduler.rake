@@ -8,6 +8,8 @@ namespace :stats do
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(last_week, current_year)
       puts "Completed weekly data load."
+      games_for_week = Game.unscoped.where(season_year: current_year, week: last_week).all
+      CheckWeeklyBetResolutionJob.new.perform(season_year: current_year, week: last_week) if games_for_week.size.positive? && games_for_week.all?(&:finished)
     end
   end
 

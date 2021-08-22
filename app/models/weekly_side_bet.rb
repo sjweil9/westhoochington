@@ -44,6 +44,7 @@ class WeeklySideBet < ApplicationRecord
 
   def outcome_description
     return over_under_outcome_description if over_under?
+    return high_score_outcome_description if high_score?
 
     "#{final_winner}: #{final_winning_result} to #{final_loser}: #{final_losing_result}"
   end
@@ -56,6 +57,26 @@ class WeeklySideBet < ApplicationRecord
 
   def predicted_nickname
     bet_terms['winner_id'] ? winner_nickname : loser_nickname
+  end
+
+  def final_winner
+    won ? User.find(bet_terms["winner_id"]).random_nickname : User.find(bet_terms["loser_id"].random_nickname)
+  end
+
+  def final_loser
+    won ? User.find(bet_terms["loser_id"]).random_nickname : User.find(bet_terms["winner_id"].random_nickname)
+  end
+
+  def final_winning_result
+    won ? game.active_total : game.opponent_active_total
+  end
+
+  def final_losing_result
+    won ? game.opponent_active_total : game.active_total
+  end
+
+  def game
+    @game ||= Game.find_by(user_id: bet_terms["winner_id"], season_year: season_year, week: week)
   end
 
   def final_value
