@@ -1,0 +1,7 @@
+<div class="row justify-content-center margin-below">
+  <div class="btn-group" role="group">
+    <a href="<%= side_hustles_path %>" class="btn btn-primary <%= current_page?(side_hustles_path) ? 'active' : '' %>">Active Bets</a>
+    <a href="<%= pending_bets_path %>" type="button" class="btn btn-primary <%= current_page?(pending_bets_path) ? 'active' : '' %>">Pending Payment</a>
+    <a href="<%= resolved_bets_path %>" type="button" class="btn btn-primary <%= current_page?(resolved_bets_path) ? 'active' : '' %>">Resolved</a>
+  </div>
+</div>

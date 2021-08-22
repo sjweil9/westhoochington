@@ -1,0 +1,38 @@
+<h3 class="mt-4">Active Weekly Bets</h3>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">Bet Type</th>
+      <th scope="col">Terms</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Proposer</th>
+      <th scope="col">Takers</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @open_weekly_bets.each do |bet| %>
+      <tr>
+        <td><%= @weekly_bet_types[bet.comparison_type.to_sym] %></td>
+        <td><%= bet.terms_description %></td>
+        <td><%= number_to_currency(bet.amount) %><% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></td>
+        <th scope="row"><%= bet.user.random_nickname %></th>
+        <th scope="row"><%= bet.side_bet_acceptances.map { |sba| sba.user.random_nickname }.join(', ') %></th>
+        <td>
+          <% if @week_started %>
+            <span class="badge badge-danger">Week Started</span>
+          <% else %>
+            <% if bet.valid_for_user_acceptance?(current_user[:id]) %>
+              <span class="badge badge-success">Closes When Any Linenup Locks</span>
+              <a href="<%= accept_bet_path('weekly', bet.id) %>" data-method="post" class="btn btn-primary">Accept Bet</a>
+            <% else %>
+              <span class="badge badge-warning" data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">Closed</span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+<%= render "add_weekly_bet", current_year: @current_year, current_week: @current_week, active_players: @active_players, weekly_bet_types: @weekly_bet_types %>

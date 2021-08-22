@@ -1,0 +1,47 @@
+<h3>Resolved Game Bets for <%= @year == 'ALL' ? 'All Years' : @year %> - <%= @week == 'ALL' ? 'All Weeks' : "Week #{@week}" %></h3>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">Week</th>
+      <th scope="col">Terms</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Proposer</th>
+      <th scope="col">Taker</th>
+      <th scope="col">Game Projection</th>
+      <th scope="col">Game Result</th>
+      <th scope="col">Bet Outcome</th>
+      <th scope="col">Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @resolved_game_bets.each do |sba| %>
+      <tr>
+        <td><%= sba.side_bet.game.season_year %> - Week <%= sba.side_bet.game.week %></td>
+        <td><%= sba.side_bet.terms_description %></td>
+        <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds.present? && sba.side_bet.odds != '1:1' %> (Paying <%= sba.side_bet.odds %>)<% end %></td>
+        <th scope="row"><a href="<%= user_profile_path(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a></th>
+        <th scope="row"><a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a></th>
+        <td>
+          <a href="<%= user_profile_path(sba.side_bet.game.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.user_id}") %></a>: <%= sba.side_bet.game.projected_total.round(2) %> to
+          <a href="<%= user_profile_path(sba.side_bet.game.opponent_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.opponent_id}") %></a>: <%= sba.side_bet.game.opponent_projected_total.round(2) %>
+        </td>
+        <td>
+          <a href="<%= user_profile_path(sba.side_bet.game.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.user_id}") %></a>: <%= sba.side_bet.game.active_total.round(2) %> to
+          <a href="<%= user_profile_path(sba.side_bet.game.opponent_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.game.opponent_id}") %></a>: <%= sba.side_bet.game.opponent_active_total.round(2) %>
+        </td>
+        <th scope="row">
+          <% if sba.side_bet.predictor_won? %>
+            <a href="<%= user_profile_path(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.proposer_payout) %>
+          <% else %>
+            <a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a> wins <%= number_to_currency(sba.side_bet.acceptor_payout) %>
+          <% end %>
+        </th>
+        <td>
+          <%= sba.status.titleize %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

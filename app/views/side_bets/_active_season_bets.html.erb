@@ -1,0 +1,41 @@
+<h3 class="mt-4">Active Season-Long Bets</h3>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">Bet Type</th>
+      <th scope="col">Terms</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Proposer</th>
+      <th scope="col">Takers</th>
+      <th scope="col">Closing Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @open_season_bets.each do |bet| %>
+      <tr>
+        <td><%= @season_bet_types[bet.bet_type.to_sym] %></td>
+        <td><%= bet.terms_description %></td>
+        <td><%= number_to_currency(bet.amount) %><% if bet.odds && bet.odds != '1:1' %>, paying <%= bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means you get 3x the amount if you win, and pay 2x the amount if you lose" src="<%= image_path('tooltip.png') %>" /><% end %></td>
+        <th scope="row"><%= bet.user.random_nickname %></th>
+        <th scope="row"><%= bet.side_bet_acceptances.map { |sba| sba.user.random_nickname }.join(', ') %></th>
+        <td>
+          <% if Time.now.in_time_zone('America/Chicago') > bet.closing_date.in_time_zone('America/Chicago').end_of_day %>
+            <span class="badge badge-danger">Closed <%= bet.closing_date %></span>
+          <% else %>
+            <% if bet.valid_for_user_acceptance?(current_user[:id]) %>
+              <span class="badge badge-success">Closes on <%= bet.closing_date.to_date %></span>
+              <a href="<%= accept_bet_path('season', bet.id) %>" data-method="post" class="btn btn-primary">Accept Bet</a>
+            <% else %>
+              <span class="badge badge-warning" data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">Closes on <%= bet.closing_date.to_date %></span>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+<%= render "add_over_under_bet", active_players: @active_players, season_bet_types: @season_bet_types %>
+
+<%= render "add_season_bet", season_bet_types: @season_bet_types, active_players: @active_players %>
