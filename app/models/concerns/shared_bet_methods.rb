@@ -5,6 +5,12 @@ module SharedBetMethods
     define_method("#{status}?") { self.status == status }
   end
 
+  def valid_to_cancel?(current_user_id)
+    return false if side_bet_acceptances.count.positive?
+
+    user_id&.to_i == current_user_id&.to_i
+  end
+
   def proposer_payout
     return amount unless odds.present?
 

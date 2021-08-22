@@ -25,7 +25,9 @@
             <% if bet.valid_for_user_acceptance?(current_user[:id]) %>
               <span class="badge badge-success">Closes When Any Linenup Locks</span>
               <a href="<%= accept_bet_path('weekly', bet.id) %>" data-method="post" class="btn btn-primary">Accept Bet</a>
-            <% else %>
+            <% elsif bet.valid_to_cancel?(current_user[:id]) %>
+              <a href="<%= cancel_bet_path('weekly', bet.id) %>" data-method="post" class="btn btn-primary">Cancel Bet</a>
+        <% else %>
               <span class="badge badge-warning" data-toggle="tooltip" title="You are ineligible to accept this bet: <%= bet.cant_accept_reason(current_user[:id]) %>">Closed</span>
             <% end %>
           <% end %>

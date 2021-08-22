@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   post '/weekly_side_bets', to: 'side_bets#create_weekly_bet', as: 'propose_weekly_bet'
 
   post '/side_bets/:bet_type/:side_bet_id/acceptances', to: 'side_bets#accept_bet', as: 'accept_bet'
+  post '/side_bets/:bet_type/:side_bet_id/cancel', to: 'side_bets#cancel', as: 'cancel_bet'
 
   #patch '/side_bets/:side_bet_id/status/:status', to: 'side_bets#update', as: 'complete_side_bet'
   #post '/side_bets/acceptances/:acceptance_id/mark_as_paid', to: 'side_bets#mark_as_paid', as: 'mark_as_paid'

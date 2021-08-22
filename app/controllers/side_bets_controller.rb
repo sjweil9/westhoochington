@@ -135,6 +135,16 @@ class SideBetsController < ApplicationController
     redirect_to pending_bets_path
   end
 
+  def cancel
+    side_bet = side_bet_klass.find(params[:side_bet_id])
+    if side_bet.valid_to_cancel?(current_user[:id])
+      side_bet.destroy!
+    else
+      flash[:sba_error] = "Unable to cancel as action has already been taken."
+    end
+    redirect_to side_hustles_path
+  end
+
   private
 
   SHARED_BET_PARAMS = [:odds_for, :odds_against, :line, :acceptances_limit, :amount, acceptances_players: []]
@@ -208,5 +218,13 @@ class SideBetsController < ApplicationController
   def set_bet_types
     @season_bet_types = SeasonSideBet::VALID_BET_TYPES
     @weekly_bet_types = WeeklySideBet::BET_TYPE_DESCRIPTIONS
+  end
+
+  def side_bet_klass
+    case params[:bet_type]
+    when "season" then SeasonSideBet
+    when "weekly" then WeeklySideBet
+    when "game" then GameSideBet
+    end
   end
 end

@@ -91,6 +91,6 @@ class GameSideBet < ApplicationRecord
   end
 
   def post_to_discord
-    Discord::Messages::GameSetBetJob.perform_now(self)
+    Discord::Messages::GameSideBetJob.perform_now(self)
   end
 end
