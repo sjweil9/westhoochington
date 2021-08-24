@@ -23,6 +23,7 @@ class CheckWeeklyBetResolutionJob < ApplicationJob
     json = { bettor_value: bettor_value, acceptor_value: acceptor_value }
     bet.update(won: won, final_bet_results: json, status: 'awaiting_payment')
     bet.side_bet_acceptances.update_all(status: 'awaiting_payment')
+    Discord::Messages::BetResolutionJob.perform_now(bet)
     CalculateStatsJob.new.update_side_hustles(bet)
   end
 
@@ -51,7 +52,7 @@ class CheckWeeklyBetResolutionJob < ApplicationJob
     if bet.bet_terms["direction"] == "under"
       bettor_value < acceptor_value
     else
-      acceptor_value > bettor_value
+      bettor_value > acceptor_value
     end
   end
 

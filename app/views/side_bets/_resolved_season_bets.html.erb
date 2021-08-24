@@ -20,7 +20,7 @@
         <td><%= sba.side_bet.season_year %></td>
         <td><%= @season_bet_types[sba.side_bet.bet_type.to_sym] %></td>
         <td><%= sba.side_bet.terms_description %></td>
-        <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds && sba.side_bet.odds != '1:1' %>, paying <%= sba.side_bet.odds %><img class="questionmark" data-toggle="tooltip" title="eg 3:2 means the proposer pays out 3x the amount if they lose, and gets 2x the amount if they win" src="<%= image_path('tooltip.png') %>" /><% end %></td>
+        <td><%= number_to_currency(sba.side_bet.amount) %><% if sba.side_bet.odds && sba.side_bet.odds != '1:1' %>, paying <%= sba.side_bet.odds %><img class="questionmark" data-toggle="tooltip" title="<%= sba.side_bet.amount_clarification %>" src="<%= image_path('tooltip.png') %>" /><% end %></td>
         <th scope="row"><a href="<%= user_profile_path(sba.side_bet.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.side_bet.user_id}") %></a></th>
         <th scope="row"><a href="<%= user_profile_path(sba.user_id) %>"><%= Rails.cache.fetch("nickname_#{sba.user_id}") %></a></th>
         <td>

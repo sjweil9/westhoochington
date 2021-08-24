@@ -105,4 +105,20 @@ module SharedBetMethods
   def player_nickname
     Rails.cache.fetch("nickname_#{bet_terms['player_id']}") { User.find(bet_terms["player_id"]).random_nickname }
   end
+
+  def amount_clarification
+    return unless odds && odds != "1:1"
+
+    "If you accept, you risk #{risk_amount} to win #{win_amount}."
+  end
+
+  def win_amount
+    win_weight, _ = odds.split(":")
+    to_currency(amount * win_weight.to_f)
+  end
+
+  def risk_amount
+    _, risk_weight = odds.split(":")
+    to_currency(amount * risk_weight.to_f)
+  end
 end

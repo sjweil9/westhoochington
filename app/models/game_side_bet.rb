@@ -38,6 +38,7 @@ class GameSideBet < ApplicationRecord
     winner_id = predictor_score_base + functional_line > acceptor_score_base ? predicted_winner_id : accepting_winner_id
     update(status: 'awaiting_payment', actual_winner_id: winner_id)
     side_bet_acceptances.update_all(status: 'awaiting_payment')
+    Discord::Messages::BetResolutionJob.perform_now(self)
     CalculateStatsJob.new.update_side_hustles(self)
   end
 

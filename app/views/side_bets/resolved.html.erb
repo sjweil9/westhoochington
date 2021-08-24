@@ -3,7 +3,7 @@
   <form action="<%= resolved_bets_path %>" method="get">
     <div class="row justify-content-center margin-below">
       <div class="col-xs-3 col-lg-2 mobile-margin-below">
-        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="year">
+        <select class="custom-select mr-sm-2" id="resolved-year-select" name="year">
           <% (%w[ALL] + (2012..Date.today.year).to_a).reverse_each do |year| %>
             <% if year.to_s == @year.to_s %>
               <option selected value="<%= year %>"><%= year %></option>
@@ -14,7 +14,7 @@
         </select>
       </div>
       <div class="col-xs-3 col-lg-2 mobile-margin-below">
-        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="week">
+        <select class="custom-select mr-sm-2" id="resolved-week-select" name="week">
           <% (%w[ALL] + (1..16).to_a).each do |week| %>
             <% if week.to_s == @week.to_s %>
               <option selected value="<%= week %>"><% if week == 'ALL' %>All Weeks<% else %>Week <%= week %><% end %></option>

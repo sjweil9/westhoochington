@@ -5,7 +5,7 @@ module Discord
     class BaseBetJob < ApplicationJob
       def perform(bet)
         @bet = bet
-          #channel.send_message(content: content, embeds: embeds)
+        channel.send_message(content: content, embeds: embeds)
       end
 
       private
