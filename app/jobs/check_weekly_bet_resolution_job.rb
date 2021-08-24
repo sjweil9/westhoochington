@@ -27,8 +27,9 @@ class CheckWeeklyBetResolutionJob < ApplicationJob
   end
 
   def determine_pvp_result_values(bet)
-    winner_game = Game.find_by(season_year: @season_year, week: @week, user_id: bet.user_id)
-    [winner_game.active_total, winner_game.opponent_active_total]
+    winner_game = Game.find_by(season_year: @season_year, week: @week, user_id: bet.bet_terms["winner_id"])
+    loser_game = Game.find_by(season_year: @season_year, week: @week, user_id: bet.bet_terms["loser_id"])
+    [winner_game.active_total, loser_game.active_total]
   end
 
   def determine_over_under_result_values(bet)
@@ -37,8 +38,8 @@ class CheckWeeklyBetResolutionJob < ApplicationJob
   end
 
   def determine_high_score_result_values(bet)
-    winner_game = Game.find_by(season_year: @season_year, week: @week, user_id: bet.bet_terms["player_id"])
-    other_games = Game.where(season_year: @season_year, week: @week).where.not(user_id: bet.bet_terms["player_id"]).all
+    winner_game = Game.find_by(season_year: @season_year, week: @week, user_id: bet.bet_terms["winner_id"])
+    other_games = Game.where(season_year: @season_year, week: @week).where.not(user_id: bet.bet_terms["winner_id"]).all
     [winner_game.active_total, other_games.map(&:active_total).max]
   end
 

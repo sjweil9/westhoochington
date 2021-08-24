@@ -6,6 +6,7 @@ class WeeklySideBet < ApplicationRecord
 
   after_create :update_calculated_stats
   after_create :post_to_discord
+  before_save :filter_bet_terms!
 
   validate :valid_status, :valid_odds, :valid_acceptances, :validate_comparison_type!, :validate_bet_terms!,
            :validate_players!, :validate_week!
@@ -43,36 +44,50 @@ class WeeklySideBet < ApplicationRecord
   end
 
   def outcome_description
-    return over_under_outcome_description if over_under?
-    return high_score_outcome_description if high_score?
-
-    "#{final_winner}: #{final_winning_result} to #{final_loser}: #{final_losing_result}"
+    send("#{comparison_type}_outcome_description")
   end
 
-  def over_under_outcome_description
-    "#{predicted_nickname} (#{final_value}) #{over_under_outcome_direction} #{over_under_threshold}"
+  def predictor_won?
+    won
   end
 
   private
+
+  def over_under_direction
+    bet_terms["direction"]&.downcase
+  end
+
+  def over_under_outcome_description
+    "#{player_nickname} (#{final_value}) #{over_under_outcome_direction} #{over_under_threshold}"
+  end
+
+  def high_score_outcome_description
+    result_string = won ? "had the high score for the week" : "did not have the high score (#{final_losing_result})"
+    "#{winner_nickname} (#{final_value}) #{result_string}"
+  end
+
+  def pvp_outcome_description
+    "#{final_winner}: #{final_winning_result} to #{final_loser}: #{final_losing_result}"
+  end
 
   def predicted_nickname
     bet_terms['winner_id'] ? winner_nickname : loser_nickname
   end
 
   def final_winner
-    won ? User.find(bet_terms["winner_id"]).random_nickname : User.find(bet_terms["loser_id"].random_nickname)
+    won ? winner_nickname : loser_nickname
   end
 
   def final_loser
-    won ? User.find(bet_terms["loser_id"]).random_nickname : User.find(bet_terms["winner_id"].random_nickname)
+    won ? loser_nickname : winner_nickname
   end
 
   def final_winning_result
-    won ? game.active_total : game.opponent_active_total
+    final_bet_results["bettor_value"]
   end
 
   def final_losing_result
-    won ? game.opponent_active_total : game.active_total
+    final_bet_results["acceptor_value"]
   end
 
   def game
@@ -80,7 +95,7 @@ class WeeklySideBet < ApplicationRecord
   end
 
   def final_value
-    (final_standings? || regular_season_finish?) ? final_bet_results['bettor_value'].to_i.ordinalize : final_bet_results['bettor_value']
+    final_bet_results['bettor_value']
   end
 
   def over_under_outcome_direction
@@ -149,5 +164,9 @@ class WeeklySideBet < ApplicationRecord
 
   def post_to_discord
     Discord::Messages::WeeklySideBetJob.perform_now(self)
+  end
+
+  def filter_bet_terms!
+    self.bet_terms = bet_terms.slice(*COMPARISON_TYPES[comparison_type])
   end
 end

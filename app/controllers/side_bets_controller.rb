@@ -59,7 +59,7 @@ class SideBetsController < ApplicationController
                               .map(&:side_bet_acceptances)
                               .flatten
     @resolved_weekly_bets = WeeklySideBet
-                              .where(status: "completed", season_year: filter_year, week: filter_week)
+                              .where({ status: "completed", season_year: filter_year, week: filter_week }.compact)
                               .order(created_at: :desc)
                               .all
                               .map(&:side_bet_acceptances)

@@ -33,5 +33,7 @@
   </form>
   <%= render "resolved_game_bets", year: @year, week: @week, resolved_game_bets: @resolved_game_bets %>
 
+  <%= render "resolved_weekly_bets", year: @year, week: @week, resolved_weekly_bets: @resolved_weekly_bets, weekly_bet_types: @weekly_bet_types %>
+
   <%= render "resolved_season_bets", year: @year, resolved_season_bets: @resolved_season_bets, season_bet_types: @season_bet_types %>
 </div>
