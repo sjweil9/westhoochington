@@ -77,7 +77,7 @@ module Discord
             if results_for_user[:total].zero?
               memo
             else
-              memo + [results_for_user.merge(user: user.discord_mention)]
+              memo + [results_for_user.merge(user: user.random_nickname)]
             end
           end.sort_by { |hash| -hash[:percentage] }
           results.each_with_index do |result, index|
@@ -98,7 +98,7 @@ module Discord
             if results_for_user[:total].zero?
               memo
             else
-              memo + [results_for_user.merge(user: user.discord_mention)]
+              memo + [results_for_user.merge(user: user.random_nickname)]
             end
           end.sort_by { |hash| -hash[:percentage] }
           results.each_with_index do |result, index|
