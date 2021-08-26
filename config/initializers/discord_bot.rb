@@ -1,9 +1,13 @@
 require "discordrb"
 
-bot = Discord::Bots::Stats.new(token: Rails.application.credentials.westhoochington_bot_token, prefix: "!", help_command: :statshelp)
+is_rake = (ENV['RACK_ENV'].blank? || ENV['RAILS_ENV'].blank? || !("#{ENV.inspect}" =~ /worker/i).blank?)
 
-bot.run(true)
+unless is_rake
+  bot = Discord::Bots::Stats.new(token: Rails.application.credentials.westhoochington_bot_token, prefix: "!", help_command: :statshelp)
 
-at_exit do
-  bot.stop
+  bot.run(true)
+
+  at_exit do
+    bot.stop
+  end
 end
