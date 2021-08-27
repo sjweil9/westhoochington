@@ -34,7 +34,7 @@ module Discord
         end
 
         def description
-          "Retrieves stats from www.westhoochington.com.".freeze
+          "Gives stats on how much the league or a specific player scored for a certain position.".freeze
         end
 
         def usage

@@ -5,6 +5,9 @@ class Game < ApplicationRecord
   has_many :player_games
 
   default_scope { where(finished: true) }
+  scope :without_two_week_playoffs, -> do
+    where("(season_year < 2015) OR (season_year < 2018 AND week < 14) OR (season_year < 2021 AND week < 13) OR (season_year >= 2021 AND week < 14)")
+  end
 
   def lineup
     player_games.lineup_order
