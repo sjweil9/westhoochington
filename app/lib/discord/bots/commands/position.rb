@@ -8,7 +8,7 @@ module Discord
 
         def execute(event, *args)
           return invalid_position!(event, args[0]) unless VALID_POSITIONS.include?(args[0])
-          second_arg_is_year = args[1].to_i.to_s == args[1]
+          second_arg_is_year = args[1].to_i.to_s == args[1] || RANGE_REGEX.match?(args[1])
           user_arg = second_arg_is_year ? nil : args[1]
           year_arg = second_arg_is_year ? args[1] : args[2]
           return invalid_user!(event, user_arg) unless !user_arg || valid_user?(user_arg)
@@ -42,6 +42,10 @@ module Discord
         end
 
         def user_year_total(position, discord_mention, year, event)
+          if RANGE_REGEX.match?(year)
+            start, finish = year.split("-")
+            year = (start..finish)
+          end
           discord_id = discord_mention.gsub(/\D+/, '')
           user_record = User.find_by(discord_id: discord_id)
           results = ratio_for_user(user_record, position, year)
@@ -64,6 +68,10 @@ module Discord
         end
 
         def year_total(position, year, event)
+          if RANGE_REGEX.match?(year)
+            start, finish = year.split("-")
+            year = (start..finish)
+          end
           conditions = { active: true, games: { season_year: year } }
           position_points = PlayerGame.joins(:game).where(conditions.merge(default_lineup_slot: position)).all.sum(&:points)
           total_points = PlayerGame.joins(:game).where(conditions).all.sum(&:points)

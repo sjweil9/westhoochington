@@ -11,7 +11,7 @@ module Discord
           return invalid_direction!(event, direction) unless VALID_DIRECTIONS.include?(direction)
 
           direction_instruction = direction == "best" ? :desc : :asc
-          second_arg_is_year = args.size == 2 && (args[1].to_i.to_s == args[1])
+          second_arg_is_year = args.size == 2 && (args[1].to_i.to_s == args[1] || RANGE_REGEX.match?(args[1]))
           user_arg = second_arg_is_year ? nil : args[1]
           year_arg = second_arg_is_year ? args[1] : args[2]
           return invalid_user!(event, user_arg) unless !user_arg || valid_user?(user_arg)
@@ -65,7 +65,12 @@ module Discord
         end
 
         def valid_year?(year)
-          year.to_i >= 2012 && year.to_i <= Date.today.year
+          if RANGE_REGEX.match?(year)
+            start, finish = year.split("-")
+            valid_year?(start) && valid_year?(finish)
+          else
+            year.to_i >= 2012 && year.to_i <= Date.today.year
+          end
         end
 
         GAME_INCLUDES = %i[player_games user opponent].freeze
@@ -79,6 +84,10 @@ module Discord
         end
 
         def year_total(direction, year, event)
+          if RANGE_REGEX.match?(year)
+            start, finish = year.split("-")
+            year = (start..finish)
+          end
           games = Game.without_two_week_playoffs.includes(*GAME_INCLUDES).references(*GAME_INCLUDES).where(season_year: year).order(:active_total => direction).first(10)
           event << "Here are the top 10 #{direction == :asc ? 'lowest' : 'highest'} 1-week scores from #{year}:"
           games.each_with_index do |game, index|
@@ -99,6 +108,10 @@ module Discord
         def user_year_total(direction, discord_mention, year, event)
           discord_id = discord_mention.gsub(/\D+/, '')
           user = User.find_by(discord_id: discord_id)
+          if RANGE_REGEX.match?(year)
+            start, finish = year.split("-")
+            year = (start..finish)
+          end
           games = Game.without_two_week_playoffs.includes(*GAME_INCLUDES).references(*GAME_INCLUDES).where(user_id: user.id, season_year: year).order(:active_total => direction).first(5)
           event << "Here are the top 5 #{direction == :asc ? 'lowest' : 'highest'} 1-week scores by #{user.random_nickname} in #{year}:"
           games.each_with_index do |game, index|

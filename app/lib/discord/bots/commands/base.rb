@@ -24,6 +24,8 @@ module Discord
 
         private
 
+        RANGE_REGEX = /(\d+)-(\d+)/
+
         def min_args; end
         def max_args; end
         def channels; end
