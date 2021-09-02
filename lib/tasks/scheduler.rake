@@ -155,11 +155,60 @@ EMAIL_DISCORD_MAPPING = {
   "john.rosensweig@gmail.com" => "363521698244591616"
 }
 
+EMAIL_SLEEPER_MAPPING = {
+  "stephen.weil@gmail.com" => "469586445502246912",
+  "sccrrckstr@gmail.com" => "473624636815306752",
+  "ovaisinamullah@gmail.com" => "470746948761022464",
+  "mikelacy3@gmail.com" => "469548265499521024",
+  "goblue101@gmail.com" => "374409574377324544",
+  "adamkos101@gmail.com" => "469597487510843392",
+  "captrf@gmail.com" => "472209611479314432",
+  "seidmangar@gmail.com" => "472100154690760704",
+  "michael.i.zack@gmail.com" => "737182541722861568"
+}
+
+SLEEPER_LEAGUE_IDS = {
+  2021 => %w[737785373232623616 737553262500306944 735284283123548160]
+}
+
 namespace :discord do
   desc "Set discord IDs for all users"
   task :set_ids => :environment do
     EMAIL_DISCORD_MAPPING.each do |email, discord_id|
       User.find_by(email: email)&.update(discord_id: discord_id)
+    end
+  end
+end
+
+namespace :sleeper do
+  desc "Set Sleeper IDs for all users"
+  task :set_ids => :environment do
+    EMAIL_SLEEPER_MAPPING.each do |email, sleeper_id|
+      User.find_by(email: email)&.update(sleeper_id: sleeper_id)
+    end
+  end
+
+  desc "Create Best Ball Leagues"
+  task :create_leagues => :environment do
+    SLEEPER_LEAGUE_IDS.each do |year, ids|
+      ids.each do |id|
+        record = BestBallLeague.find_or_create_by(sleeper_id: id, season_year: year)
+        response = RestClient.get("https://api.sleeper.app/v1/league/#{id}")
+        parsed = JSON.parse(response.body)
+        record.update(name: parsed["name"])
+      end
+    end
+  end
+
+  desc "Update Sleeper IDs for all players"
+  task :set_player_ids => :environment do
+    response = RestClient.get("https://api.sleeper.app/v1/players/nfl")
+    parsed = JSON.parse(response.body)
+    parsed.each do |sleeper_id, object|
+      espn_id = object["espn_id"]
+      name = [object["first_name"], object["last_name"]].join(" ")
+      player = Player.find_by("name = :name OR espn_id = :espn_id", name: name, espn_id: espn_id)
+      player&.update(sleeper_id: sleeper_id)
     end
   end
 end

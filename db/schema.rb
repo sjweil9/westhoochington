@@ -10,10 +10,42 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_21_170101) do
+ActiveRecord::Schema.define(version: 2021_09_02_030955) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "best_ball_games", force: :cascade do |t|
+    t.bigint "best_ball_league_id"
+    t.integer "week"
+    t.decimal "total_points"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["best_ball_league_id"], name: "index_best_ball_games_on_best_ball_league_id"
+    t.index ["user_id"], name: "index_best_ball_games_on_user_id"
+  end
+
+  create_table "best_ball_league_users", force: :cascade do |t|
+    t.bigint "best_ball_league_id"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "total_points"
+    t.string "roster_id"
+    t.index ["best_ball_league_id"], name: "index_best_ball_league_users_on_best_ball_league_id"
+    t.index ["roster_id"], name: "index_best_ball_league_users_on_roster_id"
+    t.index ["user_id"], name: "index_best_ball_league_users_on_user_id"
+  end
+
+  create_table "best_ball_leagues", force: :cascade do |t|
+    t.string "name"
+    t.string "sleeper_id"
+    t.integer "season_year"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sleeper_id"], name: "index_best_ball_leagues_on_sleeper_id"
+  end
 
   create_table "comments", force: :cascade do |t|
     t.text "content"
@@ -208,6 +240,8 @@ ActiveRecord::Schema.define(version: 2021_08_21_170101) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "sleeper_id"
+    t.index ["sleeper_id"], name: "index_players_on_sleeper_id"
   end
 
   create_table "podcasts", force: :cascade do |t|
@@ -342,8 +376,10 @@ ActiveRecord::Schema.define(version: 2021_08_21_170101) do
     t.integer "espn_id"
     t.string "discord_id"
     t.boolean "active"
+    t.string "sleeper_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["sleeper_id"], name: "index_users_on_sleeper_id"
   end
 
   create_table "weekly_side_bets", force: :cascade do |t|
@@ -364,6 +400,10 @@ ActiveRecord::Schema.define(version: 2021_08_21_170101) do
     t.index ["user_id"], name: "index_weekly_side_bets_on_user_id"
   end
 
+  add_foreign_key "best_ball_games", "best_ball_leagues"
+  add_foreign_key "best_ball_games", "users"
+  add_foreign_key "best_ball_league_users", "best_ball_leagues"
+  add_foreign_key "best_ball_league_users", "users"
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
   add_foreign_key "game_side_bet_acceptances", "game_side_bets"

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  player: one
+  best_ball_game: one
+  total_points: 
+
+two:
+  player: two
+  best_ball_game: two
+  total_points: 

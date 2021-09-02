@@ -1,0 +1,2 @@
+class BestBallLeague < ApplicationRecord
+end

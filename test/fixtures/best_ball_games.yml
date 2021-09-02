@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  best_ball_league: one
+  week: 1
+  total_points: 
+  user: one
+
+two:
+  best_ball_league: two
+  week: 1
+  total_points: 
+  user: two
