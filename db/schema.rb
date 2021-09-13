@@ -10,10 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_02_030955) do
+ActiveRecord::Schema.define(version: 2021_09_02_033807) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "best_ball_game_players", force: :cascade do |t|
+    t.bigint "player_id"
+    t.bigint "best_ball_game_id"
+    t.decimal "total_points"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "starter"
+    t.index ["best_ball_game_id"], name: "index_best_ball_game_players_on_best_ball_game_id"
+    t.index ["player_id"], name: "index_best_ball_game_players_on_player_id"
+  end
 
   create_table "best_ball_games", force: :cascade do |t|
     t.bigint "best_ball_league_id"
@@ -400,6 +411,8 @@ ActiveRecord::Schema.define(version: 2021_09_02_030955) do
     t.index ["user_id"], name: "index_weekly_side_bets_on_user_id"
   end
 
+  add_foreign_key "best_ball_game_players", "best_ball_games"
+  add_foreign_key "best_ball_game_players", "players"
   add_foreign_key "best_ball_games", "best_ball_leagues"
   add_foreign_key "best_ball_games", "users"
   add_foreign_key "best_ball_league_users", "best_ball_leagues"

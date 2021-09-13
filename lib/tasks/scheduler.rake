@@ -168,7 +168,7 @@ EMAIL_SLEEPER_MAPPING = {
 }
 
 SLEEPER_LEAGUE_IDS = {
-  2021 => %w[737785373232623616 737553262500306944 735284283123548160]
+  "2021" => %w[737785373232623616 737553262500306944 735284283123548160]
 }
 
 namespace :discord do
@@ -209,6 +209,31 @@ namespace :sleeper do
       name = [object["first_name"], object["last_name"]].join(" ")
       player = Player.find_by("name = :name OR espn_id = :espn_id", name: name, espn_id: espn_id)
       player&.update(sleeper_id: sleeper_id)
+    end
+  end
+
+  desc "Updates overall results for a league"
+  task :update_leagues, [:season_year] => :environment do |_t, args|
+    season_year = args[:season_year]
+    SLEEPER_LEAGUE_IDS[season_year].each do |league_id|
+      Sleeper::UpdateBestBallResultsJob.perform_now(league_id)
+    end
+  end
+
+  desc "Updates results for a week"
+  task :update_week => :environment do
+    previous_week = Time.now.strftime('%U').to_i - 36
+    if Time.now.tuesday? && previous_week.positive? && previous_week <= 18
+      SLEEPER_LEAGUE_IDS[Date.current.year.to_s].each do |league_id|
+        Sleeper::UpdateBestBallResultsJob.perform_now(league_id)
+        Sleeper::UpdateBestBallWeekJob.perform_now(league_id, previous_week)
+      end
+
+      state_response = RestClient.get("https://api.sleeper.app/v1/state/nfl")
+      parsed = JSON.parse(state_response.body)
+      if parsed["week"] > previous_week.to_i
+        Discord::Messages::BestBallUpdateJob.perform_now(previous_week)
+      end
     end
   end
 end
