@@ -25,6 +25,11 @@ namespace :stats do
     end
   end
 
+  desc "Load all player data for this year to map ESPN IDs"
+  task :load_players => :environment do
+    LoadWeeklyDataJob.new.update_espn_players(Date.today.year)
+  end
+
   desc "Used to load waiver transactions"
   task :load_waiver_transactions => :environment do
     current_week = Time.now.strftime('%U').to_i - 35

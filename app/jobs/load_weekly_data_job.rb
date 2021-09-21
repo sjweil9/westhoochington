@@ -202,6 +202,20 @@ class LoadWeeklyDataJob < ApplicationJob
     CalculateStatsJob.new.perform_game_level
   end
 
+  def update_espn_players(year)
+    url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/players?scoringPeriodId=0&view=players_wl"
+    headers = {"X-Fantasy-Filter"=>"{\"players\":{\"filterActive\":{\"value\":true}}}"}
+    response = RestClient.get(url, headers.merge(cookies: cookies))
+    parsed = JSON.parse(response.body)
+    parsed.each do |player|
+      id = player["id"]
+      name = player.dig("player", "fullName")
+      player_record = Player.find_by(espn_id: id)
+      player_record ||= Player.new
+      player_record.update(espn_id: id, name: name)
+    end
+  end
+
   # DO NOT USE BELOW, HARD TO KNOW IF ACTIVE OR NOT, USE WEEKLY DATA LOAD
   def perform_player_data(year, week)
     url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?view=kona_playercard&scoringPeriodId=#{week}"
