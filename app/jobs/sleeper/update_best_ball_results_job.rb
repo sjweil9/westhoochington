@@ -7,7 +7,8 @@ module Sleeper
       parsed.each do |object|
         user = User.find_by(sleeper_id: object["owner_id"])
         league_user = BestBallLeagueUser.find_or_create_by(best_ball_league: league, user: user)
-        league_user.update(roster_id: object["roster_id"], total_points: object.dig("settings", "fpts"))
+        total_points = [object.dig("settings", "fpts"), object.dig("settings", "fpts_decimal")].join(".").to_f
+        league_user.update(roster_id: object["roster_id"], total_points: total_points)
       end
     end
   end
