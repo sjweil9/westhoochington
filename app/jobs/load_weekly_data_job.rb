@@ -125,7 +125,7 @@ class LoadWeeklyDataJob < ApplicationJob
       other_team_data = game_data.dig('away', 'teamId') == team ? game_data['home'] : game_data['away']
       team_players = team_data.dig('rosterForCurrentScoringPeriod', 'entries')
       other_team_players = other_team_data.dig('rosterForCurrentScoringPeriod', 'entries')
-      game_data = {
+      game_update_fields = {
         active_total: team_data.dig('rosterForCurrentScoringPeriod', 'appliedStatTotal') || 0.0,
         bench_total: bench_total(team_players) || 0.0,
         projected_total: projected_total(team_players) || 0.0,
@@ -160,8 +160,8 @@ class LoadWeeklyDataJob < ApplicationJob
 
       game ||= Game.new
 
-      game.update(game_data)
-
+      game.update(game_update_fields)
+      
       # only load player stats if game ended
       next unless game_data['winner'] && game_data['winner'] != 'UNDECIDED'
 
