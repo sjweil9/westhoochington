@@ -37,6 +37,7 @@ namespace :stats do
       current_year = Date.today.year
       LoadWeeklyDataJob.new.perform_transaction_data(current_year, current_week)
       CalculateStatsJob.new.update_faab(current_year)
+      CalculateStatsJob.new.update_faab('alltime')
     end
   end
 

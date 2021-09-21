@@ -209,10 +209,10 @@ class LoadWeeklyDataJob < ApplicationJob
     parsed = JSON.parse(response.body)
     parsed.each do |player|
       id = player["id"]
-      name = player.dig("player", "fullName")
+      name = player["fullName"]
       player_record = Player.find_by(espn_id: id)
       player_record ||= Player.new
-      player_record.update(espn_id: id, name: name)
+      player_record.update({ espn_id: id, name: name }.compact)
     end
   end
 
