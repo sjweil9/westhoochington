@@ -161,7 +161,7 @@ class LoadWeeklyDataJob < ApplicationJob
       game ||= Game.new
 
       game.update(game_update_fields)
-      
+
       # only load player stats if game ended
       next unless game_data['winner'] && game_data['winner'] != 'UNDECIDED'
 
