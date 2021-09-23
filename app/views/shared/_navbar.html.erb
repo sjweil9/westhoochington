@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary margin-below">
+<nav class="navbar navbar-expand-xs navbar-dark bg-primary margin-below">
   <div class="container">
     <a class="main-title navbar-brand" href="<%= home_path %>">Westhoochington</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1">
@@ -8,6 +8,9 @@
       <ul class="navbar-nav nav nav-fill w-100">
         <li class="nav-item">
           <a class="<%= (current_page?(home_path) || current_page?(stats_path)) ? 'active' : 'nav-item' %> nav-link" href="<%= home_path %>">Stats</a>
+        </li>
+        <li class="nav-item">
+          <a class="<%= current_page?(best_ball_path) ? 'active' : 'nav-item' %> nav-link" href="<%= best_ball_path %>">Top Tier Testicles</a>
         </li>
         <li class="nav-item">
           <a class="<%= current_page?(hall_of_fame_path) ? 'active' : 'nav-item' %> nav-link" href="<%= hall_of_fame_path %>">HOF</a>

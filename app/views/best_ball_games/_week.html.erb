@@ -1,0 +1,35 @@
+<div class="row margin-below">
+  <h1 class="col border-bottom">
+    <img class="expand" data-toggle="collapse" data-target="#league-<%= league.id %>" aria-expanded="true" aria-controls="finishes" src="<%= image_path('expand.png') %>" /> <%= league.name %>
+  </h1>
+</div>
+<div class="collapse" id="league-<%= league.id %>">
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <h3>Results for Week</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col">Rank</th>
+            <th scope="col">User</th>
+            <th scope="col">Score</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% league.best_ball_games.sort_by { |game| -game.total_points }.each_with_index do |game, idx| %>
+            <tr>
+              <th scope="row"><%= (idx + 1).ordinalize %></th>
+              <td><a href="<%= user_profile_path(game.user.id) %>"><%= game.user.random_nickname %></a></td>
+              <td>
+                <a data-toggle="modal" data-target="#lineup<%= game.id %>" href="#"><%= game.total_points %></a>
+                <%= render "shared/lineup", lineup: game.lineup, id: game.id, total_points: game.total_points %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

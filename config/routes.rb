@@ -49,6 +49,8 @@ Rails.application.routes.draw do
   post '/nicknames/:nickname_id/upvote', to: 'nicknames#upvote', as: 'nickname_upvote'
   post '/nicknames/:nickname_id/downvote', to: 'nicknames#downvote', as: 'nickname_downvote'
 
+  get '/best_ball', to: 'best_ball_games#index', as: 'best_ball'
+
   devise_for :users
 
   # put this after devise because of /users/sign_in

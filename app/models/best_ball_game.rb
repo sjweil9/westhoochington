@@ -7,4 +7,14 @@ class BestBallGame < ApplicationRecord
   def best_ball_league_user
     BestBallLeagueUser.find_by(best_ball_league: best_ball_league, user: user)
   end
+
+  def lineup
+    best_ball_game_players.starters.includes(:player).references(:player).map do |game_player|
+      {
+        name: game_player.player.name,
+        position: game_player.position,
+        points: game_player.total_points
+      }.stringify_keys
+    end
+  end
 end
