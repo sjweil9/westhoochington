@@ -2,6 +2,7 @@ class BestBallGame < ApplicationRecord
   belongs_to :best_ball_league
   belongs_to :user
   has_many :best_ball_game_players, dependent: :destroy
+  has_many :lineup_ordered_players, -> { lineup_ordered }, class_name: "BestBallGamePlayer"
   has_many :players, through: :best_ball_game_players
 
   def best_ball_league_user
@@ -9,7 +10,7 @@ class BestBallGame < ApplicationRecord
   end
 
   def lineup
-    best_ball_game_players.starters.includes(:player).references(:player).map do |game_player|
+    lineup_ordered_players.map do |game_player|
       {
         name: game_player.player.name,
         position: game_player.position,

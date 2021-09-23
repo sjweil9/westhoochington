@@ -24,6 +24,6 @@ class BestBallGamesController < ApplicationController
   end
 
   def best_ball_includes
-    [best_ball_games: [:user, best_ball_game_players: :player]]
+    [best_ball_games: [:user, lineup_ordered_players: :player]]
   end
 end

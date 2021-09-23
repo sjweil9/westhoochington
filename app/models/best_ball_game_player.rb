@@ -5,5 +5,5 @@ class BestBallGamePlayer < ApplicationRecord
   POSITION_SORT = "CASE position WHEN 'QB' THEN 1 WHEN 'RB' THEN 2 WHEN 'WR' THEN 3 WHEN 'TE' THEN 4 "\
                   "WHEN 'FLEX' THEN 5 WHEN 'SUPER_FLEX' THEN 6 WHEN 'BN' THEN 7 END".freeze
 
-  scope :starters, -> { order(POSITION_SORT) }
+  scope :lineup_ordered, -> { order(POSITION_SORT) }
 end
