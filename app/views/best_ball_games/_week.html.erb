@@ -17,7 +17,7 @@
           </tr>
           </thead>
           <tbody>
-          <% league.best_ball_games.sort_by { |game| -game.total_points }.each_with_index do |game, idx| %>
+          <% games.select { |g| g.best_ball_league == league }.sort_by { |game| -game.total_points }.each_with_index do |game, idx| %>
             <tr>
               <th scope="row"><%= (idx + 1).ordinalize %></th>
               <td><a href="<%= user_profile_path(game.user.id) %>"><%= game.user.random_nickname %></a></td>

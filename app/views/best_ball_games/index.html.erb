@@ -37,7 +37,7 @@
   </form>
   <% if @week %>
     <% @leagues.each do |league| %>
-      <%= render "week", week: @week, year: @year, league: league %>
+      <%= render "week", week: @week, year: @year, league: league, games: @games %>
     <% end %>
   <% else %>
     <% @leagues.each do |league| %>
