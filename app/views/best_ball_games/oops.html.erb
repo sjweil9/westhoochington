@@ -1,0 +1,39 @@
+<div class="container-fluid">
+  <form action="<%= best_ball_path %>" method="get">
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-xs-3 col-lg-2 mobile-margin-below">
+        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="year">
+          <% (2012..Date.today.year).reverse_each do |year| %>
+            <% if year.to_i == @year.to_i %>
+              <option selected value="<%= year %>"><%= year %></option>
+            <% else %>
+              <option value="<%= year %>"><%= year %></option>
+            <% end %>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-xs-3 col-lg-2 mobile-margin-below">
+        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="week">
+          <% if @week %>
+            <option value="season">Season Stats</option>
+          <% else %>
+            <option selected value="season">Season Stats</option>
+          <% end %>
+          <% (1..16).each do |week| %>
+            <% if week.to_i == @week.to_i %>
+              <option selected value="<%= week %>">Week <%= week %></option>
+            <% else %>
+              <option value="<%= week %>">Week <%= week %></option>
+            <% end %>
+          <% end %>
+        </select>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary mb-2">Go</button>
+      </div>
+    </div>
+  </form>
+  <h1 class="centered">OOPS! There are no games for Week <%= @week %>, <%= @year %></h1>
+</div>

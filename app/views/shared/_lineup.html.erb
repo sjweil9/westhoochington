@@ -14,6 +14,9 @@
             <th scope="col">Player</th>
             <th scope="col">Position</th>
             <th scope="col">Points</th>
+            <% if lineup.any? { |p| p["weeks"].present? } %>
+              <th scope="col">Weeks Contributing</th>
+            <% end %>
           </tr>
           </thead>
           <tbody>
@@ -22,6 +25,9 @@
               <td><%= player['name'] %></td>
               <td><%= player['position'] %></td>
               <td><%= player['points'] %></td>
+              <% if player["weeks"].present? %>
+                <td><%= player["weeks"].sort.join(", ") %></td>
+              <% end %>
             </tr>
           <% end %>
           <tr>
