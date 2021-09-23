@@ -6,7 +6,7 @@ module Sleeper
       response = RestClient.get("https://api.sleeper.app/v1/league/#{league_id}/matchups/#{week}")
       parsed = JSON.parse(response.body)
       parsed.each do |object|
-        league_user = league.best_ball_league_users.find_by(roster_id: object["roster_id"], )
+        league_user = league.best_ball_league_users.find_by(roster_id: object["roster_id"])
         game = BestBallGame.find_or_create_by(week: week, best_ball_league: league, user: league_user.user)
         game.update(total_points: object["points"])
         BestBallGamePlayer.where(best_ball_game: game).update_all(starter: false)
