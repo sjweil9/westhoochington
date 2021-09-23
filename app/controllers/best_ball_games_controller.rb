@@ -2,6 +2,7 @@ class BestBallGamesController < ApplicationController
   def index
     @year = params[:year] || most_recent_year
     @week = params[:week] == "season" ? nil : params[:week]&.to_i
+    @possible_years = BestBallLeague.pluck(:season_year).uniq.sort
     if @week
       @leagues = BestBallLeague.where(season_year: most_recent_year).all
       @games = hash_by_league_id(BestBallGame.where(best_ball_league_id: @leagues.map(&:id), week: @week).includes(best_ball_includes).all)
