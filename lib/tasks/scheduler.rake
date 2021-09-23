@@ -213,8 +213,8 @@ namespace :sleeper do
     parsed.each do |sleeper_id, object|
       espn_id = object["espn_id"]
       name = [object["first_name"], object["last_name"]].join(" ")
-      player = Player.find_by("name = :name OR espn_id = :espn_id", name: name, espn_id: espn_id)
-      player&.update(sleeper_id: sleeper_id)
+      player = Player.find_by(espn_id: espn_id)
+      player&.update(sleeper_id: sleeper_id, name: name)
     end
   end
 
