@@ -244,6 +244,13 @@ namespace :sleeper do
   end
 end
 
+namespace :drafts do
+  desc "Load all historical drafts"
+  task :load_historical => :environment do
+    LoadHistoricalDraftsJob.perform_now
+  end
+end
+
 namespace :users do
   desc "Set active users"
   task :set_active => :environment do

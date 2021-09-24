@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  season_year: 1
+  league_id: MyString
+  league_platform: MyString
+  player: one
+  draft_type: MyString
+  metadata: 
+
+two:
+  user: two
+  season_year: 1
+  league_id: MyString
+  league_platform: MyString
+  player: two
+  draft_type: MyString
+  metadata: 

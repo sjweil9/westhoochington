@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_22_042252) do
+ActiveRecord::Schema.define(version: 2021_09_24_023701) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -67,6 +67,22 @@ ActiveRecord::Schema.define(version: 2021_09_22_042252) do
     t.datetime "updated_at", null: false
     t.index ["message_id"], name: "index_comments_on_message_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "draft_picks", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "season_year"
+    t.string "league_id"
+    t.string "league_platform"
+    t.string "drafted_league_id"
+    t.string "drafted_league_platform"
+    t.bigint "player_id"
+    t.string "draft_type"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_draft_picks_on_player_id"
+    t.index ["user_id"], name: "index_draft_picks_on_user_id"
   end
 
   create_table "faab_stats", force: :cascade do |t|
@@ -420,6 +436,8 @@ ActiveRecord::Schema.define(version: 2021_09_22_042252) do
   add_foreign_key "best_ball_league_users", "users"
   add_foreign_key "comments", "messages"
   add_foreign_key "comments", "users"
+  add_foreign_key "draft_picks", "players"
+  add_foreign_key "draft_picks", "users"
   add_foreign_key "game_side_bet_acceptances", "game_side_bets"
   add_foreign_key "game_side_bet_acceptances", "users"
   add_foreign_key "game_side_bets", "games"
