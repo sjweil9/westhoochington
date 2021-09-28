@@ -170,12 +170,24 @@ EMAIL_SLEEPER_MAPPING = {
   "adamkos101@gmail.com" => "469597487510843392",
   "captrf@gmail.com" => "472209611479314432",
   "seidmangar@gmail.com" => "472100154690760704",
-  "michael.i.zack@gmail.com" => "737182541722861568"
+  "michael.i.zack@gmail.com" => "737182541722861568",
+  "tonypelli@gmail.com" => "472115608838729728",
+  "pkaushish@gmail.com" => "471870356232073216",
+  "john.rosensweig@gmail.com" => "737353860666040320"
 }
 
 SLEEPER_LEAGUE_IDS = {
   "2021" => %w[737785373232623616 737553262500306944 735284283123548160]
 }
+
+namespace :espn do
+  desc "Set all Player IDs"
+  task :set_player_ids => :environment do
+    (2015..2021).each do |season_year|
+      LoadWeeklyDataJob.new.update_espn_players(season_year)
+    end
+  end
+end
 
 namespace :discord do
   desc "Set discord IDs for all users"
@@ -190,7 +202,7 @@ namespace :sleeper do
   desc "Set Sleeper IDs for all users"
   task :set_ids => :environment do
     EMAIL_SLEEPER_MAPPING.each do |email, sleeper_id|
-      User.find_by(email: email)&.update(sleeper_id: sleeper_id)
+      User.find_by(email: email).update(sleeper_id: sleeper_id)
     end
   end
 
@@ -213,8 +225,11 @@ namespace :sleeper do
     parsed.each do |sleeper_id, object|
       espn_id = object["espn_id"]
       name = [object["first_name"], object["last_name"]].join(" ")
-      player = Player.find_by(espn_id: espn_id)
-      player&.update(sleeper_id: sleeper_id, name: name)
+      name = ["Washington Redskins", name] if name == "Washington Football Team"
+      name = [[object["last_name"], "D/ST"].join(" "), *name] if object["position"] == "DEF"
+      search_params = espn_id ? { espn_id: espn_id } : { name: name }
+      player = Player.find_by(search_params)
+      player&.update(sleeper_id: sleeper_id, name: name.is_a?(Array) ? name.last : name)
     end
   end
 

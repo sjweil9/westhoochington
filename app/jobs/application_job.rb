@@ -93,4 +93,8 @@ class ApplicationJob < ActiveJob::Base
   def sleeper_client
     @sleeper_client ||= SleeperRb::Client.new
   end
+
+  def espn_cookies
+    { SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2 }
+  end
 end

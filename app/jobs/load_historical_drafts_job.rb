@@ -11,8 +11,38 @@ class LoadHistoricalDraftsJob < ApplicationJob
       drafted_league_id: "209719",
       league_platform: "espn",
       league_id: "209719"
+    },
+    "2019": {
+      drafted_league_platform: "sleeper",
+      drafted_league_id: "469548369782501376",
+      league_platform: "espn",
+      league_id: "209719"
+    },
+    "2018": {
+      drafted_league_platform: "espn",
+      drafted_league_id: "209719",
+      league_platform: "espn",
+      league_id: "209719"
+    },
+    "2017": {
+      drafted_league_platform: "espn",
+      drafted_league_id: "209719",
+      league_platform: "espn",
+      league_id: "209719"
+    },
+    "2016": {
+      drafted_league_platform: "espn",
+      drafted_league_id: "209719",
+      league_platform: "espn",
+      league_id: "209719"
+    },
+    "2015": {
+      drafted_league_platform: "espn",
+      drafted_league_id: "209719",
+      league_platform: "espn",
+      league_id: "209719"
     }
-  }
+  }.with_indifferent_access
 
   def perform
     LEAGUE_MAPPING.each do |season_year, draft_data|

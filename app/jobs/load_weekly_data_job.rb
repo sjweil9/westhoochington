@@ -22,7 +22,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
     puts "Loading data for week #{week}, #{year}"
 
-    response = RestClient.get(url, cookies: cookies)
+    response = RestClient.get(url, cookies: espn_cookies)
     parsed_response = JSON.parse(response.body)
     matchup_period = matchup_period_for_week(week.to_i)
     data_for_week = parsed_response.dig('schedule').select { |game| game['matchupPeriodId'].to_i == matchup_period }
@@ -116,7 +116,7 @@ class LoadWeeklyDataJob < ApplicationJob
   def update_espn_players(year)
     url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/players?scoringPeriodId=0&view=players_wl"
     headers = {"X-Fantasy-Filter"=>"{\"players\":{\"filterActive\":{\"value\":true}}}"}
-    response = RestClient.get(url, headers.merge(cookies: cookies))
+    response = RestClient.get(url, headers.merge(cookies: espn_cookies))
     parsed = JSON.parse(response.body)
     parsed.each do |player|
       id = player["id"]
@@ -131,7 +131,7 @@ class LoadWeeklyDataJob < ApplicationJob
   def perform_player_data(year, week)
     url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?view=kona_playercard&scoringPeriodId=#{week}"
     headers = {"X-Fantasy-Filter"=>"{\"players\":{\"filterActive\":{\"value\":true}}}"}
-    response = RestClient.get(url, headers.merge(cookies: cookies))
+    response = RestClient.get(url, headers.merge(cookies: espn_cookies))
     players = JSON.parse(response.body)['players']
     players.each do |player|
       id = player['id']
@@ -164,7 +164,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
   def perform_transaction_data(year, week)
     url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?scoringPeriodId=#{week}&view=mDraftDetail&view=mStatus&view=mSettings&view=mTeam&view=mTransactions2&view=modular&view=mNav"
-    response = RestClient.get(url, cookies: cookies)
+    response = RestClient.get(url, cookies: espn_cookies)
     transactions = JSON.parse(response.body)['transactions']
 
     waiver_moves = transactions.select { |trans| trans['type'] == 'WAIVER' }
@@ -210,7 +210,7 @@ class LoadWeeklyDataJob < ApplicationJob
                   {"X-Fantasy-Filter"=>"{\"schedule\":{\"filterMatchupPeriodIds\":{\"value\":[#{week}]}}}"}
                 end
       url_to_use = week == 15 ? url : url + "&scoringPeriodId=#{week}"
-      response = RestClient.get(url_to_use, headers.merge(cookies: cookies))
+      response = RestClient.get(url_to_use, headers.merge(cookies: espn_cookies))
       parsed_response = JSON.parse(response.body).first
 
       data_for_week = parsed_response['schedule']
@@ -284,7 +284,7 @@ class LoadWeeklyDataJob < ApplicationJob
       end
     end
 
-    general_response = RestClient.get(url, cookies: cookies)
+    general_response = RestClient.get(url, cookies: espn_cookies)
     parsed_response = JSON.parse(general_response.body).first
 
     user_results = parsed_response['teams']
@@ -308,7 +308,7 @@ class LoadWeeklyDataJob < ApplicationJob
     @year = year.to_s
     url ||= base_historical_url + "&seasonId=#{year}"
 
-    response = RestClient.get(url, cookies: cookies)
+    response = RestClient.get(url, cookies: espn_cookies)
     # when you retry with the override URL, its got the same data structure as the other URL, but it's no longer an array, because... reasons?
     retries.positive? ? parsed_response = JSON.parse(response.body) : parsed_response = JSON.parse(response.body).first
 
@@ -397,10 +397,6 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   private
-
-  def cookies
-    { SWID:"{#{Rails.application.credentials.espn_swid}}", espn_s2:Rails.application.credentials.espn_s2 }
-  end
 
   ROSTER_SLOT_MAPPING = {
     '20': 'BN',

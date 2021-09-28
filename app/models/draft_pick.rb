@@ -7,7 +7,7 @@ class DraftPick < ApplicationRecord
 
   store :metadata, accessors: %i[nominating_user_id bid_amount overall_pick_number round_number round_pick_number]
 
-  validates :nominating_user_id, :bid_amount, :overall_pick_number, presence: true, if: -> { auction? }
+  validates :bid_amount, :overall_pick_number, presence: true, if: -> { auction? }
   validates :overall_pick_number, :round_number, :round_pick_number, presence: true, if: -> { snake? }
 
   def auction?
