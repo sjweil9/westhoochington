@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_24_023701) do
+ActiveRecord::Schema.define(version: 2021_09_29_042038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,9 +76,13 @@ ActiveRecord::Schema.define(version: 2021_09_24_023701) do
     t.string "league_platform"
     t.string "drafted_league_id"
     t.string "drafted_league_platform"
+    t.string "draft_id"
     t.bigint "player_id"
     t.string "draft_type"
-    t.json "metadata"
+    t.integer "overall_pick_number"
+    t.integer "round_number"
+    t.integer "round_pick_number"
+    t.integer "bid_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_draft_picks_on_player_id"
@@ -388,6 +392,7 @@ ActiveRecord::Schema.define(version: 2021_09_24_023701) do
     t.json "sacko_seasons"
     t.json "lifetime_record"
     t.json "side_bet_results"
+    t.json "draft_stats"
     t.index ["user_id"], name: "index_user_stats_on_user_id"
   end
 

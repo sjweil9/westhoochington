@@ -22,7 +22,7 @@ class LoadDraftJob < ApplicationJob
       user = User.find_by(email: email)
       player = Player.find_by(espn_id: pick["playerId"])
       pick_record = DraftPick.find_or_initialize_by(base_pick_params.merge(user: user, player: player, draft_type: type))
-      pick_record.update!(metadata: metadata)
+      pick_record.update!(metadata)
     end
   end
 
@@ -33,7 +33,7 @@ class LoadDraftJob < ApplicationJob
       user = User.find_by(sleeper_id: pick.picked_by)
       player = Player.find_by(sleeper_id: pick.player_id) || Player.find_by(name: [pick.metadata.first_name, pick.metadata.last_name].join(" "))
       pick_record = DraftPick.find_or_initialize_by(base_pick_params.merge(user: user, player: player, draft_type: pick.draft.type))
-      pick_record.update!(metadata: metadata)
+      pick_record.update!(metadata.merge(draft_id: draft.draft_id))
     end
   end
 
@@ -83,6 +83,6 @@ class LoadDraftJob < ApplicationJob
 
   def espn_historical_url
     "https://fantasy.espn.com/apis/v3/games/ffl/leagueHistory/209719?scoringPeriodId=0&view=mDraftDetail"\
-    "&view=mStatus&view=mSettings&view=mTeam&view=mTransactions2&view=modular&view=mNav"
+    "&view=mStatus&view=mSettings&view=mTeam&view=mTransactions2&view=modular&view=mNav&seasonId=#{season_year}"
   end
 end

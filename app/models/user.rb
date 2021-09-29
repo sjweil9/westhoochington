@@ -14,7 +14,10 @@ class User < ApplicationRecord
   has_many :game_side_bets
   has_many :side_bet_acceptances
   has_many :seasons
+  has_many :draft_picks
+  has_many :first_round_picks, -> { where(round_number: 1) }, class_name: "DraftPick"
   has_one :calculated_stats, class_name: 'UserStat'
+  has_many :player_games
 
   scope :active, -> { where(active: true) }
 
@@ -452,6 +455,21 @@ class User < ApplicationRecord
     proposed_pending = side_bets.select(&:pending?).size
     accepted_pending = side_bet_acceptances.select { |sba| sba.side_bet.pending? }.size
     @pending_side_bets = proposed_pending + accepted_pending
+  end
+
+  def average_draft_position
+    @average_draft_position ||= (first_round_picks.sum(&:overall_pick_number).to_f / first_round_picks.size.to_f).round(2)
+  end
+
+  def percentage_from_draft
+    return @percentage_from_draft if @percentage_from_draft
+
+    games = player_games.active.all
+    drafted_player_ids = draft_picks.map(&:player_id)
+    drafted_games = games.select { |game| drafted_player_ids.include?(game.player_id) }
+    @percentage_from_draft = ((drafted_games.sum(&:points) / games.sum(&:points)) * 100.0).round(2)
+  rescue
+    0.0
   end
 
   private

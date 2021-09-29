@@ -16,6 +16,7 @@ class CalculateStatsJob < ApplicationJob
     update_average_points_yahoo(user, calculated_stats)
     update_average_margin(user, calculated_stats)
     update_lifetime_record(user, calculated_stats)
+    update_draft_percentage(user, calculated_stats)
   end
 
   def perform_year(user_id, year)
@@ -256,6 +257,13 @@ class CalculateStatsJob < ApplicationJob
       end
     end
     calculated_stats.update(lifetime_record: json_hash)
+  end
+
+  def update_draft_percentage(user, calculated_stats)
+    json = {
+      percentage_from_draft: "%0.2f%%" % user.percentage_from_draft
+    }
+    calculated_stats.update(draft_stats: json)
   end
 
   def color_for_record_string(string)

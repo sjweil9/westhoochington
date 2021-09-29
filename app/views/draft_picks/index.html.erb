@@ -1,0 +1,53 @@
+<div class="container-fluid">
+  <h6 class="mb-5">*All draft-related stats cover 2015-present only (ESPN/Sleeper years)</h6>
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <h3>Average Draft Position</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">User</th>
+              <th scope="col">Draft Position</th>
+              <th scope="col">Pick Numbers</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% @users.sort_by(&:average_draft_position).each do |user| %>
+            <tr>
+              <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+              <td><%= user.average_draft_position %></td>
+              <td>
+                <% user.first_round_picks.sort_by(&:season_year).each_with_index do |pick, index| %>
+                  <%= pick.overall_pick_number.ordinalize %> (<%= render "shared/draft_link", pick: pick %>)<%= index < user.first_round_picks.size - 1 ? ',' : '' %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-6">
+      <h3>% Points Scored By Drafted Players (Active Games Only)</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col">User</th>
+            <th scope="col">Percentage from Drafted</th>
+          </tr>
+          </thead>
+          <tbody>
+            <% @users.sort_by { |u| u.calculated_stats.draft_stats["percentage_from_draft"] }.reverse.each do |user| %>
+              <tr>
+                <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
+                <td><%= user.calculated_stats.draft_stats["percentage_from_draft"] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

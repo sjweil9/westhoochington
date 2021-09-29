@@ -51,6 +51,8 @@ Rails.application.routes.draw do
 
   get '/best_ball', to: 'best_ball_games#index', as: 'best_ball'
 
+  resources :draft_picks, only: %i[index]
+
   devise_for :users
 
   # put this after devise because of /users/sign_in
