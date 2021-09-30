@@ -6,6 +6,6 @@ class DraftPicksController < ApplicationController
   private
 
   def index_inclusions
-    [:calculated_stats, :first_round_picks, :draft_picks, nicknames: :votes]
+    [:calculated_stats, nicknames: :votes]
   end
 end

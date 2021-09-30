@@ -13,13 +13,13 @@
             </tr>
           </thead>
           <tbody>
-          <% @users.sort_by(&:average_draft_position).each do |user| %>
+          <% @users.sort_by { |u| u.calculated_stats.draft_stats["average_draft_position"] }.each do |user| %>
             <tr>
               <td><a href="<%= user_profile_path(user.id) %>"><%= user.random_nickname %></a></td>
-              <td><%= user.average_draft_position %></td>
+              <td><%= user.calculated_stats.draft_stats["average_draft_position"] %></td>
               <td>
-                <% user.first_round_picks.sort_by(&:season_year).each_with_index do |pick, index| %>
-                  <%= pick.overall_pick_number.ordinalize %> (<%= render "shared/draft_link", pick: pick %>)<%= index < user.first_round_picks.size - 1 ? ',' : '' %>
+                <% user.calculated_stats.draft_stats["first_round_picks"].each_with_index do |pick, index| %>
+                  <%= pick["overall_pick_number"].ordinalize %> (<%= render "shared/draft_link", pick: pick %>)<%= index < user.calculated_stats.draft_stats["first_round_picks"].size - 1 ? ',' : '' %>
                 <% end %>
               </td>
             </tr>

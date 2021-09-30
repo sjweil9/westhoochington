@@ -290,7 +290,15 @@ class CalculateStatsJob < ApplicationJob
     json = {
       percentage_from_draft: "%0.2f%%" % user.percentage_from_draft,
       pick_distribution: pick_distribution(user),
-      ppg_by_round: ppg_by_round(user)
+      ppg_by_round: ppg_by_round(user),
+      average_draft_position: user.average_draft_position,
+      first_round_picks: user.first_round_picks.order(season_year: :asc).map do |pick|
+        {
+          overall_pick_number: pick.overall_pick_number,
+          draft_link: pick.draft_link,
+          season_year: pick.season_year
+        }
+      end
     }
     calculated_stats.update(draft_stats: json)
   end
