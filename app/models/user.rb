@@ -495,12 +495,13 @@ class User < ApplicationRecord
       average: drafted_games.empty? ? 0.0 : (drafted_games.sum(&:points) / drafted_games.size.to_f).round(2),
       players: relevant_picks.map do |pick|
         games_for_player = drafted_games.select { |g| g.player_id == pick.player_id }
+        picks_for_player = relevant_picks.select { |p| p.player_id == pick.player_id }
         points_for_player = games_for_player.empty? ? 0.0 : (games_for_player.sum(&:points) / games_for_player.size.to_f).round(2)
         {
           name: pick.player.name,
           ppg: points_for_player,
           games: games_for_player.size,
-          years_drafted: games_for_player.map { |pg| pg.game.season_year }.uniq.join(", ")
+          years_drafted: picks_for_player.map { |p| p.season_year }.uniq.join(", ")
         }.with_indifferent_access
       end
     }
