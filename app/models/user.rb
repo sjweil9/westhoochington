@@ -472,6 +472,10 @@ class User < ApplicationRecord
     0.0
   end
 
+  def picks_at(pick_number)
+    calculated_stats.draft_stats.dig("pick_distribution", pick_number.to_s, "count")
+  end
+
   private
 
   ALLOWED_EMAILS = [

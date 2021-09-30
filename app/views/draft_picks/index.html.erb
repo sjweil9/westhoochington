@@ -50,4 +50,34 @@
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <h3>Pick Distribution</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col"></th>
+            <% (1..12).each do |pick_number| %>
+              <th><%= pick_number.ordinalize %></th>
+            <% end %>
+          </tr>
+          </thead>
+          <tbody>
+          <% @users_pick_distribution.each do |user| %>
+            <tr>
+              <td><%= user[:nickname] %></td>
+              <% (1..12).each do |pick_number| %>
+                <td class="<%= user.dig(:pick_distribution, pick_number.to_s, :color) %>">
+                  <%= user.dig(:pick_distribution, pick_number.to_s, :count) %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>

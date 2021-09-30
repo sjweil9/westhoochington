@@ -16,7 +16,7 @@ class CalculateStatsJob < ApplicationJob
     update_average_points_yahoo(user, calculated_stats)
     update_average_margin(user, calculated_stats)
     update_lifetime_record(user, calculated_stats)
-    update_draft_percentage(user, calculated_stats)
+    update_draft_stats(user, calculated_stats)
   end
 
   def perform_year(user_id, year)
@@ -259,11 +259,18 @@ class CalculateStatsJob < ApplicationJob
     calculated_stats.update(lifetime_record: json_hash)
   end
 
-  def update_draft_percentage(user, calculated_stats)
+  def update_draft_stats(user, calculated_stats)
     json = {
-      percentage_from_draft: "%0.2f%%" % user.percentage_from_draft
+      percentage_from_draft: "%0.2f%%" % user.percentage_from_draft,
+      pick_distribution: pick_distribution(user)
     }
     calculated_stats.update(draft_stats: json)
+  end
+
+  def pick_distribution(user)
+    (1..12).reduce({}) do |memo, pick_number|
+      memo.merge(pick_number.to_s => { count: user.first_round_picks.select { |p| p.round_pick_number == pick_number }.size })
+    end
   end
 
   def color_for_record_string(string)
