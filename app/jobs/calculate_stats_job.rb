@@ -70,6 +70,33 @@ class CalculateStatsJob < ApplicationJob
     update_most_impactful_ppd(calculated_stats, filter_params)
   end
 
+  def update_draft_stat_colors
+    users = User.all
+    UserStat.all.each do |stat|
+      pick_distribution = stat.draft_stats["pick_distribution"].reduce({}) do |memo, (pick_number, hash)|
+        color = "green-bg" if (users - [stat.user]).all? { |u| u.picks_at(pick_number) <= stat.user.picks_at(pick_number) }
+        memo.merge(pick_number.to_s => {
+          count: hash["count"],
+          color: color
+        })
+      end
+
+      ppg_by_round = stat.draft_stats["ppg_by_round"].reduce({}) do |memo, (round_number, hash)|
+        color = "green-bg" if (users - [stat.user]).all? { |u| u.ppg_for_round(round_number) <= stat.user.ppg_for_round(round_number) }
+        color = "red-bg" if (users - [stat.user]).all? { |u| u.ppg_for_round(round_number) >= stat.user.ppg_for_round(round_number) }
+        memo.merge(round_number.to_s => {
+          average: hash["average"],
+          color: color,
+          players: hash["players"]
+        })
+      end
+
+      stat.draft_stats["pick_distribution"] = pick_distribution
+      stat.draft_stats["ppg_by_round"] = ppg_by_round
+      stat.save!
+    end
+  end
+
   ###########################################################################################
   #                                 SEASONAL STATS                                          #
   ###########################################################################################

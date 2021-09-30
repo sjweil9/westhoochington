@@ -114,6 +114,7 @@ namespace :stats do
     User.all.each do |user|
       CalculateStatsJob.new.perform(user.id)
     end
+    CalculateStatsJob.new.update_draft_stat_colors
   end
 end
 

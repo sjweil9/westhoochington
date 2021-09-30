@@ -65,12 +65,12 @@
           </tr>
           </thead>
           <tbody>
-            <% @users_pick_distribution.each do |user| %>
+            <% @users.each do |user| %>
               <tr>
-                <td><%= user[:nickname] %></td>
+                <td><%= user.random_nickname %></td>
                 <% (1..12).each do |pick_number| %>
-                  <td class="<%= user.dig(:pick_distribution, pick_number.to_s, :color) %>">
-                    <%= user.dig(:pick_distribution, pick_number.to_s, :count) %>
+                  <td class="<%= user.calculated_stats.draft_stats.dig("pick_distribution", pick_number.to_s, "color") %>">
+                    <%= user.calculated_stats.draft_stats.dig("pick_distribution", pick_number.to_s, "count") %>
                   </td>
                 <% end %>
               </tr>
@@ -95,18 +95,18 @@
           </tr>
           </thead>
           <tbody>
-          <% @users_ppg_by_round.each do |user| %>
+          <% @users.each do |user| %>
             <tr>
-              <td><%= user[:nickname] %></td>
+              <td><%= user.random_nickname %></td>
               <% (1..16).each do |round_number| %>
-                <td class="<%= user.dig(:ppg_by_round, round_number.to_s, :color) %>">
-                  <a class="text-dark" data-toggle="modal" data-target="#player_list<%= [user[:nickname].split(" ").join, round_number.to_s].join %>" href="#">
-                    <%= user.dig(:ppg_by_round, round_number.to_s, :average) %>
+                <td class="<%= user.calculated_stats.draft_stats.dig("ppg_by_round", round_number.to_s, "color") %>">
+                  <a class="text-dark" data-toggle="modal" data-target="#player_list<%= [user.random_nickname.split(" ").join, round_number.to_s].join %>" href="#">
+                    <%= user.calculated_stats.draft_stats.dig("ppg_by_round", round_number.to_s, "average") %>
                   </a>
                   <%= render "shared/player_list",
-                             player_list: user.dig(:ppg_by_round, round_number.to_s, :players),
-                             id: [user[:nickname].split(" ").join, round_number.to_s].join,
-                             total_ppg: user.dig(:ppg_by_round, round_number.to_s, :average)
+                             player_list: user.calculated_stats.draft_stats.dig("ppg_by_round", round_number.to_s, "players"),
+                             id: [user.random_nickname.split(" ").join, round_number.to_s].join,
+                             total_ppg: user.calculated_stats.draft_stats.dig("ppg_by_round", round_number.to_s, "average")
                   %>
                 </td>
               <% end %>
