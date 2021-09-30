@@ -476,7 +476,41 @@ class User < ApplicationRecord
     calculated_stats.draft_stats.dig("pick_distribution", pick_number.to_s, "count")
   end
 
+  def ppg_for_round(round_number)
+    calculated_stats.draft_stats.dig("ppg_by_round", round_number.to_s, "average")&.to_f
+  end
+
+  def calculate_ppg_for_round(round_number)
+    @ppg_for_round ||= {}
+    return @ppg_for_round[round_number.to_s] if @ppg_for_round[round_number.to_s]
+
+    drafted_games = []
+    relevant_picks = []
+    (2015..most_recent_year).each do |year|
+      picks_for_year = draft_picks.includes(:player).where(round_number: round_number, season_year: year).all
+      relevant_picks += picks_for_year
+      drafted_games += player_games.active.joins(:game, :player).where(games: { season_year: year}, player_id: picks_for_year.map(&:player_id)).all
+    end
+    @ppg_for_round[round_number.to_s] = {
+      average: drafted_games.empty? ? 0.0 : (drafted_games.sum(&:points) / drafted_games.size.to_f).round(2),
+      players: relevant_picks.map do |pick|
+        games_for_player = drafted_games.select { |g| g.player_id == pick.player_id }
+        points_for_player = games_for_player.empty? ? 0.0 : (games_for_player.sum(&:points) / games_for_player.size.to_f).round(2)
+        {
+          name: pick.player.name,
+          ppg: points_for_player,
+          games: games_for_player.size,
+          years_drafted: games_for_player.map { |pg| pg.game.season_year }.uniq.join(", ")
+        }.with_indifferent_access
+      end
+    }
+  end
+
   private
+
+  def most_recent_year
+    @most_recent_year ||= ActiveRecord::Base.connection.execute("SELECT MAX(season_year) FROM games;").values.flatten.first
+  end
 
   ALLOWED_EMAILS = [
     'test@test.com',

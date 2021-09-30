@@ -262,7 +262,8 @@ class CalculateStatsJob < ApplicationJob
   def update_draft_stats(user, calculated_stats)
     json = {
       percentage_from_draft: "%0.2f%%" % user.percentage_from_draft,
-      pick_distribution: pick_distribution(user)
+      pick_distribution: pick_distribution(user),
+      ppg_by_round: ppg_by_round(user)
     }
     calculated_stats.update(draft_stats: json)
   end
@@ -270,6 +271,12 @@ class CalculateStatsJob < ApplicationJob
   def pick_distribution(user)
     (1..12).reduce({}) do |memo, pick_number|
       memo.merge(pick_number.to_s => { count: user.first_round_picks.select { |p| p.round_pick_number == pick_number }.size })
+    end
+  end
+
+  def ppg_by_round(user)
+    (1..16).reduce({}) do |memo, pick_number|
+      memo.merge(pick_number.to_s => user.calculate_ppg_for_round(pick_number))
     end
   end
 

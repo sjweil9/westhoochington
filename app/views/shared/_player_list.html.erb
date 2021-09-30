@@ -1,0 +1,39 @@
+<div class="modal fade" id="player_list<%= id %>" tabindex="-1" role="dialog" aria-labelledby="player_list_title<%= id %>" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="player_list_title<%= id %>"><b>Players</b></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table>
+          <thead>
+          <tr>
+            <th scope="col">Player</th>
+            <th scope="col">Years Drafted</th>
+            <th scope="col">PPG</th>
+            <th scope="col">Games Started</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% player_list.each do |player| %>
+            <tr>
+              <td><%= player['name'] %></td>
+              <td><%= player['years_drafted'] %></td>
+              <td><%= player['ppg'] %></td>
+              <td><%= player['games'] %></td>
+            </tr>
+          <% end %>
+          <tr>
+            <td></td>
+            <td scope="col"><b>Total PPG:</b></td>
+            <td><b><%= total_ppg %></b></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

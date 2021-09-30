@@ -52,7 +52,7 @@
   </div>
 
   <div class="row">
-    <div class="col-xs-12 col-lg-6">
+    <div class="col-xs-12">
       <h3>Pick Distribution</h3>
       <div class="table-responsive">
         <table class="table table-striped">
@@ -65,12 +65,49 @@
           </tr>
           </thead>
           <tbody>
-          <% @users_pick_distribution.each do |user| %>
+            <% @users_pick_distribution.each do |user| %>
+              <tr>
+                <td><%= user[:nickname] %></td>
+                <% (1..12).each do |pick_number| %>
+                  <td class="<%= user.dig(:pick_distribution, pick_number.to_s, :color) %>">
+                    <%= user.dig(:pick_distribution, pick_number.to_s, :count) %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <h3>Best PPG By Round Drafted</h3>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col"></th>
+            <% (1..16).each do |pick_number| %>
+              <th><%= pick_number.ordinalize %></th>
+            <% end %>
+          </tr>
+          </thead>
+          <tbody>
+          <% @users_ppg_by_round.each do |user| %>
             <tr>
               <td><%= user[:nickname] %></td>
-              <% (1..12).each do |pick_number| %>
-                <td class="<%= user.dig(:pick_distribution, pick_number.to_s, :color) %>">
-                  <%= user.dig(:pick_distribution, pick_number.to_s, :count) %>
+              <% (1..16).each do |round_number| %>
+                <td class="<%= user.dig(:ppg_by_round, round_number.to_s, :color) %>">
+                  <a class="text-dark" data-toggle="modal" data-target="#player_list<%= [user[:nickname].split(" ").join, round_number.to_s].join %>" href="#">
+                    <%= user.dig(:ppg_by_round, round_number.to_s, :average) %>
+                  </a>
+                  <%= render "shared/player_list",
+                             player_list: user.dig(:ppg_by_round, round_number.to_s, :players),
+                             id: [user[:nickname].split(" ").join, round_number.to_s].join,
+                             total_ppg: user.dig(:ppg_by_round, round_number.to_s, :average)
+                  %>
                 </td>
               <% end %>
             </tr>

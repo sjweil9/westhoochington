@@ -109,6 +109,12 @@ namespace :stats do
 
     CalculateStatsJob.new.perform_game_level
   end
+
+  task :calculate_user_stats => :environment do
+    User.all.each do |user|
+      CalculateStatsJob.new.perform(user.id)
+    end
+  end
 end
 
 namespace :newsletter do
