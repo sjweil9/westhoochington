@@ -10,7 +10,8 @@ module Discord
 
       COMMANDS = [
         Discord::Bots::Commands::Position.instance,
-        Discord::Bots::Commands::Games.instance
+        Discord::Bots::Commands::Games.instance,
+        Discord::Bots::Commands::Lineup.instance,
       ]
 
       def setup_commands!
