@@ -11,12 +11,13 @@ module Discord
           second_arg_is_year = args[1].to_i.to_s == args[1] || RANGE_REGEX.match?(args[1])
           user_arg = second_arg_is_year ? nil : args[1]
           year_arg = second_arg_is_year ? args[1] : args[2]
-          return invalid_user!(event, user_arg) unless !user_arg || valid_user?(user_arg)
+          user = find_user(user_arg)
+          return invalid_user!(event, user_arg) unless !user_arg || user
           return invalid_year!(event, year_arg) unless !year_arg || valid_year?(year_arg)
 
           case args.length
           when 1 then position_total(args[0], event)
-          when 2 then second_arg_is_year ? year_total(args[0], year_arg, event) : user_total(args[0], user_arg, event)
+          when 2 then second_arg_is_year ? year_total(args[0], year_arg, event) : user_total(args[0], user, event)
           when 3 then user_year_total(args[0], args[1], args[2], event)
           end
 
@@ -28,7 +29,6 @@ module Discord
         VALID_POSITIONS = %w[QB RB WR TE DST K].freeze
 
         def min_args; 1; end
-        def max_args; 3; end
         def channels
           Rails.env.production? ? %w[stat-requests].freeze : %w[testing].freeze
         end
@@ -41,13 +41,11 @@ module Discord
           "position [QB/RB/WR/TE/DST/K] [@user/year] [year]".freeze
         end
 
-        def user_year_total(position, discord_mention, year, event)
+        def user_year_total(position, user_record, year, event)
           if RANGE_REGEX.match?(year)
             start, finish = year.split("-")
             year = (start..finish)
           end
-          discord_id = discord_mention.gsub(/\D+/, '')
-          user_record = User.find_by(discord_id: discord_id)
           results = ratio_for_user(user_record, position, year)
           event << "#{user_record.random_nickname} scored #{results[:percentage]}% of their points in #{year} from the #{position} position (#{results[:position].round(2).to_s(:delimited)} / #{results[:total].round(2).to_s(:delimited)})."
           position_points = PlayerGame.joins(:game).where(active: true, default_lineup_slot: position, games: { season_year: year }).all.sum(&:points)
@@ -127,25 +125,6 @@ module Discord
         def invalid_position!(event, position)
           event << "Invalid position #{position}. Must be one of #{VALID_POSITIONS.join(', ')}."
           nil
-        end
-
-        def invalid_user!(event, user)
-          event << "Sorry, user #{user} was not recognized."
-          nil
-        end
-
-        def invalid_year!(event, year)
-          event << "Year #{year} is invalid. Must be between 2015 and the present."
-          nil
-        end
-
-        def valid_user?(discord_mention)
-          discord_id = discord_mention.gsub(/\D+/, '')
-          User.find_by(discord_id: discord_id)&.discord_id.present?
-        end
-
-        def valid_year?(year)
-          year.to_i >= 2015 && year.to_i <= Date.today.year
         end
       end
     end

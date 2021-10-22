@@ -20,23 +20,25 @@ module Discord
           year_arg = second_arg_is_year ? args[1] : (third_arg_is_year ? args[2] : nil)
           p "user_arg: #{user_arg}, year_arg: #{year_arg}, tryhard: #{tryhard}, direction_instruction: #{direction_instruction}, direction_field: #{direction_field}"
 
-          return invalid_user!(event, user_arg) unless !user_arg || valid_user?(user_arg)
+          user = find_user(user_arg) if user_arg
+
+          return invalid_user!(event, user_arg) unless !user_arg || user
           return invalid_year!(event, year_arg) unless !year_arg || valid_year?(year_arg)
 
           if args.length == 1
             historical_total(direction_instruction, direction_field, event, tryhard)
           elsif args.length == 2 && tryhard
             historical_total(direction_instruction, direction_field, event, tryhard)
-          elsif args.length == 2 && user_arg
-            user_total(direction_instruction, direction_field, user_arg, event, tryhard)
+          elsif args.length == 2 && user
+            user_total(direction_instruction, direction_field, user, event, tryhard)
           elsif args.length == 2
             year_total(direction_instruction, direction_field, year_arg, event, tryhard)
-          elsif args.length == 3 && user_arg
-            user_year_total(direction_instruction, direction_field, args[1], args[2], event, tryhard)
+          elsif args.length == 3 && user
+            user_year_total(direction_instruction, direction_field, user, year_arg, event, tryhard)
           elsif args.length == 3
             year_total(direction_instruction, direction_field, year_arg, event, tryhard)
           elsif args.length == 4
-            user_year_total(direction_instruction, direction_field, args[1], args[2], event, tryhard)
+            user_year_total(direction_instruction, direction_field, user, year_arg, event, tryhard)
           end
 
           nil
@@ -47,7 +49,6 @@ module Discord
         VALID_DIRECTIONS = %w[best worst bestprojected worstprojected].freeze
 
         def min_args; 1; end
-        def max_args; 4; end
         def channels
           Rails.env.production? ? %w[stat-requests].freeze : %w[testing].freeze
         end
@@ -65,28 +66,9 @@ module Discord
           nil
         end
 
-        def invalid_user!(event, user)
-          event << "Sorry, user #{user} was not recognized."
-          nil
-        end
-
-        def invalid_year!(event, year)
-          event << "Year #{year} is invalid. Must be between 2012 and the present."
-          nil
-        end
-
         def valid_user?(discord_mention)
           discord_id = discord_mention.gsub(/\D+/, '')
           User.find_by(discord_id: discord_id)&.discord_id.present?
-        end
-
-        def valid_year?(year)
-          if RANGE_REGEX.match?(year)
-            start, finish = year.split("-")
-            valid_year?(start) && valid_year?(finish)
-          else
-            year.to_i >= 2012 && year.to_i <= Date.today.year
-          end
         end
 
         GAME_INCLUDES = %i[player_games user opponent].freeze
@@ -119,9 +101,7 @@ module Discord
           end
         end
 
-        def user_total(direction, direction_field, discord_mention, event, tryhard)
-          discord_id = discord_mention.gsub(/\D+/, '')
-          user = User.find_by(discord_id: discord_id)
+        def user_total(direction, direction_field, user, event, tryhard)
           games = Game.without_two_week_playoffs.includes(*GAME_INCLUDES).references(*GAME_INCLUDES).where(user_id: user.id).order(direction_field => direction)
           games = games.where.not(id: PlayerGame.where(active: true, projected_points: 0).select(:game_id)) if tryhard
           games = games.where("season_year >= 2018") if direction_field == :projected_total
@@ -133,9 +113,7 @@ module Discord
           end
         end
 
-        def user_year_total(direction, direction_field, discord_mention, year, event, tryhard)
-          discord_id = discord_mention.gsub(/\D+/, '')
-          user = User.find_by(discord_id: discord_id)
+        def user_year_total(direction, direction_field, user, year, event, tryhard)
           if RANGE_REGEX.match?(year)
             start, finish = year.split("-")
             year = (start..finish)

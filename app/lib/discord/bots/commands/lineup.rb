@@ -7,17 +7,17 @@ module Discord
         end
 
         def execute(event, *args)
+          p "args: #{args}"
           discord_mention, year, week = args
-          discord_id = discord_mention.gsub(/\D+/, '')
-          user = User.find_by(discord_id: discord_id)
+          user = find_user(discord_mention)
           return invalid_year!(event, year) unless valid_year?(year)
-          return invalid_user!(event, discord_mention) unless user&.discord_id.present?
+          return invalid_user!(event, discord_mention) unless user
 
           game = Game.find_by(season_year: year, week: week, user_id: user.id)
           return invalid_combo!(event, user, year, week) unless game
 
           event << "Here was the lineup for #{user.random_nickname} for Week #{week} in #{year}:"
-          game.player_games.lineup_order.each do |pg|
+          game.player_games.includes(:player).lineup_order.each do |pg|
             msg = "#{pg.lineup_slot}: #{pg.player.name} - #{pg.points.round(2)}"
             msg << " (proj. #{pg.projected_points.round(2)})" if year.to_i >= 2018
             event << msg
@@ -30,27 +30,12 @@ module Discord
 
         private
 
-        def valid_year?(year)
-          year.to_i >= 2012 && year.to_i <= Date.today.year
-        end
-
-        def invalid_user!(event, user)
-          event << "Sorry, user #{user} was not recognized."
-          nil
-        end
-
-        def invalid_year!(event, year)
-          event << "Year #{year} is invalid. Must be between 2012 and the present."
-          nil
-        end
-
         def invalid_combo!(event, user, year, week)
           event << "Could not find any game for #{user.random_nickname} for Week #{week} in #{year}."
           nil
         end
 
         def min_args; 3; end
-        def max_args; 3; end
         def channels
           Rails.env.production? ? %w[stat-requests].freeze : %w[testing].freeze
         end
