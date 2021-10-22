@@ -23,7 +23,7 @@ module Discord
             event << msg
           end
           event << ""
-          event << "Total Score: #{game.active_total} (#{game.won? ? 'W' : 'L'} vs #{game.opponent.random_nickname})"
+          event << "Total Score: #{game.active_total.round(2)} (#{game.won? ? 'W' : 'L'} vs #{game.opponent.random_nickname} - #{game.opponent_active_total.round(2)})"
 
           nil
         end
