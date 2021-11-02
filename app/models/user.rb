@@ -41,7 +41,7 @@ class User < ApplicationRecord
   end
 
   def random_nickname
-    Rails.cache.fetch("nickname_#{id}", expires_in: 30.seconds) do
+    Rails.cache.fetch("nickname_#{id}", expires_in: 1.minute) do
       weighted_nicknames.sample&.name
     end
   end
