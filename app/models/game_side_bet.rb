@@ -17,17 +17,25 @@ class GameSideBet < ApplicationRecord
   validates :line, numericality: true
 
   def acceptor_condition_string
-    "#{Rails.cache.fetch("nickname_#{accepting_winner_id}")} #{acceptor_line_description}"
+    "#{accepting_winner_nickname} #{acceptor_line_description}"
+  end
+
+  def accepting_winner_nickname
+    Rails.cache.fetch("nickname_#{accepting_winner_id}") { User.find(accepting_winner_id).random_nickname }
   end
 
   def proposer_condition_string
-    "#{Rails.cache.fetch("nickname_#{predicted_winner_id}")} #{proposer_line_description}"
+    "#{predicted_winner_nickname} #{proposer_line_description}"
+  end
+
+  def predicted_winner_nickname
+    Rails.cache.fetch("nickname_#{predicted_winner_id}") { User.find(predicted_winner_id).random_nickname }
   end
 
   def terms_description
-    str = Rails.cache.fetch("nickname_#{predicted_winner_id}") { User.find(predicted_winner_id).random_nickname }
+    str = predicted_winner_nickname
     str += " (#{line.positive? ? '+' + line.to_s : line})" if line.present? && !line.zero?
-    str += " over #{Rails.cache.fetch("nickname_#{accepting_winner_id}") { User.find(accepting_winner_id).random_nickname }}"
+    str += " over #{accepting_winner_nickname}"
     str
   end
 
