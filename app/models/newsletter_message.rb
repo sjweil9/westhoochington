@@ -14,7 +14,7 @@ class NewsletterMessage < ApplicationRecord
         [:crushed, 'Crushed', 180],
         [:very_high, 'Very High', 150],
         [:high, 'High', 130],
-        [:medium, 'Medium', 120],
+        [:medium, 'Medium', 125],
         [:low, 'Low', 0],
       ]
     },

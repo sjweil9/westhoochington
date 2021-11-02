@@ -224,7 +224,7 @@ class UserNotificationsMailer < ApplicationMailer
                  'very_high'
                elsif @high_score.active_total > 130
                  'high'
-               elsif @high_score.active_total < 120
+               elsif @high_score.active_total < 125
                  'low'
                else
                  'medium'
