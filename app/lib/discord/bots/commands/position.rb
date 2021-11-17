@@ -11,7 +11,7 @@ module Discord
           second_arg_is_year = args[1].to_i.to_s == args[1] || RANGE_REGEX.match?(args[1])
           user_arg = second_arg_is_year ? nil : args[1]
           year_arg = second_arg_is_year ? args[1] : args[2]
-          user = find_user(user_arg)
+          user = find_user(user_arg) if user_arg
           return invalid_user!(event, user_arg) unless !user_arg || user
           return invalid_year!(event, year_arg) unless !year_arg || valid_year?(year_arg)
 
