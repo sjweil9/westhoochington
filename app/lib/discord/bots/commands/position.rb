@@ -47,22 +47,24 @@ module Discord
             year = (start..finish)
           end
           results = ratio_for_user(user_record, position, year)
-          event << "#{user_record.random_nickname} scored #{results[:percentage]}% of their points in #{year} from the #{position} position (#{results[:position].round(2).to_s(:delimited)} / #{results[:total].round(2).to_s(:delimited)})."
-          position_points = PlayerGame.joins(:game).where(active: true, default_lineup_slot: position, games: { season_year: year }).all.sum(&:points)
+          event << "#{user_record.random_nickname} scored #{results[:position_ppg]} ppg from the #{position} position in #{year}, representing #{results[:percentage]}% of their points (#{results[:position].round(2).to_s(:delimited)} / #{results[:total].round(2).to_s(:delimited)})."
+          position_games = PlayerGame.joins(:game).where(active: true, default_lineup_slot: position, games: { season_year: year }).all
+          position_points = position_games.sum(&:points)
+          overall_position_ppg = (position_points / total_games_factoring_playoffs(position_games)).round(2)
           total_points = PlayerGame.joins(:game).where(active: true, games: { season_year: year }).all.sum(&:points)
           percentage = ((position_points / total_points) * 100).round(2)
-          event << "#{percentage}% of all points in #{year} (#{position_points.round(2).to_s(:delimited)} / #{total_points.round(2).to_s(:delimited)}) come from the #{position} position."
+          event << "#{percentage}% of all points in #{year} (#{position_points.round(2).to_s(:delimited)} / #{total_points.round(2).to_s(:delimited)}) come from the #{position} position (#{overall_position_ppg} ppg)."
         end
 
-        def user_total(position, user, event)
-          discord_id = user.gsub(/\D+/, '')
-          user_record = User.find_by(discord_id: discord_id)
+        def user_total(position, user_record, event)
           results = ratio_for_user(user_record, position)
-          event << "#{user_record.random_nickname} has scored #{results[:percentage]}% of their lifetime points from the #{position} position (#{results[:position].round(2).to_s(:delimited)} / #{results[:total].round(2).to_s(:delimited)})."
-          position_points = PlayerGame.where(active: true, default_lineup_slot: position).all.sum(&:points)
+          event << "#{user_record.random_nickname} has scored a lifetime average of #{results[:position_ppg]} ppg from the #{position} position, amounting to #{results[:percentage]}% of their lifetime points (#{results[:position].round(2).to_s(:delimited)} / #{results[:total].round(2).to_s(:delimited)})."
+          position_games = PlayerGame.includes(:game).where(active: true, default_lineup_slot: position).all
+          position_points = position_games.sum(&:points)
+          overall_position_ppg = (position_points / total_games_factoring_playoffs(position_games)).round(2)
           total_points = PlayerGame.where(active: true).all.sum(&:points)
           percentage = ((position_points / total_points) * 100).round(2)
-          event << "#{percentage}% of all points in League History (#{position_points.round(2).to_s(:delimited)} / #{total_points.round(2).to_s(:delimited)}) come from the #{position} position."
+          event << "#{percentage}% of all points in League History (#{position_points.round(2).to_s(:delimited)} / #{total_points.round(2).to_s(:delimited)}) come from the #{position} position (#{overall_position_ppg} ppg)."
         end
 
         def year_total(position, year, event)
@@ -71,11 +73,13 @@ module Discord
             year = (start..finish)
           end
           conditions = { active: true, games: { season_year: year } }
-          position_points = PlayerGame.joins(:game).where(conditions.merge(default_lineup_slot: position)).all.sum(&:points)
+          position_games = PlayerGame.joins(:game).where(conditions.merge(default_lineup_slot: position)).all
+          position_points = position_games.sum(&:points)
+          position_ppg = (position_points / total_games_factoring_playoffs(position_games)).round(2)
           total_points = PlayerGame.joins(:game).where(conditions).all.sum(&:points)
           percentage = ((position_points / total_points) * 100).round(2)
           event << "A total of #{position_points.round(2).to_s(:delimited)} points were scored at the #{position} position in #{year}."
-          event << "This constitutes #{percentage}% of all #{total_points.round(2).to_s(:delimited)} points scored in #{year}."
+          event << "This constitutes #{percentage}% of all #{total_points.round(2).to_s(:delimited)} points scored in #{year}, or an average of #{position_ppg} ppg."
           event << "Here are all league members sorted by the proportion of their points from the #{position} position in #{year}:"
           year_users = Game.where(season_year: year).all.map(&:user).uniq
           results = year_users.reduce([]) do |memo, user|
@@ -87,15 +91,17 @@ module Discord
             end
           end.sort_by { |hash| -hash[:percentage] }
           results.each_with_index do |result, index|
-            event << "#{index + 1}) #{result[:user]} -- #{result[:percentage]}% (#{result[:position].round(2).to_s(:delimited)} / #{result[:total].round(2).to_s(:delimited)})"
+            event << "#{index + 1}) #{result[:user]} -- #{result[:percentage]}% (#{result[:position].round(2).to_s(:delimited)} / #{result[:total].round(2).to_s(:delimited)}) -- #{result[:position_ppg]} ppg"
           end
         end
 
         def position_total(position, event)
-          position_points = PlayerGame.where(active: true, default_lineup_slot: position).all.sum(&:points)
+          position_games = PlayerGame.where(active: true, default_lineup_slot: position).all
+          position_points = position_games.sum(&:points)
+          position_ppg = (position_points / total_games_factoring_playoffs(position_games)).round(2)
           total_points = PlayerGame.where(active: true).all.sum(&:points)
           percentage = ((position_points / total_points) * 100).round(2)
-          event << "A total of #{position_points.round(2).to_s(:delimited)} points have been scored at the #{position} position in league history."
+          event << "A total of #{position_points.round(2).to_s(:delimited)} points have been scored at the #{position} position in league history (#{position_ppg} ppg)."
           event << "This constitutes #{percentage}% of all #{total_points.round(2).to_s(:delimited)} points that have been scored in league history."
           event << "Here are all active league members sorted by the proportion of their points from the #{position} position:"
           active_users = User.where(active: true).all
@@ -108,7 +114,7 @@ module Discord
             end
           end.sort_by { |hash| -hash[:percentage] }
           results.each_with_index do |result, index|
-            event << "#{index + 1}) #{result[:user]} -- #{result[:percentage]}% (#{result[:position].round(2).to_s(:delimited)} / #{result[:total].round(2).to_s(:delimited)})"
+            event << "#{index + 1}) #{result[:user]} -- #{result[:percentage]}% (#{result[:position].round(2).to_s(:delimited)} / #{result[:total].round(2).to_s(:delimited)}) -- #{result[:position_ppg]} ppg"
           end
         end
 
@@ -116,15 +122,24 @@ module Discord
           filter_conditions = { active: true, user_id: user.id }.compact
           game_conditions = { season_year: year, week: week }.compact
           total_conditions = game_conditions.present? ? filter_conditions.merge(games: game_conditions) : filter_conditions
-          total_points = PlayerGame.joins(:game).where(total_conditions).all.sum(&:points)
-          position_points = PlayerGame.joins(:game).where(total_conditions.merge(default_lineup_slot: position)).all.sum(&:points)
+          total_games = PlayerGame.joins(:game).where(total_conditions).all
+          total_points = total_games.sum(&:points)
+          position_games = PlayerGame.joins(:game).where(total_conditions.merge(default_lineup_slot: position)).all
+          position_points = position_games.sum(&:points)
           percentage = total_points.zero? ? 0.0 : ((position_points / total_points) * 100).round(2)
-          { total: total_points, position: position_points, percentage: percentage }
+          position_ppg = (position_points / total_games_factoring_playoffs(position_games)).round(2)
+          { total: total_points, position: position_points, percentage: percentage, position_ppg: position_ppg }
         end
 
         def invalid_position!(event, position)
           event << "Invalid position #{position}. Must be one of #{VALID_POSITIONS.join(', ')}."
           nil
+        end
+
+        def total_games_factoring_playoffs(player_games)
+          player_games.reduce(0.0) do |memo, player_game|
+            memo + (player_game.game.two_game_playoff? ? 2.0 : 1.0)
+          end
         end
       end
     end
