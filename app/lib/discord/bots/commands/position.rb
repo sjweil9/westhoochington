@@ -18,7 +18,7 @@ module Discord
           case args.length
           when 1 then position_total(args[0], event)
           when 2 then second_arg_is_year ? year_total(args[0], year_arg, event) : user_total(args[0], user, event)
-          when 3 then user_year_total(args[0], args[1], args[2], event)
+          when 3 then user_year_total(args[0], user, args[2], event)
           end
 
           nil
