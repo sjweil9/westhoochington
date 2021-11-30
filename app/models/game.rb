@@ -90,8 +90,9 @@ class Game < ApplicationRecord
   def playoff?
     return week > 14 if season_year < 2015
     return week >= 14 if season_year < 2018
+    return week >= 13 if season_year < 2021
 
-    week >= 13
+    week >= 14
   end
 
   def espn?
@@ -157,7 +158,8 @@ class Game < ApplicationRecord
   end
 
   def two_game_playoff?
-    return false unless (13..16).cover?(week) && both_weeks_completed?
+    playoff_range = season_year >= 2021 ? (14..17) : (13..16)
+    return false unless playoff_range.cover?(week) && both_weeks_completed?
 
     Rails.cache.fetch("seasons.#{season_year}.two_game_playoff", expires_in: 1.days) do
       season = Season.find_by(season_year: season_year)
