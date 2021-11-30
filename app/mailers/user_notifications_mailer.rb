@@ -23,12 +23,12 @@ class UserNotificationsMailer < ApplicationMailer
     @championship_games = @games.select { |game| championship_bracket?(game) }
     @irrelevant_games = @games.select { |game| irrelevant?(game) }
     @sacko_games = @games.select { |game| sacko?(game) }
-    if @week >= 15
-      @championship_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 13 }.won? }
-      @third_place_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 13 }.lost? }
+    if @week >= 16
+      @championship_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 14 }.won? }
+      @third_place_game = @championship_games.detect { |game| game.user.send("games_#{@year}").detect { |g| g.week == 14 }.lost? }
     end
     set_random_playoff_messages!
-    mail(to: emails, subject: "Weekly Westhoochington - #{year} Playoffs - Week #{week - 12}")
+    mail(to: emails, subject: "Weekly Westhoochington - #{year} Playoffs - Week #{week - 13}")
   end
 
   def send_podcast_blast(subject, body, podcast_link)
@@ -59,16 +59,16 @@ class UserNotificationsMailer < ApplicationMailer
   def irrelevant?(game)
     return false if championship_bracket?(game)
     return false unless game.user.playoff_seed(@year) < game.opponent.playoff_seed(@year)
-    return true if [5, 6].include?(game.user.playoff_seed(@year))
-    return false unless @week >= 15
+    return true if [5, 6, 7, 8].include?(game.user.playoff_seed(@year))
+    return false unless @week >= 16
 
-    game.user.send("games_#{@year}").detect { |game| game.week == 13 }.won?
+    game.user.send("games_#{@year}").detect { |game| game.week == 14 }.won?
   end
 
   def sacko?(game)
     return false unless game.user.playoff_seed(@year) < game.opponent.playoff_seed(@year)
 
-    game.user.playoff_seed(@year) >= 7 && !irrelevant?(game)
+    game.user.playoff_seed(@year) >= 9 && !irrelevant?(game)
   end
 
   def last_week
@@ -199,7 +199,7 @@ class UserNotificationsMailer < ApplicationMailer
   end
 
   def set_random_playoff_messages!
-    win_key = [14, 16].include?(@week.to_i) ? 'won' : 'winning'
+    win_key = [15, 17].include?(@week.to_i) ? 'won' : 'winning'
 
     @narrow_win_messages = I18n.t("newsletter.playoffs.#{win_key}.narrow").keys.map { |key| ["newsletter.playoffs.#{win_key}.narrow", key].join('.') }
     @medium_win_messages = I18n.t("newsletter.playoffs.#{win_key}.medium").keys.map { |key| ["newsletter.playoffs.#{win_key}.medium", key].join('.') }

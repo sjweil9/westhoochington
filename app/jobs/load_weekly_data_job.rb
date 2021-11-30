@@ -52,13 +52,13 @@ class LoadWeeklyDataJob < ApplicationJob
       }
 
       game = Game.unscoped.find_by(
-        week: [14, 16].include?(week) ? week - 1 : week,
+        week: [15, 17].include?(week) ? week - 1 : week,
         season_year: @year.to_i,
         user_id: user_id_for(team),
         opponent_id: user_id_for(other_team_data['teamId'])
       )
 
-      if [14, 16].include?(week) && game
+      if [15, 17].include?(week) && game
         game.active_total += game_data[:active_total]
         game.bench_total += game_data[:bench_total]
         game.projected_total += game_data[:projected_total]

@@ -127,10 +127,10 @@ namespace :newsletter do
       relevant_week = [14, 16].include?(week) ? week - 1 : week
       involved_users = Game.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 
-      if week >= 13 && week <= 16
+      if week >= 14 && week <= 17
         involved_users = Game.unscoped.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
         UserNotificationsMailer.send_playoff_newsletter(involved_users, week, year).deliver
-      elsif week <= 12
+      elsif week <= 13
         UserNotificationsMailer.send_newsletter(involved_users, week, year).deliver
       end
     end
