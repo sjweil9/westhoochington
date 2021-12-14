@@ -43,8 +43,8 @@ class UserNotificationsMailer < ApplicationMailer
   def set_basic_variables(week, year, playoff = false)
     @year = year
     @week = week
-    @games = Game.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all
-    @games = Game.unscoped.includes(game_joins).references(game_joins).where(week: [14, 16].include?(@week) ? @week - 1 : @week, season_year: @year).all if playoff
+    @games = Game.includes(game_joins).references(game_joins).where(week: [15, 17].include?(@week) ? @week - 1 : @week, season_year: @year).all
+    @games = Game.unscoped.includes(game_joins).references(game_joins).where(week: [15, 17].include?(@week) ? @week - 1 : @week, season_year: @year).all if playoff
     @season_games = Game.includes(game_joins).references(game_joins).where(season_year: @year).all
     @users = User.includes(user_joins).references(user_joins).where(id: @games.map(&:user_id)).all
     @trend_breakers = calculate_trend_breakers

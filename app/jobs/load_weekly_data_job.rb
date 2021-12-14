@@ -471,10 +471,10 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def matchup_period_for_week(week)
-    return week if week < 13
-    return 14 if [15, 16].include?(week)
+    return week if week <= 13
+    return 14 if [14, 15].include?(week)
 
-    13 if [13, 14].include?(week)
+    15 if [16, 17].include?(week)
   end
 end
 
