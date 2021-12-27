@@ -3,7 +3,7 @@ namespace :stats do
   task :load_weekly_data, [:override_day] => :environment do |_t, args|
     # last scoring week still not complete, wait until Tuesday to load
     last_week = Time.now.strftime('%U').to_i - 36
-    if (Time.now.wednesday? && last_week.positive? && last_week <= 17) || args[:override_day]
+    if (Time.now.tuesday? && last_week.positive? && last_week <= 17) || args[:override_day]
       current_year = Time.now.strftime('%Y')
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
       LoadWeeklyDataJob.perform_now(last_week, current_year)
@@ -15,7 +15,7 @@ namespace :stats do
 
   desc "This is also called by scheduler to load the next week of games"
   task :load_next_week_data => :environment do
-    unless Time.now.monday? || Time.now.tuesday? || Time.now.in_time_zone('America/Chicago').hour < 7
+    unless Time.now.monday? || Time.now.in_time_zone('America/Chicago').hour < 7
       offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
       current_week = Time.now.strftime('%U').to_i - offset
       current_year = Time.now.strftime('%Y')
@@ -123,7 +123,7 @@ namespace :newsletter do
   task :send, [:override_day] => :environment do |_t, args|
     week = Time.now.strftime('%U').to_i - 36
     year = Date.today.year
-    if (Time.now.wednesday? && week.positive? && week <= 17) || args[:override_day]
+    if (Time.now.tuesday? && week.positive? && week <= 17) || args[:override_day]
       relevant_week = [15, 17].include?(week) ? week - 1 : week
       involved_users = Game.where(season_year: year, week: relevant_week).map(&:user).reduce([]) { |emails, user| user.newsletter ? emails + [user.email] : emails }
 
@@ -251,7 +251,7 @@ namespace :sleeper do
   desc "Updates results for a week"
   task :update_week => :environment do
     previous_week = Time.now.strftime('%U').to_i - 36
-    if Time.now.wednesday? && previous_week.positive? && previous_week <= 18
+    if Time.now.tuesday? && previous_week.positive? && previous_week <= 18
       SLEEPER_LEAGUE_IDS[Date.current.year.to_s].each do |league_id|
         Sleeper::UpdateBestBallResultsJob.perform_now(league_id)
         Sleeper::UpdateBestBallWeekJob.perform_now(league_id, previous_week)
