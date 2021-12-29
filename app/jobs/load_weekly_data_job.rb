@@ -59,12 +59,12 @@ class LoadWeeklyDataJob < ApplicationJob
       )
 
       if [15, 17].include?(week) && game
-        game.active_total += game_data[:active_total]
-        game.bench_total += game_data[:bench_total]
-        game.projected_total += game_data[:projected_total]
-        game.opponent_active_total += game_data[:opponent_active_total]
-        game.opponent_bench_total += game_data[:opponent_bench_total]
-        game.opponent_projected_total += game_data[:opponent_projected_total]
+        game.active_total += game_update_fields[:active_total]
+        game.bench_total += game_update_fields[:bench_total]
+        game.projected_total += game_update_fields[:projected_total]
+        game.opponent_active_total += game_update_fields[:opponent_active_total]
+        game.opponent_bench_total += game_update_fields[:opponent_bench_total]
+        game.opponent_projected_total += game_update_fields[:opponent_projected_total]
         game.save
         next
       end
