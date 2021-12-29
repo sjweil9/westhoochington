@@ -65,6 +65,7 @@ class LoadWeeklyDataJob < ApplicationJob
         game.opponent_active_total += game_update_fields[:opponent_active_total]
         game.opponent_bench_total += game_update_fields[:opponent_bench_total]
         game.opponent_projected_total += game_update_fields[:opponent_projected_total]
+        game.finished = true
         game.save
         next
       end
