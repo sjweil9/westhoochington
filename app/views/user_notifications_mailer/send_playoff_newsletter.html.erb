@@ -62,7 +62,7 @@
     <%= I18n.t(@narrow_win_messages.sample, winner: game.winner.random_nickname, loser: game.loser.random_nickname, winning_score: game.winning_score, losing_score: game.losing_score) %>
   <% end %>
 <% end %>
-<% if [14, 16].include?(@week) %>
+<% if [15, 17].include?(@week) %>
   <h3>Movers and Shakers</h3>
   <% if @trend_breakers[:tie].empty? && @trend_breakers[:lead].empty? %>
     <p>Nobody broke any historical trends this week. Guess sometimes the earth just keeps turning...</p>
