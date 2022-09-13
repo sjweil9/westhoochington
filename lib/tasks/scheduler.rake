@@ -170,7 +170,7 @@ EMAIL_DISCORD_MAPPING = {
 
 EMAIL_SLEEPER_MAPPING = {
   "stephen.weil@gmail.com" => "469586445502246912",
-  "sccrrckstr@gmail.com" => "473624636815306752",
+  "sccrrckstr@gmail.com" => "868728429988732928",
   "ovaisinamullah@gmail.com" => "470746948761022464",
   "mikelacy3@gmail.com" => "469548265499521024",
   "goblue101@gmail.com" => "374409574377324544",
@@ -180,7 +180,7 @@ EMAIL_SLEEPER_MAPPING = {
   "michael.i.zack@gmail.com" => "737182541722861568",
   "tonypelli@gmail.com" => "472115608838729728",
   "pkaushish@gmail.com" => "471870356232073216",
-  "john.rosensweig@gmail.com" => "737353860666040320"
+  "john.rosensweig@gmail.com" => "737353860666040320",
 }
 
 SLEEPER_LEAGUE_IDS = {

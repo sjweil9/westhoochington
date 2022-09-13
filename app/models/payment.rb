@@ -2,7 +2,7 @@ class Payment < ApplicationRecord
   belongs_to :user
 
   PAYOUT_MAP = {
-    buy_in: 150,
+    buy_in: 200,
     weekly_payout: 20,
     first_place: 900,
     second_place: 360,
