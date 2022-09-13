@@ -6,7 +6,7 @@ module Discord
         main_message = "**Best Ball Results for Week #{week} are in! Let's check in on the leagues:**\n"
         Discord::Channels::WeeklyWesthoochington.send_message(content: main_message)
         leagues.each do |league|
-          content = "\n**#{league.name}**\n\n"
+          content = "\n\n**#{league.name}**\n\n"
           content << "***Scores for the Week:***\n\n"
           ordered_weekly_games(league).each_with_index do |game, index|
             content << "#{game_content(game, index)}\n"
@@ -17,6 +17,7 @@ module Discord
             content << "#{league_user_content(league_user, index)}\n"
           end
           Discord::Channels::WeeklyWesthoochington.send_message(content: content)
+          sleep 1
         end
       end
 
