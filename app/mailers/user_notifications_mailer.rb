@@ -327,15 +327,3 @@ class UserNotificationsMailer < ApplicationMailer
     [I18n.t("#{selected_key}.header"), body_lines]
   end
 end
-
-
-NewsletterMessage::CATEGORIES.each do |category, object|
-  object[:levels].each do |level|
-    level = level[0]
-    key = "newsletter.#{category}.#{level}"
-    possible_values = I18n.t(key).values
-    possible_values.each do |value|
-      NewsletterMessage.create(user_id: 1, category: category, level: level, template_string: value)
-    end
-  end
-end
