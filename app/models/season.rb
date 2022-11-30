@@ -14,7 +14,7 @@ class Season < ApplicationRecord
   end
 
   def sacko?
-    playoff_rank.to_i == 10
+    playoff_rank.to_i == Season.where(season_year: season_year).maximum(:playoff_rank).to_i
   end
 
   def regular_season_win?
