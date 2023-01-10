@@ -26,7 +26,11 @@ module Discord
       attr_reader :week
 
       def leagues
-        @leagues ||= BestBallLeague.where(season_year: Date.current.year).all
+        @leagues ||= BestBallLeague.where(season_year: current_year).all
+      end
+
+      def current_year
+        @current_year ||= BestBallLeague.maximum(:season_year)
       end
 
       def ordered_weekly_games(league)
