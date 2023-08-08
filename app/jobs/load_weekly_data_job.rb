@@ -48,7 +48,7 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_bench_total: bench_total(other_team_players) || 0.0,
         opponent_projected_total: projected_total(other_team_players) || 0.0,
         started: lineup_locked?([*team_players, *other_team_players]),
-        finished: game_data['winner'] != 'UNDECIDED',
+        finished: game_data['winner'] != 'UNDECIDED' && [14, 16].exclude?(week),
       }
 
       game = Game.unscoped.find_by(
