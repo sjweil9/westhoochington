@@ -2,7 +2,7 @@ class Game < ApplicationRecord
   belongs_to :user
   belongs_to :opponent, class_name: 'User'
   has_many :game_side_bets
-  has_many :player_games
+  has_many :player_games, dependent: :destroy
 
   default_scope { where(finished: true) }
   scope :without_two_week_playoffs, -> do

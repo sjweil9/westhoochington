@@ -58,7 +58,7 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_id: user_id_for(other_team_data['teamId'])
       )
 
-      if [15, 17].include?(week) && game
+      if [15, 17].include?(week) && game && !game.finished
         game.active_total += game_update_fields[:active_total]
         game.bench_total += game_update_fields[:bench_total]
         game.projected_total += game_update_fields[:projected_total]
