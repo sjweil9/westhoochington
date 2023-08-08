@@ -1,8 +1,8 @@
 module Discord
   module Bots
     class Stats < ::Discordrb::Commands::CommandBot
-      def initialize(*args)
-        super(*args)
+      def initialize(**args)
+        super(**args)
         setup_commands!
       end
 
