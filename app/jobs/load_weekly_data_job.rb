@@ -48,7 +48,7 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_bench_total: bench_total(other_team_players) || 0.0,
         opponent_projected_total: projected_total(other_team_players) || 0.0,
         started: lineup_locked?([*team_players, *other_team_players]),
-        finished: game_data['winner'] != 'UNDECIDED' && [14, 16].exclude?(week),
+        finished: game_data['winner'] != 'UNDECIDED',
       }
 
       game = Game.unscoped.find_by(
@@ -58,7 +58,7 @@ class LoadWeeklyDataJob < ApplicationJob
         opponent_id: user_id_for(other_team_data['teamId'])
       )
 
-      if [15, 17].include?(week) && game && !game.finished
+      if [15, 17].include?(week) && game && !game.loaded_second_week_data
         game.active_total += game_update_fields[:active_total]
         game.bench_total += game_update_fields[:bench_total]
         game.projected_total += game_update_fields[:projected_total]
@@ -66,6 +66,7 @@ class LoadWeeklyDataJob < ApplicationJob
         game.opponent_bench_total += game_update_fields[:opponent_bench_total]
         game.opponent_projected_total += game_update_fields[:opponent_projected_total]
         game.finished = true
+        game.loaded_second_week_data = true
         game.save
         next
       end

@@ -40,6 +40,7 @@ gem "sleeper_rb"
 gem 'jquery-rails'
 gem 'bootstrap'
 gem 'hirb'
+gem 'sync'
 
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
@@ -64,8 +65,8 @@ group :development do
   gem 'web-console'
   gem 'listen'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
-  gem 'spring-watcher-listen'
+  # gem 'spring'
+  # gem 'spring-watcher-listen'
   gem 'letter_opener'
 end
 
