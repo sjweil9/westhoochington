@@ -38,7 +38,7 @@ gem 'aws-sdk'
 gem "sleeper_rb"
 
 gem 'jquery-rails'
-gem 'bootstrap'
+gem 'bootstrap', '~> 4.3.1'
 gem 'hirb'
 gem 'sync'
 
