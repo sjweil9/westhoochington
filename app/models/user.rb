@@ -533,6 +533,7 @@ class User < ApplicationRecord
     'john.rosensweig@gmail.com',
     'brandon.tricou@gmail.com',
     'michael.i.zack@gmail.com',
+    'austinlayton6@gmail.com'
   ]
 
   NICKNAMES = {

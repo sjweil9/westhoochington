@@ -1,5 +1,17 @@
 class LoadHistoricalDraftsJob < ApplicationJob
   LEAGUE_MAPPING = {
+    "2023":{
+      drafted_league_platform: "sleeper",
+      drafted_league_id: "992181416802430976",
+      league_platform: "espn",
+      league_id: "209719"
+    },
+    "2022": {
+      drafted_league_platform: "sleeper",
+      drafted_league_id: "863913206069002240",
+      league_platform: "espn",
+      league_id: "209719"
+    },
     "2021": {
       drafted_league_platform: "sleeper",
       drafted_league_id: "737327330413969408",
