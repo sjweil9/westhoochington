@@ -3,7 +3,7 @@ class NewsletterMessage < ApplicationRecord
 
   # https://utopia.duth.gr/~pefraimi/research/data/2007EncOfAlg.pdf
   # https://stackoverflow.com/questions/31493673/rails-query-random-records-using-weights
-  scope :weighted_random, -> { order("RANDOM() ^ (1.0 / GREATEST(used, 1)) ASC") }
+  scope :weighted_random, -> { order(Arel.sql("RANDOM() ^ (1.0 / GREATEST(used, 1)) ASC")) }
 
   CATEGORIES = {
     high_score: {
