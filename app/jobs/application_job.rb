@@ -100,6 +100,20 @@ class ApplicationJob < ActiveJob::Base
       '12': 'michael.i.zack@gmail.com',
       '13': 'john.rosensweig@gmail.com'
     },
+    '2023': {
+      '1': 'ovaisinamullah@gmail.com',
+      '2': 'mikelacy3@gmail.com',
+      '4': 'tonypelli@gmail.com',
+      '5': 'goblue101@gmail.com',
+      '6': 'pkaushish@gmail.com',
+      '7': 'adamkos101@gmail.com',
+      '8': 'stephen.weil@gmail.com',
+      '9': 'captrf@gmail.com',
+      '10': 'seidmangar@gmail.com',
+      '11': 'sccrrckstr@gmail.com',
+      '12': 'michael.i.zack@gmail.com',
+      '13': 'austinlayton6@gmail.com'
+    }
   }.with_indifferent_access
 
   private
