@@ -1,6 +1,7 @@
 class SeasonsController < ApplicationController
   def index
-    @users = User.includes(user_joins).references(user_joins).all
+    # only get users associated to at least one Game (eg not BB-only users like for BB0 in 2023)
+    @users = User.includes(user_joins).references(user_joins).where(id: Game.select(:user_id))
     @gls = GameLevelStat.first
     @faab = FaabStat.find_by(season_year: 'alltime')
     player_ids = %w[biggest_load narrowest_fail biggest_overpay most_impactful most_impactful_ppg most_impactful_ppd].reduce([]) do |memo, type|
