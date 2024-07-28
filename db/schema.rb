@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_08_183233) do
+ActiveRecord::Schema.define(version: 2024_07_28_214433) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -394,6 +394,7 @@ ActiveRecord::Schema.define(version: 2023_08_08_183233) do
     t.json "lifetime_record"
     t.json "side_bet_results"
     t.json "draft_stats"
+    t.json "best_ball_results"
     t.index ["user_id"], name: "index_user_stats_on_user_id"
   end
 

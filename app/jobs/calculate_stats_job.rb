@@ -17,6 +17,7 @@ class CalculateStatsJob < ApplicationJob
     update_average_margin(user, calculated_stats)
     update_lifetime_record(user, calculated_stats)
     update_draft_stats(user, calculated_stats)
+    update_best_ball_stats(user, calculated_stats)
   end
 
   def perform_year(user_id, year)
@@ -324,6 +325,20 @@ class CalculateStatsJob < ApplicationJob
     else
       ''
     end
+  end
+
+  def update_best_ball_stats(user, calculated_stats)
+    json = {}
+    finishes_from_last = []
+    user.best_ball_league_users.each do |lu|
+      final_pos = lu.best_ball_league.best_ball_league_users.order(total_points: :desc).all.index(lu) + 1
+      dist_from_last = lu.best_ball_league.best_ball_league_users.count - final_pos
+      finishes_from_last << dist_from_last
+      json[final_pos.to_s] ||= 0
+      json[final_pos.to_s] += 1
+    end
+    json["average"] = (finishes_from_last.sum.to_f / finishes_from_last.size.to_f).round(2)
+    calculated_stats.update(best_ball_results: json)
   end
 
   ###########################################################################################

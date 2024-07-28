@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :first_round_picks, -> { where(round_number: 1) }, class_name: "DraftPick"
   has_one :calculated_stats, class_name: 'UserStat'
   has_many :player_games
+  has_many :best_ball_league_users
 
   scope :active, -> { where(active: true) }
 

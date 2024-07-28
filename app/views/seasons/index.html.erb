@@ -798,6 +798,41 @@
       </div>
     </div>
   </div>
+  <div class="row margin-below">
+    <h1 class="col border-bottom">
+      <img class="expand" data-toggle="collapse" data-target="#bestball" aria-expanded="true" aria-controls="bestball" src="<%= image_path('expand.png') %>" /> Top Tier Testicles
+    </h1>
+  </div>
+  <div class="collapse" id="bestball">
+    <div class="row">
+      <div class="col-xs-12 col-lg-12">
+        <div class="table-responsive">
+          <table class="table table-striped sortable">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <% (1..12).each do |finish| %>
+                  <th><%= finish.ordinalize %></th>
+                <% end %>
+                <th>Avg Rank Above Last Place</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.sort_by { |u| u.calculated_stats.best_ball_results["average"] || 0 }.reverse.each do |user| %>
+                <tr>
+                  <td><%= user.random_nickname %></td>
+                  <% (1..12).each do |finish| %>
+                    <td><%= user.calculated_stats.best_ball_results[finish.to_s] || 0 %></td>
+                  <% end %>
+                  <td><%= user.calculated_stats.best_ball_results["average"]&.round(2) || "-" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>

@@ -310,7 +310,7 @@ class LoadWeeklyDataJob < ApplicationJob
     return if retries > 1
 
     @year = year.to_s
-    url ||= base_historical_url + "&seasonId=#{year}"
+    url ||= "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?view=mLiveScoring&view=mMatchupScore&view=mRoster&view=mSettings&view=mStandings&view=mStatus&view=mTeam&view=modular&view=mNav"
 
     response = RestClient.get(url, cookies: espn_cookies)
     # when you retry with the override URL, its got the same data structure as the other URL, but it's no longer an array, because... reasons?
