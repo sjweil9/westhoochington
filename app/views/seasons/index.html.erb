@@ -814,7 +814,8 @@
                 <% (1..12).each do |finish| %>
                   <th><%= finish.ordinalize %></th>
                 <% end %>
-                <th>Avg Rank Above Last Place</th>
+                <th>Avg Above Last</th>
+                <th>Avg % of Top Score</th>
                 <th>Total Played</th>
                 <th>Win Rate</th>
               </tr>
@@ -827,6 +828,7 @@
                     <td><%= user.calculated_stats.best_ball_results[finish.to_s] || 0 %></td>
                   <% end %>
                   <td><%= user.calculated_stats.best_ball_results["average"]&.round(2) || "-" %></td>
+                  <td><%= user.calculated_stats.best_ball_results["avg_pct_1st"] || 0 %>%</td>
                   <td><%= user.calculated_stats.best_ball_results["total_played"] || 0 %></td>
                   <td><%= user.calculated_stats.best_ball_results["win_rate"] || 0 %>%</td>
                 </tr>

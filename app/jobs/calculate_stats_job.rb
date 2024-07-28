@@ -330,18 +330,23 @@ class CalculateStatsJob < ApplicationJob
   def update_best_ball_stats(user, calculated_stats)
     json = {}
     finishes_from_last = []
+    percent_of_1st = []
     user.best_ball_league_users.each do |lu|
       final_pos = lu.best_ball_league.best_ball_league_users.order(total_points: :desc).all.index(lu) + 1
       dist_from_last = lu.best_ball_league.best_ball_league_users.count - final_pos
       finishes_from_last << dist_from_last
       json[final_pos.to_s] ||= 0
       json[final_pos.to_s] += 1
+      top_score = lu.best_ball_league.best_ball_league_users.order(total_points: :desc).first.total_points.to_f
+      percent = (lu.total_points.to_f / top_score)
+      percent_of_1st << percent
     end
     return if finishes_from_last.size.zero?
 
     json["average"] = (finishes_from_last.sum.to_f / finishes_from_last.size.to_f).round(2)
     json["total_played"] = finishes_from_last.size
     json["win_rate"] = ((json["1"].to_f / finishes_from_last.size.to_f) * 100).round(2)
+    json["avg_pct_1st"] = ((percent_of_1st.sum / percent_of_1st.size.to_f) * 100).round(2)
     calculated_stats.update(best_ball_results: json)
   end
 
