@@ -337,7 +337,11 @@ class CalculateStatsJob < ApplicationJob
       json[final_pos.to_s] ||= 0
       json[final_pos.to_s] += 1
     end
+    return if finishes_from_last.size.zero?
+
     json["average"] = (finishes_from_last.sum.to_f / finishes_from_last.size.to_f).round(2)
+    json["total_played"] = finishes_from_last.size
+    json["win_rate"] = ((json["1"].to_f / finishes_from_last.size.to_f) * 100).round(2)
     calculated_stats.update(best_ball_results: json)
   end
 
