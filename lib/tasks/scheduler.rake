@@ -2,7 +2,7 @@ namespace :stats do
   desc "This task is called by the Heroku scheduler add-on"
   task :load_weekly_data, [:override_day] => :environment do |_t, args|
     # last scoring week still not complete, wait until Tuesday to load
-    last_week = Time.now.strftime('%U').to_i - 36
+    last_week = Time.now.strftime('%U').to_i - 35
     if (Time.now.tuesday? && last_week.positive? && last_week <= 17) || args[:override_day]
       current_year = Time.now.strftime('%Y')
       puts "Starting weekly data load for week #{last_week} year #{current_year}..."
@@ -16,7 +16,7 @@ namespace :stats do
   desc "This is also called by scheduler to load the next week of games"
   task :load_next_week_data => :environment do
     unless Time.now.monday? || Time.now.in_time_zone('America/Chicago').hour < 7
-      offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
+      offset = Time.now.sunday? || Time.now.monday? ? 35 : 34
       current_week = Time.now.strftime('%U').to_i - offset
       current_year = Time.now.strftime('%Y')
       puts "Starting weekly data load for week #{current_week} year #{current_year}..."
@@ -32,7 +32,7 @@ namespace :stats do
 
   desc "Used to load waiver transactions"
   task :load_waiver_transactions => :environment do
-    current_week = Time.now.strftime('%U').to_i - 35
+    current_week = Time.now.strftime('%U').to_i - 34
     if Time.now.thursday? && current_week.positive? && current_week <= 16
       current_year = Date.today.year
       LoadWeeklyDataJob.new.perform_transaction_data(current_year, current_week)
@@ -45,7 +45,7 @@ namespace :stats do
   task :load_historical_transactions => :environment do
     current_year = Date.today.year
     (2018..current_year).each do |year|
-      max_week = year == current_year ? Time.now.strftime('%U').to_i - 36 : 16
+      max_week = year == current_year ? Time.now.strftime('%U').to_i - 35 : 16
       (1..max_week).each do |week|
         LoadWeeklyDataJob.new.perform_transaction_data(year, week)
       end
@@ -69,7 +69,7 @@ namespace :stats do
     current_year = Time.now.year
     (2018..current_year).each do |year|
       # for current year, we just go up to the current week
-      max_week = year == current_year ? Time.now.strftime('%U').to_i - 36 : 16
+      max_week = year == current_year ? Time.now.strftime('%U').to_i - 35 : 16
       (1..max_week).to_a.each do |week|
         LoadWeeklyDataJob.perform_now(week, year)
       end
@@ -87,7 +87,7 @@ namespace :stats do
   end
 
   task :load_current_season => :environment do
-    offset = Time.now.sunday? || Time.now.monday? ? 36 : 35
+    offset = Time.now.sunday? || Time.now.monday? ? 35 : 34
     current_week = Time.now.strftime('%U').to_i - offset
     return unless current_week > 16
 
@@ -121,7 +121,7 @@ end
 namespace :newsletter do
   desc "Called by Heroku scheduler to send newsletter"
   task :send, [:override_day] => :environment do |_t, args|
-    week = Time.now.strftime('%U').to_i - 36
+    week = Time.now.strftime('%U').to_i - 35
     year = Date.today.year
     if (Time.now.tuesday? && week.positive? && week <= 17) || args[:override_day]
       relevant_week = [15, 17].include?(week) ? week - 1 : week

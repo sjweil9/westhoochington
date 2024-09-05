@@ -172,7 +172,7 @@ class Game < ApplicationRecord
   end
 
   def current_week
-    offset = (Time.now.sunday? || Time.now.monday?) ? 36 : 35
+    offset = (Time.now.sunday? || Time.now.monday?) ? 35 : 34
     Time.now.strftime('%U').to_i - offset
   end
 

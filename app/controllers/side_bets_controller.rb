@@ -3,7 +3,7 @@ class SideBetsController < ApplicationController
   before_action :set_bet_types, only: %i[index pending resolved]
 
   def index
-    offset = (Time.now.monday? || Time.now.sunday?) ? 36 : 35
+    offset = (Time.now.monday? || Time.now.sunday?) ? 35 : 34
     @current_week = [Time.now.strftime('%U').to_i - offset, 1].max
     @current_year = Date.today.year
     @current_games =
