@@ -457,11 +457,11 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def base_url
-    "http://fantasy.espn.com/apis/v3/games/ffl/seasons/#{@year}/segments/0/leagues/209719?view=mMatchup&view=mMatchupScore"
+    "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/#{@year}/segments/0/leagues/209719?view=modular&view=mNav&view=mMatchupScore&view=mScoreboard&view=mStatus&view=mSettings&view=mTeam&view=mPendingTransactions"
   end
 
   def base_historical_url
-    "https://fantasy.espn.com/apis/v3/games/ffl/leagueHistory/209719?view=modular&view=mNav&view=mMatchupScore&view=mScoreboard&view=mSettings&view=mTopPerformers&view=mTeam"
+    "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/leagueHistory/209719?view=modular&view=mNav&view=mMatchupScore&view=mScoreboard&view=mSettings&view=mTopPerformers&view=mTeam"
   end
   
   def user_id_for(team_id)
