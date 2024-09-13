@@ -167,7 +167,7 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def perform_transaction_data(year, week)
-    url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?scoringPeriodId=#{week}&view=mDraftDetail&view=mStatus&view=mSettings&view=mTeam&view=mTransactions2&view=modular&view=mNav"
+    url = "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/segments/0/leagues/209719?scoringPeriodId=#{week}&view=mDraftDetail&view=mStatus&view=mSettings&view=mTeam&view=mTransactions2&view=modular&view=mNav"
     response = RestClient.get(url, cookies: espn_cookies)
     transactions = JSON.parse(response.body)['transactions']
 
