@@ -26,12 +26,18 @@ class LoadDraftJob < ApplicationJob
     end
   end
 
+  NAME_MAPPING = {
+    "Travis Etienne" => "Travis Etienne Jr."
+  }
+
   def retrieve_sleeper!
     draft = sleeper_client.league(drafted_league_id).drafts.first
     draft.draft_picks.each do |pick|
       metadata = pick.auction? ? sleeper_auction_metadata(pick) : sleeper_snake_metadata(pick)
       user = User.find_by(sleeper_id: pick.picked_by)
-      player = Player.find_by(sleeper_id: pick.player_id) || Player.find_by(name: [pick.metadata.first_name, pick.metadata.last_name].join(" "))
+      raw = [pick.metadata.first_name, pick.metadata.last_name].join(" ")
+      name = NAME_MAPPING[name] || raw
+      player = Player.find_by(sleeper_id: pick.player_id) || Player.find_by(name: name)
       pick_record = DraftPick.find_or_initialize_by(base_pick_params.merge(user: user, player: player, draft_type: pick.draft.type))
       pick_record.update!(metadata.merge(draft_id: draft.draft_id))
     end
