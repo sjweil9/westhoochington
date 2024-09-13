@@ -1,6 +1,6 @@
 class DraftPicksController < ApplicationController
   def index
-    @users = User.includes(index_inclusions).references(index_inclusions).all
+    @users = User.where.not(espn_id: nil).includes(index_inclusions).references(index_inclusions).all
   end
 
   private
