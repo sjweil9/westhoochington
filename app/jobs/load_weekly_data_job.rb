@@ -184,7 +184,7 @@ class LoadWeeklyDataJob < ApplicationJob
 
       espn_player_id, team_id = move['items'].detect { |item| item['type'] == 'ADD' }.values_at('playerId', 'toTeamId')
       player_id = Player.find_by(espn_id: espn_player_id).id
-      user_id = User.find_by(espn_id: team_id).id
+      user_id = User.active.find_by(espn_id: team_id).id
       transaction_data = {
         player_id: player_id,
         user_id: user_id,
