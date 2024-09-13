@@ -7,6 +7,10 @@ class UserNotificationsMailer < ApplicationMailer
     :subject => 'Welcome to Westhoochington.com, you cuck bastard.' )
   end
 
+  def send_keep_alive
+    mail(to: "stephen.weil@gmail.com", subject: "WestHoochIngton Keep Alive")
+  end
+
   def send_newsletter(emails, week, year)
     set_basic_variables(week, year)
     @overperformer = @users.sort_by { |a| -a.send("points_above_average_for_week_#{@year}", @week) }.first

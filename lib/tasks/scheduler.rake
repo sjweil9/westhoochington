@@ -119,6 +119,11 @@ namespace :stats do
 end
 
 namespace :newsletter do
+  task :keep_alive => :environment do
+    # Heroku scheduler doesn't do days but we only need to send once a week, doesn't really matter which day.
+    UserNotificationsMailer.send_keep_alive.deliver if Time.now.wednesday?
+  end
+
   desc "Called by Heroku scheduler to send newsletter"
   task :send, [:override_day] => :environment do |_t, args|
     week = Time.now.strftime('%U').to_i - 35
