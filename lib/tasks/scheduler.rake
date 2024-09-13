@@ -260,7 +260,7 @@ namespace :sleeper do
   desc "Updates results for a week"
   task :update_week => :environment do
     # TODO: think about extended season where this rolls over into next year and fucks with week calculations
-    previous_week = Time.now.strftime('%U').to_i - 36
+    previous_week = Time.now.strftime('%U').to_i - 35
     current_year = BestBallLeague.maximum(:season_year)
     if Time.now.tuesday? && previous_week.positive? && previous_week <= 18
       SLEEPER_LEAGUE_IDS[current_year.to_s].each do |league_id|
