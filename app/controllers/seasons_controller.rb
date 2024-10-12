@@ -10,6 +10,9 @@ class SeasonsController < ApplicationController
     @players = Player.where(id: player_ids).all.reduce({}) do |memo, player|
       memo.merge(player.id.to_s => player)
     end
+    @season_schedules = @users.map do |user|
+      user.calculated_stats.schedule_stats.map { |hash| hash.merge(user: user).with_indifferent_access }
+    end.flatten
   end
 
   private

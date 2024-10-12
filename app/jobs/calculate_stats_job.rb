@@ -18,6 +18,7 @@ class CalculateStatsJob < ApplicationJob
     update_lifetime_record(user, calculated_stats)
     update_draft_stats(user, calculated_stats)
     update_best_ball_stats(user, calculated_stats)
+    update_strength_of_schedule_stats(user, calculated_stats)
   end
 
   def perform_year(user_id, year)
@@ -348,6 +349,21 @@ class CalculateStatsJob < ApplicationJob
     json["win_rate"] = ((json["1"].to_f / finishes_from_last.size.to_f) * 100).round(2)
     json["avg_pct_1st"] = ((percent_of_1st.sum / percent_of_1st.size.to_f) * 100).round(2)
     calculated_stats.update(best_ball_results: json)
+  end
+
+  def update_strength_of_schedule_stats(user, calculated_stats)
+    json = user.seasons.map do |season|
+      {
+        year: season.season_year,
+        points_against: (user.send("average_opponent_active_total_#{season.season_year}") - seasonal_average(season.season_year)).round(2)
+      }
+    end
+    calculated_stats.update(schedule_stats: json)
+  end
+
+  def seasonal_average(year)
+    totals = Game.where(season_year: year).map(&:playoff_weighted_active_total)
+    totals.sum / totals.size
   end
 
   ###########################################################################################

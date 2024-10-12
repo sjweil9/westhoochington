@@ -477,6 +477,58 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-xs-12 col-lg-6">
+        <h3>Cakewalks (Lowest PA vs Seasonal Average)</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Points Against</th>
+              <th scope="col">Season</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @season_schedules.sort_by { |hash| hash["points_against"] }.first(10); sorted.each_with_index do |hash, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.dig("points_against") == sorted[idx]&.dig("points_against") ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(hash["user"].id) %>"><%= hash["user"].random_nickname %></a></th>
+                <th><%= hash["points_against"] %></th>
+                <th><%= hash["year"] %></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-xs-12 col-lg-6">
+        <h3>Tough Sledding (Highest PA vs Seasonal Average)</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">User</th>
+              <th scope="col">Points Against</th>
+              <th scope="col">Season</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% rank = 1; sorted = @season_schedules.sort_by { |hash| -hash["points_against"] }.first(10); sorted.each_with_index do |hash, idx| %>
+              <tr>
+                <th scope="row"><%= sorted[[idx - 1, 0].max]&.dig("points_against") == sorted[idx]&.dig("points_against") ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
+                <th><a href="<%= user_profile_path(hash["user"].id) %>"><%= hash["user"].random_nickname %></a></th>
+                <th><%= hash["points_against"] %></th>
+                <th><%= hash["year"] %></th>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="row margin-below">
     <h1 class="col border-bottom">
