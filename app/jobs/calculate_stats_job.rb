@@ -353,7 +353,7 @@ class CalculateStatsJob < ApplicationJob
 
   def update_strength_of_schedule_stats(user, calculated_stats)
     json = user.seasons.map do |season|
-      against_totals = Game.where(season_year: year, user: user).all.reject(&:playoff?).map(&:opponent_active_total)
+      against_totals = Game.where(season_year: season.season_year, user: user).all.reject(&:playoff?).map(&:opponent_active_total)
       against = against_totals.sum / against_totals.size
       average = seasonal_average(season.season_year)
       {
