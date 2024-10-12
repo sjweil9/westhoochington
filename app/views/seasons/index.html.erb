@@ -497,9 +497,9 @@
               <tr>
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.dig("points_against") == sorted[idx]&.dig("points_against") ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(hash["user"].id) %>"><%= hash["user"].random_nickname %></a></th>
-                <th><%= hash["points_against"] %></th>
-                <th><%= hash["seasonal_average"] %></th>
-                <th><%= hash["diff"] %></th>
+                <th><%= hash["points_against"]&.round(2) %></th>
+                <th><%= hash["seasonal_average"]&.round(2) %></th>
+                <th><%= hash["diff"]&.round(2) %></th>
                 <th><%= hash["year"] %></th>
               </tr>
             <% end %>
@@ -526,9 +526,9 @@
               <tr>
                 <th scope="row"><%= sorted[[idx - 1, 0].max]&.dig("points_against") == sorted[idx]&.dig("points_against") ? rank.ordinalize : (rank = rank + 1).ordinalize %></th>
                 <th><a href="<%= user_profile_path(hash["user"].id) %>"><%= hash["user"].random_nickname %></a></th>
-                <th><%= hash["points_against"] %></th>
-                <th><%= hash["seasonal_average"] %></th>
-                <th><%= hash["diff"] %></th>
+                <th><%= hash["points_against"]&.round(2) %></th>
+                <th><%= hash["seasonal_average"]&.round(2) %></th>
+                <th><%= hash["diff"]&.round(2) %></th>
                 <th><%= hash["year"] %></th>
               </tr>
             <% end %>
