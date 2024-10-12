@@ -353,16 +353,20 @@ class CalculateStatsJob < ApplicationJob
 
   def update_strength_of_schedule_stats(user, calculated_stats)
     json = user.seasons.map do |season|
+      against = user.send("average_regular_opponent_active_total_#{season.season_year}")
+      average = seasonal_average(season.season_year)
       {
         year: season.season_year,
-        points_against: (user.send("average_opponent_active_total_#{season.season_year}") - seasonal_average(season.season_year)).round(2)
+        points_against: against,
+        seasonal_average: average,
+        diff: (against - average).round(2)
       }
     end
     calculated_stats.update(schedule_stats: json)
   end
 
   def seasonal_average(year)
-    totals = Game.where(season_year: year).map(&:playoff_weighted_active_total)
+    totals = Game.where(season_year: year).all.reject(&:playoff?).map(&:active_total)
     totals.sum / totals.size
   end
 
