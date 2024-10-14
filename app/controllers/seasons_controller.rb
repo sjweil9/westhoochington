@@ -10,9 +10,12 @@ class SeasonsController < ApplicationController
     @players = Player.where(id: player_ids).all.reduce({}) do |memo, player|
       memo.merge(player.id.to_s => player)
     end
+    current_season = Season.maximum(:season_year) + 1
     @season_schedules = @users.map do |user|
       user.calculated_stats.schedule_stats.map { |hash| hash.merge(user: user).with_indifferent_access }
-    end.flatten
+    end.flatten.reject do |season|
+      season[:year] == current_season
+    end
   end
 
   private
