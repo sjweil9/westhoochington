@@ -355,7 +355,7 @@ class CalculateStatsJob < ApplicationJob
     include_current = Game.where(season_year: Time.current.year, user: user).present?
     years = user.seasons.map(&:season_year)
     years += [Time.current.year] if include_current
-    years.map do |year|
+    json = years.map do |year|
       against_totals = Game.where(season_year: year, user: user).all.reject(&:playoff?).map(&:opponent_active_total)
       against = against_totals.sum / against_totals.size
       average = seasonal_average(year)
