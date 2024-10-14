@@ -495,6 +495,35 @@
         </div>
       <% end %>
     </div>
+      <div class="row">
+        <div class="col-xs-12 col-lg-6">
+          <h3>Strength of Schedule</h3>
+          <div class="table-responsive">
+            <table class="table table-striped sortable" id="sos">
+              <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">PA/G</th>
+                <th scope="col">Season Avg PPG</th>
+                <th scope="col">Opp Pts Above Season Avg</th>
+                <th scope="col">Opp Pts Above Their Avg</th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @season_schedules.sort_by { |hash| -hash["diff"] }; sorted.each do |hash| %>
+                <tr>
+                  <th><%= render "shared/user_link", user_id: hash["user"].id %></th>
+                  <th><%= hash["points_against"]&.round(2) %></th>
+                  <th><%= hash["seasonal_average"]&.round(2) %></th>
+                  <th><%= hash["diff"]&.round(2) %></th>
+                  <th><%= hash["opponent_pts_above_avg"]&.round(2) %></th>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     <% end %>
   <% end %>
 </div>

@@ -18,6 +18,9 @@ class GamesController < ApplicationController
         memo.merge(player.id.to_s => player)
       end
     end
+    @season_schedules = @users.map do |user|
+      user.calculated_stats.schedule_stats.detect { |hash| hash["year"].to_i == @year.to_i }&.merge(user: user)&.with_indifferent_access
+    end.flatten.compact
     render :index
   end
 
