@@ -510,7 +510,7 @@
               </tr>
               </thead>
               <tbody>
-              <% @season_schedules.sort_by { |hash| -hash["diff"] }; sorted.each do |hash| %>
+              <% @season_schedules.sort_by { |hash| -hash["diff"] }.each do |hash| %>
                 <tr>
                   <th><%= render "shared/user_link", user_id: hash["user"].id %></th>
                   <th><%= hash["points_against"]&.round(2) %></th>
