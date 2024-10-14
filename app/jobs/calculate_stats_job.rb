@@ -352,19 +352,22 @@ class CalculateStatsJob < ApplicationJob
   end
 
   def update_strength_of_schedule_stats(user, calculated_stats)
-    json = user.seasons.map do |season|
-      against_totals = Game.where(season_year: season.season_year, user: user).all.reject(&:playoff?).map(&:opponent_active_total)
+    include_current = Game.where(season_year: Time.current.year, user: user).present?
+    years = user.seasons.map(&:season_year)
+    years += [Time.current.year] if include_current
+    years.map do |year|
+      against_totals = Game.where(season_year: year, user: user).all.reject(&:playoff?).map(&:opponent_active_total)
       against = against_totals.sum / against_totals.size
-      average = seasonal_average(season.season_year)
-      opp_totals_above_avg = user.send(:"games_#{season.season_year}").all.reject(&:playoff?).map do |game|
+      average = seasonal_average(year)
+      opp_totals_above_avg = user.send(:"games_#{year}").all.reject(&:playoff?).map do |game|
         opp_points = game.opponent_active_total
-        oppo_totals = game.opponent.send("games_#{season.season_year}").all.reject(&:playoff?).map(&:active_total)
+        oppo_totals = game.opponent.send("games_#{year}").all.reject(&:playoff?).map(&:active_total)
         opp_avg = oppo_totals.sum / oppo_totals.size
         opp_points - opp_avg
       end
       opp_pts_above_avg = opp_totals_above_avg.sum / opp_totals_above_avg.size
       {
-        year: season.season_year,
+        year: year,
         points_against: against,
         seasonal_average: average,
         diff: (against - average).round(2),
