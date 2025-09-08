@@ -19,12 +19,8 @@ module Discord
           is_year = arg3.to_i.to_s == arg3 || RANGE_REGEX.match?(arg3)
           return invalid_year!(event, arg3) unless !is_year || valid_year?(arg3)
 
-          user = find_user(arg3) unless is_year
-          return invalid_user!(event, arg3) unless is_year || user
-
-          p "**********************************"
-          p "Processing command with: #{args}"
-          p "**********************************"
+          user = find_user(arg3) unless is_year || arg3.blank?
+          return invalid_user!(event, arg3) unless arg3.blank? || is_year || user
 
           stat_key = KEY_MAPPING[stat]
 
@@ -39,7 +35,7 @@ module Discord
             sorted.first(10).each_with_index do |season, index|
               user_id = season["user_id"]
               user = User.find(user_id)
-              event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]}"
+              event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]&.round(2)}"
             end
           elsif args.length == 3 && is_year
             # top for a specific year or range of years
@@ -55,16 +51,16 @@ module Discord
             sorted = relevant.sort_by { |x| direction == "highest" ? -x[stat_key] : x[stat_key] }
             year_desc = if RANGE_REGEX.match?(arg3)
                           start, finish = arg3.split("-")
-                          "between #{start} and #{finish}."
+                          "between #{start} and #{finish}"
                         else
-                          "in #{arg3}."
+                          "in #{arg3}"
                         end
             msg = "Here are the top 10 #{direction} seasons by #{stat_desc} #{year_desc}"
             event << "#{msg}:"
             sorted.first(10).each_with_index do |season, index|
               user_id = season["user_id"]
               user = User.find(user_id)
-              event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]}"
+              event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]&.round(2)}"
             end
           elsif args.length == 3 && user
             # top for a specific user
@@ -73,7 +69,7 @@ module Discord
             seasons = user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
             sorted = seasons.sort_by { |x| direction == "highest" ? -x[stat_key] : x[stat_key] }
             sorted.each_with_index do |season, index|
-              event << "#{index + 1}) #{season['year']} - #{season[stat_key]}"
+              event << "#{index + 1}) #{season['year']} - #{season[stat_key]&.round(2)}"
             end
           end
 
