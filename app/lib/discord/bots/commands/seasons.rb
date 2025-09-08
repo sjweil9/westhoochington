@@ -143,7 +143,7 @@ module Discord
         }.with_indifferent_access
 
         def invalid_stat!(event, stat)
-          event << "Stat #{sta [average]t} is invalid. Must be one of: #{VALID_STATS.join(', ')}."
+          event << "Stat #{stat} is invalid. Must be one of: #{VALID_STATS.join(', ')}."
           nil
         end
 
