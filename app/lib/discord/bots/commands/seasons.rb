@@ -86,7 +86,7 @@ module Discord
                 }
               end
               sorted = users.sort_by { |hash| direction == "highest" ? -hash[:average] : hash[:average] }
-              msg = "Here are all players sorted by #{direction} average #{stat_desc} in league history"
+              msg = "Here are all players sorted by #{direction} average #{stat_desc} #{year_desc}"
               event << "#{msg}:"
               sorted.each_with_index do |hash, index|
                 event << "#{index + 1})  #{hash[:user].random_nickname} - #{hash[:average]&.round(2)}"
