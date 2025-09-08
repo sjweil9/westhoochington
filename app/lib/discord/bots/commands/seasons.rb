@@ -1,7 +1,7 @@
 module Discord
   module Bots
     module Commands
-      class Games < Discord::Bots::Commands::Base
+      class Seasons < Discord::Bots::Commands::Base
         def name
           :seasons
         end
