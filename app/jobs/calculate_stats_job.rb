@@ -357,6 +357,8 @@ class CalculateStatsJob < ApplicationJob
     years += [Time.current.year] if include_current
     json = years.map do |year|
       against_totals = Game.where(season_year: year, user: user).all.reject(&:playoff?).map(&:opponent_active_total)
+      for_totals = Game.where(season_year: year, user: user).all.reject(&:playoff?).map(&:active_total)
+      avg_pf = for_totals.sum / for_totals.size
       against = against_totals.sum / against_totals.size
       average = seasonal_average(year)
       opp_totals_above_avg = user.send(:"games_#{year}").all.reject(&:playoff?).map do |game|
@@ -369,9 +371,11 @@ class CalculateStatsJob < ApplicationJob
       {
         year: year,
         points_against: against,
+        points_for: avg_pf,
         seasonal_average: average,
         diff: (against - average).round(2),
-        opponent_pts_above_avg: opp_pts_above_avg.round(2)
+        opponent_pts_above_avg: opp_pts_above_avg.round(2),
+        user_id: user.id
       }
     end
     calculated_stats.update(schedule_stats: json)

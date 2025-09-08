@@ -12,6 +12,7 @@ module Discord
         Discord::Bots::Commands::Position.instance,
         Discord::Bots::Commands::Games.instance,
         Discord::Bots::Commands::Lineup.instance,
+        Discord::Bots::Commands::Seasons.instance
       ]
 
       def setup_commands!
