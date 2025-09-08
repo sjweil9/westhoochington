@@ -91,7 +91,7 @@ module Discord
           pointsfor: "Avg Points For",
           pointsagainst: "Avg Points Against",
           opponentmojo: "Opponent Points Above (their) Average"
-        }
+        }.with_indifferent_access
 
         def invalid_stat!(event, stat)
           event << "Stat #{stat} is invalid. Must be one of: #{VALID_STATS.join(', ')}."
