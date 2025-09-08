@@ -10,6 +10,13 @@ module Discord
           direction = args[0]
           return invalid_direction!(event, direction) unless VALID_DIRECTIONS.include?(direction)
 
+          is_avg = false
+
+          if args[1] == "average"
+            is_avg = true
+            args.delete_at(1)
+          end
+
           stat = args[1]
           return invalid_stat!(event, stat) unless VALID_STATS.include?(stat)
 
@@ -25,43 +32,85 @@ module Discord
           stat_key = KEY_MAPPING[stat]
 
           if args.length == 2
-            # no year / user, just all historical
-            seasons = User.joins(:calculated_stats).all.map do |user|
-              user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
-            end.flatten
-            sorted = seasons.sort_by { |x| direction == "highest" ? -x[stat_key] : x[stat_key] }
-            msg = "Here are the top 10 #{direction} seasons by #{stat_desc} in league history"
-            event << "#{msg}:"
-            sorted.first(10).each_with_index do |season, index|
-              user_id = season["user_id"]
-              user = User.find(user_id)
-              event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]&.round(2)}"
+            if is_avg
+              users = User.where(active: true).joins(:calculated_stats).all.map do |user|
+                schedule_stats = user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
+                sum = schedule_stats.map { |x| x[stat_key] }.sum
+                average = sum / schedule_stats.size
+                {
+                  user: user,
+                  average: average,
+                }
+              end
+              sorted = users.sort_by { |x| direction == "highest" ? -x[:average] : x[:average] }
+              msg = "Here are all players sorted by #{direction} average #{stat_desc} in league history"
+              event << "#{msg}:"
+              sorted.each_with_index do |hash, index|
+                event << "#{index + 1}) #{hash[:user].random_nickname} - #{hash[:average]&.round(2)}"
+              end
+            else
+              seasons = User.joins(:calculated_stats).all.map do |user|
+                user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
+              end.flatten
+              sorted = seasons.sort_by { |x| direction == "highest" ? -x[stat_key] : x[stat_key] }
+              msg = "Here are the top 10 #{direction} seasons by #{stat_desc} in league history"
+              event << "#{msg}:"
+              sorted.first(10).each_with_index do |season, index|
+                user_id = season["user_id"]
+                user = User.find(user_id)
+                event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]&.round(2)}"
+              end
             end
+            # no year / user, just all historical
+
           elsif args.length == 3 && is_year
-            # top for a specific year or range of years
-            seasons = User.joins(:calculated_stats).all.map do |user|
-              user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
-            end.flatten
-            relevant = if RANGE_REGEX.match?(arg3)
-                         start, finish = arg3.split("-").map(&:to_i)
-                         seasons.select { |x| x["year"].to_i >= start && x["year"].to_i <= finish }
-                       else
-                         seasons.select { |x| x["year"].to_i == arg3.to_i }
-                       end
-            sorted = relevant.sort_by { |x| direction == "highest" ? -x[stat_key] : x[stat_key] }
             year_desc = if RANGE_REGEX.match?(arg3)
                           start, finish = arg3.split("-")
                           "between #{start} and #{finish}"
                         else
                           "in #{arg3}"
                         end
-            msg = "Here are the top 10 #{direction} seasons by #{stat_desc} #{year_desc}"
-            event << "#{msg}:"
-            sorted.first(10).each_with_index do |season, index|
-              user_id = season["user_id"]
-              user = User.find(user_id)
-              event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]&.round(2)}"
+            if is_avg
+              users = User.where(active: true).joins(:calculated_stats).all.map do |user|
+                seasons = user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
+                relevant = if RANGE_REGEX.match?(arg3)
+                             start, finish = arg3.split("-").map(&:to_i)
+                             seasons.select { |x| x["year"].to_i >= start && x["year"].to_i <= finish }
+                           else
+                             seasons.select { |x| x["year"].to_i == arg3.to_i }
+                           end
+                sum = relevant.map { |x| x[stat_key] }.sum
+                {
+                  user: user,
+                  average: sum / relevant.size,
+                }
+              end
+              sorted = users.sort_by { |hash| direction == "highest" ? -hash[:average] : hash[:average] }
+              msg = "Here are all players sorted by #{direction} average #{stat_desc} in league history"
+              event << "#{msg}:"
+              sorted.each_with_index do |hash, index|
+                event << "#{index + 1})  #{hash[:user].random_nickname} - #{hash[:average]&.round(2)}"
+              end
+            else
+              seasons = User.joins(:calculated_stats).all.map do |user|
+                user.calculated_stats.schedule_stats.map(&:with_indifferent_access)
+              end.flatten
+              relevant = if RANGE_REGEX.match?(arg3)
+                           start, finish = arg3.split("-").map(&:to_i)
+                           seasons.select { |x| x["year"].to_i >= start && x["year"].to_i <= finish }
+                         else
+                           seasons.select { |x| x["year"].to_i == arg3.to_i }
+                         end
+              sorted = relevant.sort_by { |x| direction == "highest" ? -x[stat_key] : x[stat_key] }
+              msg = "Here are the top 10 #{direction} seasons by #{stat_desc} #{year_desc}"
+              event << "#{msg}:"
+              sorted.first(10).each_with_index do |season, index|
+                user_id = season["user_id"]
+                user = User.find(user_id)
+                event << "#{index + 1}) #{user.random_nickname} - #{season['year']} - #{season[stat_key]&.round(2)}"
+              end
             end
+            # top for a specific year or range of years
           elsif args.length == 3 && user
             # top for a specific user
             msg = "Here are the top #{direction} seasons by #{stat_desc} for #{user.random_nickname}:"
@@ -94,7 +143,7 @@ module Discord
         }.with_indifferent_access
 
         def invalid_stat!(event, stat)
-          event << "Stat #{stat} is invalid. Must be one of: #{VALID_STATS.join(', ')}."
+          event << "Stat #{sta [average]t} is invalid. Must be one of: #{VALID_STATS.join(', ')}."
           nil
         end
 
@@ -108,7 +157,7 @@ module Discord
         end
 
         def usage
-          "seasons [highest/lowest] [pointsfor/pointsagainst/opponentmojo] [@user/year]".freeze
+          "seasons [highest/lowest] [average] [pointsfor/pointsagainst/opponentmojo] [@user/year]".freeze
         end
 
         def invalid_direction!(event, direction)
