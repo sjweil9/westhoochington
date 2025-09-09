@@ -480,7 +480,7 @@ class CalculateStatsJob < ApplicationJob
   end
 
   def update_narrowest_fail(calculated_stats, filter_params)
-    transactions = PlayerFaabTransaction.where(filter_params.merge(success: false)).order('winning_bid - bid_amount ASC').first(10)
+    transactions = PlayerFaabTransaction.where(filter_params.merge(success: false)).order(Arel.sql('winning_bid - bid_amount ASC')).first(10)
     json = transactions.map do |transaction|
       winning_transaction = PlayerFaabTransaction.find_by(filter_params.merge(success: true, player_id: transaction.player_id))
         {
