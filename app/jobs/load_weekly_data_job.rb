@@ -118,7 +118,7 @@ class LoadWeeklyDataJob < ApplicationJob
   end
 
   def update_espn_players(year)
-    url = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/players?scoringPeriodId=0&view=players_wl"
+    url = "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/#{year}/players?scoringPeriodId=0&view=players_wl"
     headers = {"X-Fantasy-Filter"=>"{\"players\":{\"filterActive\":{\"value\":true}}}"}
     response = RestClient.get(url, headers.merge(cookies: espn_cookies))
     parsed = JSON.parse(response.body)
