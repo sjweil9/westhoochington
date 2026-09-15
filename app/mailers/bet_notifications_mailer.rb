@@ -5,7 +5,7 @@ class BetNotificationsMailer < ApplicationMailer
     @new_season_bets = SeasonSideBet.where(created_at: 1.day.ago..Float::INFINITY).all
     return unless @new_bets_accepted.present? || @new_bets_proposed.present? || @new_season_bets.present?
 
-    @week = Time.now.strftime('%U').to_i - 35
+    @week = Time.now.strftime('%U').to_i - 36
     @year = Date.today.year
     users = Game.unscoped.where(season_year: @year).all.map(&:user).uniq.select(&:newsletter)
     return unless users.present?

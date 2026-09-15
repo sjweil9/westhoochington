@@ -119,14 +119,14 @@ class CheckSeasonBetResolutionJob < ApplicationJob
   def regular_season_completed?(year)
     return true if year < Date.today.year
 
-    current_week = Time.now.strftime('%U').to_i - 35
+    current_week = Time.now.strftime('%U').to_i - 36
     current_week >= 13
   end
 
   def full_season_completed?(year)
     return true if year < Date.today.year
 
-    current_week = Time.now.strftime('%U').to_i - 35
+    current_week = Time.now.strftime('%U').to_i - 36
     current_week > 16
   end
 end

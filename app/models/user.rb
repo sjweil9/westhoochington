@@ -339,7 +339,7 @@ class User < ApplicationRecord
       var_name = :"@game_count_#{year}"
       return instance_variable_get(var_name) if instance_variable_get(var_name)
 
-      current_week = Time.now.strftime('%U').to_i - 35
+      current_week = Time.now.strftime('%U').to_i - 36
       extra_games = if year.to_i < Date.today.year || current_week >= 16
                       2.0
                     elsif year.to_i == Date.today.year && [14, 15].include?(current_week)
@@ -355,7 +355,7 @@ class User < ApplicationRecord
       var_name = :"@opponent_game_count_#{year}"
       return instance_variable_get(var_name) if instance_variable_get(var_name)
 
-      current_week = Time.now.strftime('%U').to_i - 35
+      current_week = Time.now.strftime('%U').to_i - 36
       extra_games = if year.to_i < Date.today.year || current_week >= 16
                       2.0
                     elsif year.to_i == Date.today.year && [14, 15].include?(current_week)
