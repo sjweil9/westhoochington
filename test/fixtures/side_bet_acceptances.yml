@@ -1,13 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  side_bet: one
+  side_bet_id: 1
   type: 
   user: one
   status: MyString
 
 two:
-  side_bet: two
+  side_bet_id: 2
   type: 
   user: two
   status: MyString

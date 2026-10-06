@@ -7,7 +7,6 @@ one:
   league_platform: MyString
   player: one
   draft_type: MyString
-  metadata: 
 
 two:
   user: two
@@ -16,4 +15,3 @@ two:
   league_platform: MyString
   player: two
   draft_type: MyString
-  metadata: 

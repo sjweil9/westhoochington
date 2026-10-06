@@ -6,7 +6,6 @@ one:
   category: MyString
   html_content: 
   used: 1
-  weight: MyString
 
 two:
   user: two
@@ -14,4 +13,3 @@ two:
   category: MyString
   html_content: 
   used: 1
-  weight: MyString

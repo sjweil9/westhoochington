@@ -8,11 +8,11 @@ module Discord
 
       private
 
+      # The natural-language !stats command replaces the legacy hand-rolled
+      # commands (Position, Games, Lineup, Seasons), which remain on disk
+      # but are no longer registered.
       COMMANDS = [
-        Discord::Bots::Commands::Position.instance,
-        Discord::Bots::Commands::Games.instance,
-        Discord::Bots::Commands::Lineup.instance,
-        Discord::Bots::Commands::Seasons.instance
+        Discord::Bots::Commands::Stats.instance
       ]
 
       def setup_commands!

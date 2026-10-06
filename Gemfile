@@ -75,7 +75,9 @@ group :test do
   gem 'capybara'
   gem 'selenium-webdriver'
   # Easy installation and use of chromedriver to run system tests with Chrome
-  gem 'chromedriver-helper'
+  # require: false — its require is incompatible with selenium-webdriver 4.x
+  # (which bundles selenium-manager and makes this gem redundant anyway)
+  gem 'chromedriver-helper', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

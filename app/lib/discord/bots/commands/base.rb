@@ -6,6 +6,9 @@ module Discord
 
         module Instrumentation
           def execute(event, *args)
+            # commands taking free text skip quote parsing (see #raw_args?)
+            return super if send(:raw_args?)
+
             # handle arguments wrapped in double quotes as one argument
             while quoted_arg = args.detect { |arg| arg[0] == '"' }
               close_quote_arg = args.detect { |arg| arg[-1] == '"' }
@@ -47,6 +50,9 @@ module Discord
         private
 
         RANGE_REGEX = /(\d+)-(\d+)/
+
+        # when true, args are passed through verbatim (no quote handling)
+        def raw_args?; false; end
 
         def min_args; end
         def max_args; end

@@ -2,14 +2,12 @@
 
 one:
   user: one
-  type: 
   amount: 
   season_year: 1
   week: 1
 
 two:
   user: two
-  type: 
   amount: 
   season_year: 1
   week: 1

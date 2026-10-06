@@ -1,7 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  game: one
+  game_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
   user: one
   predicted_winner_id: 1
   status: MyString
@@ -11,7 +11,7 @@ one:
   possible_acceptances: 
 
 two:
-  game: two
+  game_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
   user: two
   predicted_winner_id: 1
   status: MyString
