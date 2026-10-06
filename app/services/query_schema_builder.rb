@@ -103,23 +103,60 @@ class QuerySchemaBuilder
   end
 
   def member_roster
+    played = seasons_played_by_user_id
     lines = User.includes(:nicknames).order(:id).map do |user|
       names = user.nicknames.map(&:name).uniq.first(15)
-      next if names.empty? && user.email.blank?
-
       label = names.any? ? names.map { |n| %("#{n}") }.join(", ") : "(no nicknames)"
       status = user.active ? "" : " [former member]"
-      "- user_id #{user.id}: #{label}#{status}"
-    end.compact
+      years = played[user.id]
+      seasons = years.any? ? compress_years(years) : "none (best ball / side participant only)"
+      "- user_id #{user.id}: #{label}#{status} — seasons: #{seasons}"
+    end
 
     <<~PROMPT.strip
       ## League Member Roster
 
-      Known members and their nicknames (any nickname may be used to refer to
-      that person in questions):
+      Known members, their nicknames (any nickname may be used to refer to
+      that person in questions), and the main-league seasons they ACTUALLY
+      played:
 
       #{lines.join("\n")}
+
+      IMPORTANT: seasons/season_user_stats rows sometimes exist for a member
+      in years they did not actually play (stray artifacts of stats
+      computation and best-ball-only participation). The season lists above
+      are canonical — never attribute a season to a member outside their
+      listed years, and apply the participation filter from the schema guide
+      to every season-level query.
     PROMPT
+  end
+
+  # Canonical participation: the per-year roster constant (ESPN/Sleeper era)
+  # unioned with years the user actually has finished games (covers the
+  # Yahoo era, which predates the constant).
+  def seasons_played_by_user_id
+    played = Hash.new { |hash, key| hash[key] = [] }
+
+    Game.distinct.pluck(:user_id, :season_year).each do |user_id, year|
+      played[user_id] << year if user_id && year
+    end
+
+    user_ids_by_email = User.pluck(:email, :id).to_h
+    ApplicationJob::EMAIL_MAPPING.each do |year, teams|
+      teams.each_value do |email|
+        user_id = user_ids_by_email[email]
+        played[user_id] << year.to_s.to_i if user_id
+      end
+    end
+
+    played.each_value(&:uniq!)
+    played
+  end
+
+  def compress_years(years)
+    years.sort.uniq.slice_when { |a, b| b != a + 1 }.map do |run|
+      run.size > 1 ? "#{run.first}–#{run.last}" : run.first.to_s
+    end.join(", ")
   end
 
   def hard_constraints

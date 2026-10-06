@@ -97,7 +97,14 @@ etc. are the COMBINED two-week totals.
 - `seasons.regular_rank`: regular-season finish (1 = regular season champion).
   Playoff appearance = `regular_rank <= 4`.
 - `seasons.finished = true` means the season is complete; ranks are only
-  meaningful for finished seasons.
+  meaningful for finished seasons. season_user_stats rows ALSO exist for the
+  current in-progress season (stats recompute weekly), so season-level
+  rankings MUST filter to completed seasons (see Temporal Scope Defaults).
+- "Best/worst season" questions: unless the user names a metric, rank by
+  regular season record (season_user_stats.regular_season_wins /
+  regular_season_losses, tie-break by regular_season_total_points) and show
+  wins, losses, points, user, and year. Do not ask for clarification for
+  this common phrasing — apply this default.
 - `season_user_stats` is precomputed per user per season. Prefer it when it
   directly answers the question. Useful scalar columns:
   regular_season_wins/losses, regular_season_total_points, total_wins,
@@ -230,8 +237,36 @@ Answers render in Discord, so keep rows compact but self-explanatory:
 - LIMIT every ranking/list query: default 10 when unspecified, never more
   than 25 rows under any circumstances (the app truncates at 25).
 
+## Temporal Scope Defaults
+
+- SEASON-level questions (best/worst seasons, season records, standings,
+  championships, any per-season ranking or aggregate) are presumed
+  HISTORICAL: include ONLY completed seasons the member actually played.
+  An in-progress season has artificially low totals, and stray rows exist
+  for non-participants (see Data Quality Filters), so apply BOTH predicates:
+  JOIN seasons s ON s.user_id = sus.user_id
+    AND s.season_year = sus.season_year AND s.finished = true
+  WHERE EXISTS (SELECT 1 FROM games g WHERE g.user_id = sus.user_id
+    AND g.season_year = sus.season_year AND g.finished = true)
+  Include the current season only when the user says "this season",
+  "current", or names the current year.
+- WEEK/GAME-level questions (highest/lowest scores, weekly results,
+  matchups, player performances) DO include the current season's completed
+  games by default — `games.finished = true` already excludes in-progress
+  games. Exclude the current season only if the user asks.
+
 ## Data Quality Filters
 
+- STRAY SEASON ROWS: `seasons` and `season_user_stats` contain rows for
+  (user, season_year) combinations where the member did NOT actually play
+  the main league that year — artifacts of stats computation and of members
+  who only played best ball. These strays show as empty or near-zero
+  seasons and corrupt rankings. EVERY season-level query must require real
+  participation:
+  AND EXISTS (SELECT 1 FROM games g WHERE g.user_id = <t>.user_id
+    AND g.season_year = <t>.season_year AND g.finished = true)
+  The member roster's season lists are the canonical reference for who
+  played when.
 - `games.finished = true` for all stats queries.
 - Exclude two-week playoff rows from single-week score rankings (see
   Playoffs section).

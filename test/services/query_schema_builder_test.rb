@@ -22,9 +22,22 @@ class QuerySchemaBuilderTest < ActiveSupport::TestCase
     assert_includes @prompt, "Result Composition Defaults"
   end
 
-  test "includes the member roster with nicknames" do
+  test "includes the member roster with nicknames and seasons played" do
     assert_includes @prompt, "## League Member Roster"
     assert_includes @prompt, "user_id #{@user.id}: \"Schema Tester\""
+    assert_includes @prompt, "— seasons: none (best ball / side participant only)"
+    assert_includes @prompt, "never attribute a season to a member outside"
+  end
+
+  test "roster lists seasons derived from finished games" do
+    opponent = User.new(email: "schema-builder-opponent@example.com", password: "password123")
+    opponent.save!(validate: false)
+    [2016, 2017, 2019].each do |year|
+      Game.create!(user: @user, opponent: opponent, season_year: year, week: 1, finished: true)
+    end
+
+    prompt = QuerySchemaBuilder.new(user: @user).system_prompt
+    assert_match(/user_id #{@user.id}:.*— seasons: 2016–2017, 2019/, prompt)
   end
 
   test "identifies the asking user" do
