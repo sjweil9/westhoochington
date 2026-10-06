@@ -174,10 +174,10 @@ class QuerySchemaBuilder
       3. Refusal (when the question is off-topic or cannot be answered):
       {"refusal": "Reason for refusal"}
 
-      Rules for display_format (results render in Discord messages):
-      - "scalar": single value answer (e.g., "How many championships does Stephen have?")
-      - "list": a ranking or short list — each row renders as a numbered line with columns joined by " — ". Order columns so each line reads naturally (value or person first, then context like year/week).
-      - "table": multi-column data where aligned columns matter (standings, comparisons). Keep to 5 columns or fewer — Discord tables are narrow.
+      Rules for display_format (results render as Discord embeds):
+      - "scalar": single value answer (e.g., "How many championships does Stephen have?"). The first column is the headline value; any extra columns render as one context line beneath it.
+      - "list": rows with only 1–2 columns (a ranking of bare values, or value + person). Each row renders as a numbered line with the first column bolded, so put the most important value first.
+      - "table": rows with 3 or more columns (rankings with year/week context, standings, comparisons). Renders as an aligned monospace table with headers and an automatic rank column. Prefer this over "list" whenever rows carry context columns. Keep to 5 columns or fewer — Discord tables are narrow, so use short column_labels (e.g. "Yr", "Wk", "Pts" over verbose names).
 
       column_labels must be human-readable names matching the SELECT columns in order.
       headline is a short, friendly one-line summary of what the result shows

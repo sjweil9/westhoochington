@@ -93,19 +93,43 @@ module Discord
           Rails.logger.warn("[Stats] start_typing failed: #{e.class}: #{e.message}")
         end
 
-        def deliver(event, result, rate_limiter)
-          case result[:type]
-          when "result"
-            result[:messages].each { |message| event.respond(message) }
-          else
-            event.respond(result[:content])
-          end
+        # Embed side-bar colors per result type
+        EMBED_COLORS = {
+          "result" => 0x57F287,        # green
+          "clarification" => 0xFEE75C, # yellow
+          "refusal" => 0x95A5A6,       # grey
+          "error" => 0xED4245          # red
+        }.freeze
 
-          if rate_limiter.remaining <= 3
-            event.respond("_#{rate_limiter.remaining} question#{'s' unless rate_limiter.remaining == 1} left this hour._")
+        def deliver(event, result, rate_limiter)
+          payloads = embed_payloads(result)
+          color = EMBED_COLORS.fetch(result[:type], 0x95A5A6)
+          footer = "#{rate_limiter.remaining} of #{QueryRateLimiter::LIMIT} questions left this hour"
+
+          payloads.each_with_index do |payload, index|
+            send_embed(event, payload, color, index == payloads.size - 1 ? footer : nil)
           end
+        end
+
+        def embed_payloads(result)
+          return result[:messages] if result[:type] == "result"
+
+          [{ title: nil, description: result[:content] }]
+        end
+
+        def send_embed(event, payload, color, footer_text)
+          embed = Discordrb::Webhooks::Embed.new(
+            title: payload[:title],
+            description: payload[:description],
+            colour: color
+          )
+          embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: footer_text) if footer_text
+
+          event.respond("", false, embed)
         rescue StandardError => e
-          Rails.logger.error("[Stats] Failed to deliver result: #{e.class}: #{e.message}")
+          # Embeds need the "Embed Links" permission — fall back to plain text
+          Rails.logger.warn("[Stats] Embed send failed, falling back to text: #{e.class}: #{e.message}")
+          event.respond([payload[:title], payload[:description]].compact.join("\n"))
         end
       end
     end

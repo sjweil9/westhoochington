@@ -21,8 +21,8 @@ class DiscordStatsCommandTest < ActiveSupport::TestCase
       @lines << message
     end
 
-    def respond(message)
-      @responses << message
+    def respond(message, _tts = false, embed = nil)
+      @responses << { content: message, embed: embed }
     end
 
     def channel
@@ -92,19 +92,31 @@ class DiscordStatsCommandTest < ActiveSupport::TestCase
     assert_match(/used all #{QueryRateLimiter::LIMIT} questions/, event.lines.join)
   end
 
-  test "delivers result messages and counts the request" do
+  test "delivers results as embeds and counts the request" do
     event = FakeEvent.new(424_242)
-    result = { type: "result", messages: ["Top scores", "1) 198.5 — Hooch"] }
+    result = {
+      type: "result",
+      messages: [
+        { title: "Top scores", description: "1. **198.5** — Hooch" },
+        { title: nil, description: "2. **190.1** — Hooch" }
+      ]
+    }
 
     StatsQueryService.stub(:new, ->(**) { FakeService.new(result) }) do
       @command.execute(event, "top", "scores", "ever")
     end
 
-    assert_equal ["Top scores", "1) 198.5 — Hooch"], event.responses
+    assert_equal 2, event.responses.size
+    first_embed = event.responses.first[:embed]
+    last_embed = event.responses.last[:embed]
+    assert_equal "Top scores", first_embed.title
+    assert_equal "1. **198.5** — Hooch", first_embed.description
+    assert_nil first_embed.footer
+    assert_match(/19 of 20 questions left this hour/, last_embed.footer.text)
     assert_equal 1, QueryRateLimiter.new(user_id: @user.id).current_count
   end
 
-  test "delivers refusals as a single response" do
+  test "delivers refusals as a single embed" do
     event = FakeEvent.new(424_242)
     result = { type: "refusal", content: "I only answer league questions." }
 
@@ -112,19 +124,20 @@ class DiscordStatsCommandTest < ActiveSupport::TestCase
       @command.execute(event, "write", "me", "a", "poem")
     end
 
-    assert_equal ["I only answer league questions."], event.responses
+    assert_equal 1, event.responses.size
+    assert_equal "I only answer league questions.", event.responses.first[:embed].description
   end
 
-  test "warns when few questions remain" do
+  test "footer reflects remaining questions" do
     limiter = QueryRateLimiter.new(user_id: @user.id)
     (QueryRateLimiter::LIMIT - 3).times { limiter.increment! }
     event = FakeEvent.new(424_242)
-    result = { type: "result", messages: ["Answer"] }
+    result = { type: "result", messages: [{ title: nil, description: "Answer" }] }
 
     StatsQueryService.stub(:new, ->(**) { FakeService.new(result) }) do
       @command.execute(event, "top", "scores")
     end
 
-    assert_match(/2 questions left this hour/, event.responses.join)
+    assert_match(/2 of 20 questions left this hour/, event.responses.last[:embed].footer.text)
   end
 end

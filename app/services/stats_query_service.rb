@@ -160,7 +160,12 @@ class StatsQueryService
   end
 
   def persist_conversation(result)
-    content = result[:type] == "result" ? result[:messages].join("\n") : result[:content]
+    content =
+      if result[:type] == "result"
+        result[:messages].map { |m| [m[:title], m[:description]].compact.join("\n") }.join("\n")
+      else
+        result[:content]
+      end
     @conversation.append_message(role: "user", content: @question)
     @conversation.append_message(
       role: "assistant",

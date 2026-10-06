@@ -125,16 +125,28 @@ Ruby >= 3.2 and this app runs 3.1. Details:
   credentials file never blocks the ENV path
 - Errors map to `LlmAdapters::ApiError` / `RateLimitError` / `OverloadedError`
 
-## Discord Output (QueryResultFormatter)
+## Discord Output (QueryResultFormatter + embeds)
 
-- `scalar` → headline + bold value on one line
-- `list` → headline + numbered `1)` lines, columns joined with ` — `
-- `table` → headline + monospace code-block table with aligned columns
-- Columns whose key/alias ends in `user_id` (or equals `opponent_id`) are
+Results render as Discord **embeds** (colored cards), not plain messages.
+The formatter produces plain `{ title:, description: }` hashes; the Stats
+command wraps them in `Discordrb::Webhooks::Embed` with a side-bar color by
+result type (green result, yellow clarification, grey refusal, red error)
+and a footer on the final embed showing rate-limit status ("17 of 20
+questions left this hour"). If an embed send fails (e.g. the bot lacks the
+"Embed Links" permission in the channel), it falls back to plain text.
+
+- `scalar` → title = headline, bold value, extra columns as a context line
+- `list` (1–2 column rows) → numbered markdown list, first column bolded
+- `table` (3+ column rows) → monospace code-block table with aligned
+  columns, header row, and an automatic rank (`#`) column
+- The LLM is instructed to prefer `table` whenever rows carry context
+  columns, and to keep column_labels short (≤5 columns)
+- Columns whose key/alias ends in `user_id` (or `opponent_id` etc.) are
   replaced with the member's nickname (`User#random_nickname`)
 - Floats rounded to 2 decimals
-- Hard cap 25 rows (with a truncation note); messages split on line
-  boundaries at ≤1900 chars and sent as multiple Discord messages
+- Hard cap 25 rows (with a truncation note); long answers split into
+  multiple embeds at ≤3800-char descriptions (Discord caps embed
+  descriptions at 4096), repeating table headers per chunk
 
 ## Operational Notes
 

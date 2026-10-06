@@ -46,7 +46,8 @@ class StatsQueryServiceTest < ActiveSupport::TestCase
 
     assert_equal "result", result[:type]
     assert_equal 1, result[:messages].size
-    assert_match(/Finished games on record: \*\*\d+\*\*/, result[:messages].first)
+    assert_equal "Finished games on record", result[:messages].first[:title]
+    assert_match(/\*\*\d+\*\*/, result[:messages].first[:description])
     assert_equal "1 row(s) returned", result[:results_summary]
   end
 

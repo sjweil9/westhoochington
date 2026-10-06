@@ -1,9 +1,11 @@
-# Formats raw SQL result rows into Discord-ready message strings.
+# Formats raw SQL result rows into Discord embed payloads.
 #
 # Adapted from fantasy-hof's QueryResultFormatter for Discord as the output
-# surface: nickname resolution for user id columns, numbered lists,
-# monospace code-block tables, a hard row cap, and chunking under Discord's
-# 2000-character message limit.
+# surface. Produces plain hashes ({ title:, description: }) that the Stats
+# command renders as Discord embeds — nickname resolution for user id
+# columns, bolded markdown lists, monospace code-block tables with a rank
+# column, a hard row cap, and chunking under Discord's embed description
+# limit (4096 chars).
 #
 # Usage:
 #   QueryResultFormatter.format(
@@ -12,11 +14,12 @@
 #     column_labels: ["Score", "Manager", "Year", "Week"],
 #     headline: "Top single-week scores in league history"
 #   )
-#   # => ["Top single-week scores in league history\n1) 198.5 — Hooch — 2019 — Week 12"]
+#   # => [{ title: "Top single-week scores in league history",
+#   #       description: "1. **198.5** — Hooch — 2019 — 12" }]
 class QueryResultFormatter
   VALID_FORMATS = %w[scalar list table].freeze
   MAX_ROWS = 25
-  MAX_MESSAGE_LENGTH = 1900 # headroom under Discord's 2000-char limit
+  MAX_DESCRIPTION_LENGTH = 3800 # headroom under Discord's 4096 embed cap
   EMPTY_MESSAGE = "No results found. Try rephrasing the question.".freeze
 
   # Columns holding a user id get resolved to that member's nickname.
@@ -34,8 +37,9 @@ class QueryResultFormatter
     @headline = headline.to_s.strip.presence
   end
 
+  # @return [Array<Hash>] embed payloads: { title: String|nil, description: String }
   def format
-    return [[@headline, EMPTY_MESSAGE].compact.join("\n")] if @rows.empty?
+    return [{ title: @headline, description: EMPTY_MESSAGE }] if @rows.empty?
 
     case @display_format
     when "scalar" then format_scalar
@@ -47,47 +51,53 @@ class QueryResultFormatter
   private
 
   def format_scalar
-    value = display_value(@rows.first.keys.first, @rows.first.values.first)
-    label = @headline || effective_labels.first
-    [label ? "#{label}: **#{value}**" : "**#{value}**"]
+    values = @rows.first.map { |key, value| display_value(key, value) }
+    description = "**#{values.first}**"
+    description += "\n#{values[1..].join(' — ')}" if values.size > 1
+
+    [{ title: @headline || effective_labels.first, description: description }]
   end
 
   def format_list
     lines = @rows.each_with_index.map do |row, index|
       values = row.map { |key, value| display_value(key, value) }
-      "#{index + 1}) #{values.join(' — ')}"
+      line = "#{index + 1}. **#{values.first}**"
+      line += " — #{values[1..].join(' — ')}" if values.size > 1
+      line
     end
-    lines << truncation_note if truncation_note
+    lines << "_#{truncation_note}_" if truncation_note
 
-    with_headline(chunk_plain(lines))
+    as_embeds(chunk_lines(lines))
   end
 
   def format_table
     keys = @rows.first.keys
-    labels = effective_labels
-    display_rows = @rows.map { |row| row.map { |key, value| display_value(key, value) } }
-
-    widths = keys.each_index.map do |i|
-      [labels[i].to_s.length, *display_rows.map { |row| row[i].length }].max
+    labels = ["#", *effective_labels.first(keys.size).map(&:to_s)]
+    display_rows = @rows.each_with_index.map do |row, index|
+      [(index + 1).to_s, *row.map { |key, value| display_value(key, value) }]
     end
-    numeric = keys.each_index.map do |i|
+
+    widths = labels.each_index.map do |i|
+      [labels[i].length, *display_rows.map { |r| r[i].to_s.length }].max
+    end
+    numeric = [true, *keys.each_index.map do |i|
       !keys[i].to_s.match?(USER_ID_KEY) &&
         @rows.all? { |row| row.values[i].nil? || row.values[i].is_a?(Numeric) }
-    end
+    end]
 
-    header = format_table_row(labels.map(&:to_s), widths, numeric)
+    header = format_table_row(labels, widths, numeric)
     separator = widths.map { |w| "-" * w }.join("-+-")
     body = display_rows.map { |row| format_table_row(row, widths, numeric) }
 
-    messages = chunk_code_block(body, header_lines: [header, separator])
-    messages << truncation_note if truncation_note
+    descriptions = chunk_lines(body, code_block: true, header_lines: [header, separator])
+    descriptions[-1] += "\n_#{truncation_note}_" if truncation_note
 
-    with_headline(messages)
+    as_embeds(descriptions)
   end
 
   def format_table_row(values, widths, numeric)
     values.each_with_index.map do |value, i|
-      numeric[i] ? value.rjust(widths[i]) : value.ljust(widths[i])
+      numeric[i] ? value.to_s.rjust(widths[i]) : value.to_s.ljust(widths[i])
     end.join(" | ").rstrip
   end
 
@@ -126,50 +136,26 @@ class QueryResultFormatter
     "…plus #{@truncated_count} more — showing the first #{MAX_ROWS}."
   end
 
-  def with_headline(messages)
-    return messages unless @headline
-
-    if messages.any? && @headline.length + 1 + messages.first.length <= MAX_MESSAGE_LENGTH
-      messages[0] = "#{@headline}\n#{messages.first}"
-      messages
-    else
-      [@headline, *messages]
+  # The headline becomes the first embed's title; continuation chunks are
+  # untitled so they read as one answer.
+  def as_embeds(descriptions)
+    descriptions.each_with_index.map do |description, index|
+      { title: index.zero? ? @headline : nil, description: description }
     end
   end
 
-  # Splits plain lines into messages under the Discord limit.
-  def chunk_plain(lines)
-    chunks = []
-    current = []
-    current_length = 0
-
-    lines.each do |line|
-      if current.any? && current_length + line.length + 1 > MAX_MESSAGE_LENGTH
-        chunks << current.join("\n")
-        current = []
-        current_length = 0
-      end
-      current << line
-      current_length += line.length + 1
-    end
-
-    chunks << current.join("\n") if current.any?
-    chunks
-  end
-
-  # Splits table body lines into fenced code blocks, repeating the header in
-  # each chunk so every message stands alone.
-  def chunk_code_block(body_lines, header_lines:)
-    fence_overhead = 8 # "```\n" + "\n```"
-    base_length = header_lines.sum { |line| line.length + 1 } + fence_overhead
+  # Splits lines into embed-description-sized strings. With code_block, each
+  # chunk is fenced and repeats the header lines so every chunk stands alone.
+  def chunk_lines(lines, code_block: false, header_lines: [])
+    base_length = code_block ? header_lines.sum { |l| l.length + 1 } + 8 : 0
 
     chunks = []
     current = []
     current_length = base_length
 
-    body_lines.each do |line|
-      if current.any? && current_length + line.length + 1 > MAX_MESSAGE_LENGTH
-        chunks << wrap_code_block(header_lines + current)
+    lines.each do |line|
+      if current.any? && current_length + line.length + 1 > MAX_DESCRIPTION_LENGTH
+        chunks << finalize_chunk(current, code_block, header_lines)
         current = []
         current_length = base_length
       end
@@ -177,11 +163,13 @@ class QueryResultFormatter
       current_length += line.length + 1
     end
 
-    chunks << wrap_code_block(header_lines + current) if current.any?
+    chunks << finalize_chunk(current, code_block, header_lines) if current.any?
     chunks
   end
 
-  def wrap_code_block(lines)
-    "```\n#{lines.join("\n")}\n```"
+  def finalize_chunk(lines, code_block, header_lines)
+    return lines.join("\n") unless code_block
+
+    "```\n#{(header_lines + lines).join("\n")}\n```"
   end
 end
