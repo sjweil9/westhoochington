@@ -96,10 +96,14 @@ etc. are the COMBINED two-week totals.
   (last place — a notable booby prize in this league).
 - `seasons.regular_rank`: regular-season finish (1 = regular season champion).
   Playoff appearance = `regular_rank <= 4`.
-- `seasons.finished = true` means the season is complete; ranks are only
-  meaningful for finished seasons. season_user_stats rows ALSO exist for the
-  current in-progress season (stats recompute weekly), so season-level
-  rankings MUST filter to completed seasons (see Temporal Scope Defaults).
+- IMPORTANT: the `seasons.finished` column is NOT populated (NULL on every
+  row) — NEVER filter on it; doing so returns zero rows. A season is
+  complete when season_year < the current season_year (given in the
+  Current Date section of this prompt). Ranks are only meaningful for
+  completed seasons.
+- season_user_stats rows also exist for the current in-progress season
+  (stats recompute weekly), so season-level rankings MUST filter to
+  completed seasons (see Temporal Scope Defaults).
 - "Best/worst season" questions: unless the user names a metric, rank by
   regular season record (season_user_stats.regular_season_wins /
   regular_season_losses, tie-break by regular_season_total_points) and show
@@ -257,11 +261,11 @@ Answers render in Discord, so keep rows compact but self-explanatory:
   championships, any per-season ranking or aggregate) are presumed
   HISTORICAL: include ONLY completed seasons the member actually played.
   An in-progress season has artificially low totals, and stray rows exist
-  for non-participants (see Data Quality Filters), so apply BOTH predicates:
-  JOIN seasons s ON s.user_id = sus.user_id
-    AND s.season_year = sus.season_year AND s.finished = true
-  WHERE EXISTS (SELECT 1 FROM games g WHERE g.user_id = sus.user_id
-    AND g.season_year = sus.season_year AND g.finished = true)
+  for non-participants (see Data Quality Filters), so apply BOTH predicates
+  (do NOT use seasons.finished — it is never populated):
+  WHERE sus.season_year < <current season_year from the Current Date section>
+    AND EXISTS (SELECT 1 FROM games g WHERE g.user_id = sus.user_id
+      AND g.season_year = sus.season_year AND g.finished = true)
   Include the current season only when the user says "this season",
   "current", or names the current year.
 - WEEK/GAME-level questions (highest/lowest scores, weekly results,

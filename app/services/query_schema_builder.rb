@@ -61,6 +61,7 @@ class QuerySchemaBuilder
       schema_ddl,
       schema_guide,
       member_roster,
+      current_date_context,
       hard_constraints,
       scope_restriction,
       user_identity,
@@ -157,6 +158,17 @@ class QuerySchemaBuilder
     years.sort.uniq.slice_when { |a, b| b != a + 1 }.map do |run|
       run.size > 1 ? "#{run.first}–#{run.last}" : run.first.to_s
     end.join(", ")
+  end
+
+  def current_date_context
+    today = Date.current
+    <<~PROMPT.strip
+      ## Current Date
+
+      Today is #{today.strftime('%Y-%m-%d')}. The current season_year is #{today.year}.
+      Completed seasons are those with season_year < #{today.year} — use this
+      literal comparison for "completed seasons only" filters.
+    PROMPT
   end
 
   def hard_constraints

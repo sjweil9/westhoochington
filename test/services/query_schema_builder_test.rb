@@ -44,6 +44,12 @@ class QuerySchemaBuilderTest < ActiveSupport::TestCase
     assert_includes @prompt, "The person asking is user_id #{@user.id}."
   end
 
+  test "includes current date context for completed-season filtering" do
+    assert_includes @prompt, "## Current Date"
+    assert_includes @prompt, "The current season_year is #{Date.current.year}."
+    assert_includes @prompt, "season_year < #{Date.current.year}"
+  end
+
   test "includes constraints and response format" do
     assert_includes @prompt, "## Hard Constraints"
     assert_includes @prompt, "LIMIT of 25 or less"

@@ -91,12 +91,19 @@ class QuerySqlValidator
     raise InvalidQueryError, "Disallowed table(s) referenced: #{disallowed.join(', ')}"
   end
 
+  # SQL functions whose syntax embeds FROM/IN keywords — e.g.
+  # EXTRACT(YEAR FROM CURRENT_DATE), SUBSTRING(s FROM 2), TRIM(LEADING FROM s),
+  # POSITION(a IN b) — must not have their bodies mistaken for table
+  # references. Handles one level of nested parens.
+  FROM_BEARING_FUNCTIONS = /\b(?:EXTRACT|SUBSTRING|TRIM|OVERLAY|POSITION)\s*\([^()]*(?:\([^()]*\)[^()]*)*\)/i.freeze
+
   def extract_table_references
     tables = Set.new
     cte_names = extract_cte_names
+    scannable = @sql.gsub(FROM_BEARING_FUNCTIONS, " ")
 
     # Match FROM and JOIN clauses
-    @sql.scan(/\b(?:FROM|JOIN)\s+(\w+)/i) do |match|
+    scannable.scan(/\b(?:FROM|JOIN)\s+(\w+)/i) do |match|
       tables.add(match[0].downcase)
     end
 

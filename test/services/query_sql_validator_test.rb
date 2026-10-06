@@ -50,6 +50,17 @@ class QuerySqlValidatorTest < ActiveSupport::TestCase
     assert_match(/users/, error.message)
   end
 
+  test "does not mistake FROM inside sql functions for table references" do
+    [
+      "SELECT user_id FROM games WHERE season_year < EXTRACT(YEAR FROM CURRENT_DATE) LIMIT 5",
+      "SELECT SUBSTRING(lineup_slot FROM 1 FOR 2) FROM player_games LIMIT 5",
+      "SELECT TRIM(TRAILING FROM name) FROM players LIMIT 5",
+      "SELECT user_id FROM games WHERE EXTRACT(YEAR FROM COALESCE(created_at, CURRENT_DATE)) > 2020 LIMIT 5"
+    ].each do |sql|
+      assert_equal sql, QuerySqlValidator.validate!(sql), "expected #{sql.inspect} to be allowed"
+    end
+  end
+
   test "rejects over-length SQL" do
     sql = "SELECT * FROM games WHERE #{'1 = 1 AND ' * 700} 1 = 1"
     assert_raises(QuerySqlValidator::InvalidQueryError) do
