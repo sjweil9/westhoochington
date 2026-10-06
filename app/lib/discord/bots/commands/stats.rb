@@ -52,7 +52,7 @@ module Discord
         def min_args; 1; end
 
         def channels
-          Rails.env.production? ? %w[stat-requests].freeze : %w[testing].freeze
+          Rails.env.production? ? %w[stat-requests testing].freeze : %w[testing].freeze
         end
 
         def description
