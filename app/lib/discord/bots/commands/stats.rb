@@ -7,6 +7,10 @@ module Discord
       class Stats < Discord::Bots::Commands::Base
         CLEAR_KEYWORDS = %w[clear reset].freeze
 
+        # Discord mentions arrive in message content as <@snowflake> (or
+        # <@!snowflake> for server-nickname mentions)
+        MENTION_PATTERN = /<@!?(\d+)>/.freeze
+
         def name
           :stats
         end
@@ -18,6 +22,9 @@ module Discord
           return untracked_user!(event) unless user
 
           return clear_conversation!(event, user) if CLEAR_KEYWORDS.include?(question.downcase)
+
+          question, unresolved_mentions = resolve_mentions(question)
+          return unknown_mention!(event, unresolved_mentions) if unresolved_mentions.any?
 
           if (error = StatsPromptValidator.error_for(question))
             event << error
@@ -68,6 +75,29 @@ module Discord
           return nil unless discord_id
 
           User.find_by(discord_id: discord_id.to_s)
+        end
+
+        # Translates Discord @mentions into "user_id N" tokens so the LLM
+        # can match them against the roster in its system prompt directly.
+        # Returns [resolved_question, unresolved_mention_tokens].
+        def resolve_mentions(question)
+          unresolved = []
+          resolved = question.gsub(MENTION_PATTERN) do
+            mentioned = User.find_by(discord_id: Regexp.last_match(1))
+            if mentioned
+              "user_id #{mentioned.id}"
+            else
+              unresolved << Regexp.last_match(0)
+              Regexp.last_match(0)
+            end
+          end
+
+          [resolved, unresolved]
+        end
+
+        def unknown_mention!(event, mentions)
+          event << "I don't recognize #{mentions.size == 1 ? 'that @mention' : 'some of those @mentions'} — they may not be linked to a league member. Try a nickname instead."
+          nil
         end
 
         def untracked_user!(event)

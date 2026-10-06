@@ -92,6 +92,35 @@ class DiscordStatsCommandTest < ActiveSupport::TestCase
     assert_match(/used all #{QueryRateLimiter::LIMIT} questions/, event.lines.join)
   end
 
+  test "resolves discord mentions to user ids before querying" do
+    mentioned = User.new(email: "mentioned-user@example.com", password: "password123", discord_id: "555666777")
+    mentioned.save!(validate: false)
+    event = FakeEvent.new(424_242)
+    captured_question = nil
+    result = { type: "result", messages: [{ title: nil, description: "Answer" }] }
+    probe = lambda do |question:, **|
+      captured_question = question
+      FakeService.new(result)
+    end
+
+    StatsQueryService.stub(:new, probe) do
+      @command.execute(event, "what", "are", "<@!555666777>", "'s", "5", "worst", "games?")
+    end
+
+    assert_equal "what are user_id #{mentioned.id} 's 5 worst games?", captured_question
+  end
+
+  test "rejects unknown mentions without spending a rate-limit slot" do
+    event = FakeEvent.new(424_242)
+
+    StatsQueryService.stub(:new, ->(**) { flunk "service should not be called" }) do
+      @command.execute(event, "what", "are", "<@999000111>", "'s", "worst", "games?")
+    end
+
+    assert_match(/don't recognize that @mention/, event.lines.join)
+    assert_equal 0, QueryRateLimiter.new(user_id: @user.id).current_count
+  end
+
   test "delivers results as embeds and counts the request" do
     event = FakeEvent.new(424_242)
     result = {

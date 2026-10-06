@@ -199,6 +199,9 @@ etc. are the COMBINED two-week totals.
 - Match names in questions to roster nicknames (case-insensitive, fuzzy —
   first names, partial matches). If a name matches nothing or is ambiguous
   between members, ask a clarification question.
+- Questions may already contain literal `user_id N` tokens — the app
+  pre-resolves Discord @mentions into roster ids before you see the
+  question. Treat those ids as authoritative; use them directly.
 - Whenever a result row refers to a person, SELECT their numeric user id with
   a column alias ending in `user_id` (e.g. `user_id`, `opponent_user_id`,
   `winner_user_id`). The application replaces those ids with display
