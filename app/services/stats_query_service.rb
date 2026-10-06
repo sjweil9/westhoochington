@@ -17,6 +17,13 @@ class StatsQueryService
 
   class QueryError < StandardError; end
 
+  # Raised internally when generated SQL fails in a way the LLM can
+  # plausibly fix (validator rejection, undefined column/table, bad CTE
+  # scoping, read-only violation). Triggers one repair round-trip.
+  class RepairableSqlError < StandardError; end
+
+  MAX_REPAIR_ATTEMPTS = 1
+
   def initialize(user:, question:, conversation:, llm_adapter: nil)
     @user = user
     @question = question
@@ -27,10 +34,29 @@ class StatsQueryService
   def call
     system_prompt = QuerySchemaBuilder.new(user: @user).system_prompt
     messages = @conversation.llm_messages + [{ role: "user", content: @question }]
+    repair_attempts = 0
 
     raw_response = call_llm(system_prompt: system_prompt, messages: messages)
-    parsed = parse_response(raw_response)
-    result = process_parsed_response(parsed)
+
+    begin
+      parsed = parse_response(raw_response)
+      result = process_parsed_response(parsed)
+    rescue RepairableSqlError => e
+      repair_attempts += 1
+      raise QueryError, "I couldn't answer that question. Try rephrasing it." if repair_attempts > MAX_REPAIR_ATTEMPTS
+
+      Rails.logger.info("[StatsQueryService] Attempting SQL repair: #{e.message.truncate(300)}")
+      messages += [
+        { role: "assistant", content: raw_response },
+        {
+          role: "user",
+          content: "That query failed: #{e.message.truncate(500)}. " \
+                   "Fix the SQL and respond again with ONLY the required JSON format."
+        }
+      ]
+      raw_response = call_llm(system_prompt: system_prompt, messages: messages)
+      retry
+    end
 
     persist_conversation(result)
 
@@ -116,7 +142,11 @@ class StatsQueryService
 
     raise QueryError, "Query too complex. Try a simpler question." if sql.length > QuerySqlValidator::MAX_SQL_LENGTH
 
-    QuerySqlValidator.validate!(sql)
+    begin
+      QuerySqlValidator.validate!(sql)
+    rescue QuerySqlValidator::InvalidQueryError => e
+      raise RepairableSqlError, "SQL rejected by validation: #{e.message}"
+    end
     display_format = "list" unless VALID_DISPLAY_FORMATS.include?(display_format)
 
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -145,7 +175,7 @@ class StatsQueryService
     end
 
     Rails.logger.error("[StatsQueryService] SQL execution error: #{error.message}")
-    raise QueryError, "I couldn't answer that question. Try rephrasing it."
+    raise RepairableSqlError, "PostgreSQL error: #{error.message.lines.first(3).join(' ').strip}"
   end
 
   def execute_readonly_sql(sql)

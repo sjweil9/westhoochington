@@ -25,7 +25,11 @@ Discord as the output surface.
               column_labels, headline} | {clarification} | {refusal}
            d. QuerySqlValidator — static SQL validation
            e. Execute in a READ ONLY transaction with a 5s statement timeout
-           f. QueryResultFormatter → Discord message chunks
+           f. Self-repair: if the SQL fails validation or execution (bad CTE
+              scope, unknown column, rejected table, read-only violation —
+              anything but a timeout), the error is fed back to the LLM for
+              ONE corrected attempt before giving up
+           g. QueryResultFormatter → Discord message chunks
       6. Send chunks via event.respond (≤2000 chars each)
 ```
 

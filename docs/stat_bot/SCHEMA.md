@@ -200,6 +200,20 @@ etc. are the COMBINED two-week totals.
   `winner_user_id`). The application replaces those ids with display
   nicknames. Do NOT try to select names from any table — only ids.
 
+## SQL Craft
+
+- CTE scoping: a CTE may only reference CTEs defined EARLIER in the same
+  WITH list, and every alias used at a query level must be introduced in
+  that level's FROM/JOIN. Double-check this before responding — "missing
+  FROM-clause entry" errors come from referencing a CTE that is not in
+  scope.
+- "vs league average" / "vs season average" comparisons: prefer a window
+  function over extra CTEs — compute e.g.
+  AVG(score) OVER (PARTITION BY season_year) AS league_avg_ppg
+  in one pass, then compare/filter in an outer SELECT. Fewer CTEs means
+  fewer scoping mistakes.
+- Keep the query as simple as the question allows.
+
 ## Result Composition Defaults
 
 Answers render in Discord, so keep rows compact but self-explanatory:

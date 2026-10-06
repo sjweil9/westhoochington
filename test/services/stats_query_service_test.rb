@@ -11,6 +11,8 @@ class StatsQueryServiceTest < ActiveSupport::TestCase
 
     def chat(system_prompt:, messages:, model: nil)
       @calls << { system_prompt: system_prompt, messages: messages, model: model }
+      raise LlmAdapters::ApiError, "stub adapter exhausted" if @responses.empty?
+
       response = @responses.shift
       raise response if response.is_a?(StandardError) || (response.is_a?(Class) && response < StandardError)
 
@@ -92,29 +94,72 @@ class StatsQueryServiceTest < ActiveSupport::TestCase
     assert_match(/rephrasing/, result[:content])
   end
 
-  test "returns an error when generated sql fails validation" do
+  test "returns an error when generated sql repeatedly fails validation" do
     response = {
       sql: "DELETE FROM games",
       display_format: "table",
       column_labels: []
     }.to_json
 
-    result = service_with(response).call
+    result = service_with([response, response]).call
 
     assert_equal "error", result[:type]
     assert_match(/rephrasing/, result[:content])
   end
 
-  test "blocks sql referencing the users table" do
+  test "blocks sql referencing the users table even after a repair attempt" do
     response = {
       sql: "SELECT email FROM users LIMIT 1",
       display_format: "list",
       column_labels: ["Email"]
     }.to_json
 
-    result = service_with(response).call
+    result = service_with([response, response]).call
 
     assert_equal "error", result[:type]
+  end
+
+  test "repairs sql that fails validation when the retry succeeds" do
+    bad = { sql: "SELECT email FROM users LIMIT 1", display_format: "scalar", column_labels: ["Email"] }.to_json
+    good = { sql: "SELECT COUNT(*) AS total FROM games", display_format: "scalar", column_labels: ["Games"] }.to_json
+    adapter = StubAdapter.new([bad, good])
+
+    result = StatsQueryService.new(
+      user: @user, question: "how many games?", conversation: @conversation, llm_adapter: adapter
+    ).call
+
+    assert_equal "result", result[:type]
+    assert_equal 2, adapter.calls.size
+    repair_message = adapter.calls.last[:messages].last
+    assert_equal "user", repair_message[:role]
+    assert_match(/That query failed/, repair_message[:content])
+  end
+
+  test "repairs sql that fails execution when the retry succeeds" do
+    bad = { sql: "SELECT nonexistent_column FROM games LIMIT 1", display_format: "scalar", column_labels: ["X"] }.to_json
+    good = { sql: "SELECT COUNT(*) AS total FROM games", display_format: "scalar", column_labels: ["Games"] }.to_json
+    adapter = StubAdapter.new([bad, good])
+
+    result = StatsQueryService.new(
+      user: @user, question: "how many games?", conversation: @conversation, llm_adapter: adapter
+    ).call
+
+    assert_equal "result", result[:type]
+    assert_equal 2, adapter.calls.size
+    assert_match(/PostgreSQL error/, adapter.calls.last[:messages].last[:content])
+  end
+
+  test "gives up after one failed repair of broken sql" do
+    bad = { sql: "SELECT nonexistent_column FROM games LIMIT 1", display_format: "scalar", column_labels: ["X"] }.to_json
+    adapter = StubAdapter.new([bad, bad])
+
+    result = StatsQueryService.new(
+      user: @user, question: "how many games?", conversation: @conversation, llm_adapter: adapter
+    ).call
+
+    assert_equal "error", result[:type]
+    assert_match(/rephrasing/, result[:content])
+    assert_equal 2, adapter.calls.size
   end
 
   test "falls back to the fallback model when the primary call fails" do
