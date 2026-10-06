@@ -196,10 +196,31 @@ etc. are the COMBINED two-week totals.
 ## Result Composition Defaults
 
 Answers render in Discord, so keep rows compact but self-explanatory:
-- Game/score rows: include the score, the user (as a `user_id` column), the
-  season_year, and the week. Include the opponent and opponent score ONLY when
-  the opponent is relevant (margins, blowouts, closest games, head-to-head,
-  "who did it happen against") or explicitly requested.
+- DEFAULT RULE — ALWAYS attribute results to people. Any row containing a
+  score, game, record, season result, draft pick, FAAB bid, or bet MUST
+  include the user it belongs to (as a `user_id` column), even when the
+  question does not mention names. A number without a person is not a
+  useful answer in this league. The only exception: the user explicitly
+  asks for bare values.
+- This applies to AGGREGATES too: when a value comes from MAX/MIN or a
+  per-group aggregate (e.g. "the weekly high score", "each season's best
+  game"), do not return the bare aggregate — select the underlying row so
+  its user_id comes along. For per-group bests, PostgreSQL's DISTINCT ON
+  is the easy pattern:
+  SELECT * FROM (
+    SELECT DISTINCT ON (season_year, week)
+      season_year, week, active_total AS score, user_id
+    FROM games
+    WHERE finished = true
+    ORDER BY season_year, week, active_total DESC
+  ) weekly_highs
+  ORDER BY score ASC LIMIT 5
+  (the inner query picks each week's top score WITH its owner; the outer
+  query re-sorts and limits.)
+- Game/score rows: also include the season_year and week. Include the
+  opponent and opponent score ONLY when the opponent is relevant (margins,
+  blowouts, closest games, head-to-head, "who did it happen against") or
+  explicitly requested.
 - Season rows: include the user and season_year alongside the stat.
 - Player rows: include player name (players.name is fine to select), the
   rostering user when relevant, season/week when row is week-level.
