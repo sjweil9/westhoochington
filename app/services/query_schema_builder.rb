@@ -25,7 +25,6 @@ class QuerySchemaBuilder
     draft_picks
     player_faab_transactions
     game_side_bets
-    game_side_bet_acceptances
     season_side_bets
     weekly_side_bets
     side_bet_acceptances
@@ -81,7 +80,14 @@ class QuerySchemaBuilder
   end
 
   def schema_ddl
-    ddl_lines = ALLOWED_TABLES.map { |table| table_ddl(table) }
+    # Guard against schema.rb/migration drift: only describe tables that
+    # exist in the live database (and never crash prompt building over one).
+    present, missing = ALLOWED_TABLES.partition { |t| ActiveRecord::Base.connection.table_exists?(t) }
+    if missing.any?
+      Rails.logger.warn("[QuerySchemaBuilder] Allowlisted table(s) missing from database: #{missing.join(', ')}")
+    end
+
+    ddl_lines = present.map { |table| table_ddl(table) }
     "## Database Schema\n\n#{ddl_lines.join("\n\n")}"
   end
 

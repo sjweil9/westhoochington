@@ -112,16 +112,6 @@ ActiveRecord::Schema.define(version: 2026_10_05_120000) do
     t.json "highest_score_yahoo"
   end
 
-  create_table "game_side_bet_acceptances", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "game_side_bet_id"
-    t.string "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["game_side_bet_id"], name: "index_game_side_bet_acceptances_on_game_side_bet_id"
-    t.index ["user_id"], name: "index_game_side_bet_acceptances_on_user_id"
-  end
-
   create_table "game_side_bets", force: :cascade do |t|
     t.bigint "game_id"
     t.bigint "user_id"
@@ -454,8 +444,6 @@ ActiveRecord::Schema.define(version: 2026_10_05_120000) do
   add_foreign_key "comments", "users"
   add_foreign_key "draft_picks", "players"
   add_foreign_key "draft_picks", "users"
-  add_foreign_key "game_side_bet_acceptances", "game_side_bets"
-  add_foreign_key "game_side_bet_acceptances", "users"
   add_foreign_key "game_side_bets", "games"
   add_foreign_key "game_side_bets", "users"
   add_foreign_key "games", "users"

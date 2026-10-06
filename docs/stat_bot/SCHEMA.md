@@ -35,11 +35,12 @@ Platform eras:
 - season_user_stats: one row per user per season_year (precomputed stats)
 - draft_picks belongs_to user (user_id), player (player_id)
 - player_faab_transactions belongs_to user (user_id), player (player_id)
-- game_side_bets belongs_to game (game_id) and user (user_id, the proposer);
-  has_many game_side_bet_acceptances (game_side_bet_id)
-- season_side_bets / weekly_side_bets belongs_to user (the proposer);
-  acceptances live in side_bet_acceptances where bet_type = 'season' or
-  'weekly' and side_bet_id = the bet's id (manual polymorphism)
+- game_side_bets belongs_to game (game_id) and user (user_id, the proposer)
+- season_side_bets / weekly_side_bets belongs_to user (the proposer)
+- acceptances for ALL bet kinds live in side_bet_acceptances: bet_type is
+  'game', 'season', or 'weekly' and side_bet_id is the id in the matching
+  bet table (manual polymorphism — there is no game_side_bet_acceptances
+  table)
 - side_bets: legacy free-form bets (terms text), belongs_to user
 - over_unders (the proposition, description text) has_many lines; lines
   belongs_to over_under and user (the user the line is about); over_under_bets
@@ -144,16 +145,16 @@ etc. are the COMBINED two-week totals.
 - `game_side_bets`: a user proposes a bet on a specific game
   (predicted_winner_id / actual_winner_id are user ids; amount in dollars;
   `status` lifecycle: awaiting_bets → awaiting_resolution → awaiting_payment →
-  awaiting_confirmation → completed). Acceptances: game_side_bet_acceptances
-  (status 'accepted' rows are the users on the other side).
+  awaiting_confirmation → completed).
 - `season_side_bets`: bet_type one of final_standings, total_points,
   regular_season_finish, regular_season_points; comparison_type '1V1'
   (user vs user), '1VF' (user vs field), 'OU' (over/under); `won` = whether
   the PROPOSER won; bet_terms JSON holds winner_id/loser_id/threshold.
 - `weekly_side_bets`: same shape as season_side_bets but scoped to one week.
-- `side_bet_acceptances`: acceptances for season/weekly bets (bet_type
-  'season' or 'weekly', side_bet_id = the bet id). The acceptor takes the
-  other side of the proposer's bet.
+- `side_bet_acceptances`: one row per user accepting a bet (bet_type 'game',
+  'season', or 'weekly'; side_bet_id = the id in that bet's table). The
+  acceptor takes the other side of the proposer's bet. `status` lifecycle:
+  awaiting_resolution → awaiting_payment → awaiting_confirmation → completed.
 - `side_bets`: legacy free-form text bets; `terms` describes them.
 - `over_unders` + `lines` + `over_under_bets`: a proposition about a user with
   a numeric line; bettors pick over or under; `correct` = whether the bettor
